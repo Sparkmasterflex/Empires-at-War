@@ -1,0 +1,16 @@
+Empire Base Colors
+-------------------------
+Egypt: 			#f4c10f  -- Orange
+Rome: 			#820b08  -- Red
+Greece: 		#5bc9d6  -- Light Blue
+Gaul: 			#5b8e14  -- Green
+Carthage:   	#1b3a93  -- Dark Blue
+Japan: 			#8ec049  -- Light Green
+Mongols: 		#8e5109  -- Brown
+Undead: 		#383838  -- Off Black
+
+Unit FullSize Dimensions
+-------------------------
+Height: 		300px
+
+5b8e14

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flex-config xmlns="http://www.adobe.com/2006/flex-config">
+<compiler>
+<source-path append="true">
+<path-element>C:\eclipse_projects\EmpiresatWar\src</path-element>
+</source-path>
+</compiler>
+<file-specs>
+<path-element>C:\eclipse_projects\EmpiresatWar\empiresAtWar.as</path-element>
+</file-specs>
+<target-player>10</target-player>
+<output>C:\eclipse_projects\EmpiresatWar\bin\EmpiresatWar.swf</output>
+<default-background-color>#FFFFFF</default-background-color>
+<default-frame-rate>30</default-frame-rate>
+<default-size>
+<width>1200</width>
+<height>800</height>
+</default-size>
+</flex-config>

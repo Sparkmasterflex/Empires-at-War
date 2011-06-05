@@ -1,0 +1,2 @@
+onSelect of piece addEventListener for enter_frame.  continuously draw invisible line from piece to mouse.
+Also addEventListener for mGrids hitTest for line, then draw line from piece to center of closest square touched and then to next.

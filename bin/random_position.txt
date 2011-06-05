@@ -1,0 +1,11 @@
+public function getPos() {
+			
+			piecePos = new Array();
+			var r:Number = Math.round(Math.random() * (sGridArr[0].sqWlandArr.length / 2));
+			for(var i:uint = 0; i < 10; i++) {
+				var range = Math.round(Math.random() * ((r + 50) - r) + r);
+				piecePos.push(sGridArr[0].sqWlandArr[range]);
+			}
+			userContr = new userControlled(empire, difficulty, 0, piecePos, userObj);
+			addChild(userContr);
+		}
