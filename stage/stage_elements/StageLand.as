@@ -1,0 +1,1 @@
+﻿package stage.stage_elements {  import flash.display.Sprite;  import flash.text.TextField;	  public class StageLand extends Sprite {	private var testColor:Number;			public function StageLand(color):void {	  testColor = color;//	  graphics.lineStyle(1, 0x000000, .45);	  graphics.beginFill(0x009900, 1);	  graphics.drawRect(0,0,100,100);	  graphics.endFill();	}  }}
