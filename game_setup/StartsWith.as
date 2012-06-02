@@ -19,7 +19,7 @@ package game_setup {
 		  break;
 		case GameConstants.MEDGAME:
 		  userStarts.ARMY = 2;
-		  userStarts.armyUnit = [[2, 2, 3, 4, 5, 8, 8, 10, 7],[2, 2, 3, 8, 10]];
+		  userStarts.armyUnits = [[2, 2, 3, 4, 5, 8, 8, 10, 7],[2, 2, 3, 8, 10]];
 		  userStarts.CITY = 0;
 		  userStarts.SETTLER = 1;
 		  userStarts.AGENT = ['diplomat'];

@@ -13,9 +13,13 @@ package control_panel.ui {
 	public var xmlLoader:URLLoader;
 	public var baseArmyLoader:URLLoader;
 	public var selectedXML:XML;
+	public var cityTab;
+	public var armyTab;
+	public var agentTab;
 	
 	/*-- Arrays --*/
 	private var current:Object;
+	private var selectedPiece:Object;
 	public var selectedArr:Array;
 	public var thumbs:Array;
 	private var rollBG:Gradient;
@@ -37,16 +41,19 @@ package control_panel.ui {
 	  addChild(bg);
 	}
 	
-	public function neededXML(obj, expanded:Boolean) {
+	public function neededXML(obj, expanded:Boolean, parent=null) {
       if(thumbs) thumbs.forEach(function(t) { removeChild(t); });
+	  thumbs = new Array()
 	  current = obj;
-	  var empire = current['empire'].toLowerCase(),
+	  var empire = current['empire'][1].toLowerCase(),
 		  xml = current['pieceType'] + "_" + empire + '.xml';
 	  if(expanded) {
 	    xmlLoader = new URLLoader();
 	    xmlLoader.load(new URLRequest('xml/' + xml));
 	    thumbs = new Array();
+		selectedPiece = parent ? parent : obj;
 		addSelectedTabs(obj);
+		setupTabs(selectedPiece)
 	    switch(current['pieceType']) {
 		  case 'city':
 		    xmlLoader.addEventListener(Event.COMPLETE, displayCityBuildings);
@@ -141,7 +148,7 @@ package control_panel.ui {
 		  i = 0;
 	  tabs.forEach(function(tab) {
 		var btnDim = 53,
-			bgColor = tab.match(obj.pieceType) ? 0xaaaaaa : 0x777777,
+			bgColor = tab.match(obj.pieceType) ? 0xaaaaaa : 0x444444,
 			btn = new MovieClip(),
 			bg:Gradient = new Gradient(
 				['none'], 'linear', [bgColor, bgColor],
@@ -150,6 +157,7 @@ package control_panel.ui {
 			),
 			img:ImgLoader = new ImgLoader('controlPanel/buttons/' + tab);
 	    btn.addChild(bg);
+		img.alpha = 0.5;
 		btn.addChild(img);
 		btn.x = 655 - (btnDim + 1);
 		btn.y = (btnDim * i) + 2;
@@ -157,8 +165,62 @@ package control_panel.ui {
 		addChild(btn);
 		btn.addEventListener(MouseEvent.MOUSE_OVER, rollOver);
 		btn.addEventListener(MouseEvent.MOUSE_OUT, rollOver);
+		switch(tab) {
+		  case 'city.png':
+			cityTab = btn;
+			break;
+		  case 'army.png':
+			armyTab = btn;
+			break;
+		  case 'agent.png':
+			agentTab = btn;
+			break;
+		}
 		i++;
 	  });
+	}
+	
+	public function setupTabs(obj) {
+	  if(obj.pieceType == 'city') {
+		enableTab(cityTab, false);
+		if(obj.army) enableTab(armyTab);
+		if(obj.support) enableTab(agentTab);
+	  } else if(obj.pieceType == 'army') {
+		enableTab(armyTab, false);
+		if(obj.support) enableTab(agentTab);
+	  } else {
+		enableTab(agentTab, false);
+	  }
+	}
+	
+	public function enableTab(btn, setBG=true) {
+	  var func = btn == cityTab ? showBuildings : 
+		btn == armyTab ? showArmies : 
+		    showAgents;
+	  btn.getChildAt(1).alpha = 1;
+	  btn.addEventListener(MouseEvent.CLICK, func);
+	  if(setBG) {
+	    btn.removeChild(btn.getChildAt(0));
+	    var bg:Gradient = new Gradient(
+		  ['none'], 'linear', [0x777777, 0x777777],
+		  [1,1], [0,255], 53, 53,
+		  (3 * Math.PI) / 2, [53,53], 'rectangle'
+	    )
+        btn.addChild(bg);
+	    btn.setChildIndex(bg, 0);
+	  }
+	}
+	
+	private function showBuildings(event:MouseEvent) {
+	  neededXML(selectedPiece, true);
+	}
+
+	private function showArmies(event:MouseEvent) {
+	  neededXML(current['army'], true, current);
+	}
+	
+	private function showAgents(event:MouseEvent) {
+	  trace('not yet');
 	}
 	
 	private function extendedDetails(event:MouseEvent) {

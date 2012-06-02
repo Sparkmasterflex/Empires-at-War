@@ -99,14 +99,11 @@ package static_return {
 			case DOWN_RIGHT:
 			  horizantal = RIGHT;
 			  break;
-			}
-//		  trace('horz: ' + horizantal);
-//		  trace('vert: ' + vertical);
+		  }
+
 		  var sqRow = upOrDownRow(vertical, gridSqd, sides, sqPos[1]),
 		      sqCol = leftOrRightColumn(horizantal, gridSqd, sides, sqPos[2]),
 			  sqSection = determineSection(sqPos[0], sqRow[1], sqCol[1]);
-//		  trace(sqRow);
-//		  trace(sqCol);
 			
 		  var nSq = sqSection.toString() + "_" + sqRow[0].toString() + "_" + sqCol[0].toString();
 			

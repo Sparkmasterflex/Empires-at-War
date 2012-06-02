@@ -49,7 +49,7 @@ package stage.stage_elements {
 	  gridInfo.posX = posX;
 	  gridInfo.posY = posY;
 	  gridInfo.land = false;
-	  gridInfo.pieces = [];
+	  gridInfo.pieces = null;
 	  //findMapSquare(gridInfo.section, gridInfo.row, gridInfo.column);
 	}
 	
@@ -189,8 +189,7 @@ package stage.stage_elements {
 	}
 	
 	public function hasLand() {
-	  var land = this.gridInfo.land ? true : false;
-	  return land;
+	  return gridInfo.land;
 	}
 	
 	public function addImgLoader(img, pos:Array=null) {
@@ -202,10 +201,14 @@ package stage.stage_elements {
 	  this.addChild(loader);
 	}
 	
+	public function pieces() {
+	  return gridInfo['pieces'];
+	}
+	
 	public function addToSquare(obj) {
 	  obj.attr.square = this;
-	  gridInfo['pieces'].push(obj);
-	  if(obj.attr['pieceType'] == 'city') {
+	  gridInfo['pieces'] = obj;
+	  if(obj.attr['primary'] == true) {
 		dispatchEvent(new MoveWindowEvent(MoveWindowEvent.WINDOW, obj.x, obj.y));
 	  }
 	}

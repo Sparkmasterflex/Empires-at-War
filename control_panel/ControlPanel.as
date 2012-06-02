@@ -1,4 +1,6 @@
 package control_panel {
+  import empiresAtWar;
+  import empires.Empire;
   import com.greensock.*;
   import com.greensock.easing.*;
   import com.greensock.plugins.DropShadowFilterPlugin;
@@ -27,11 +29,14 @@ package control_panel {
 	private static const EXPANDED:int  = GameConstants.STAGE_HEIGHT - 175;
 	
 	/*---- Classes Added ----*/
+	public  var userEmp:Empire;
 	private var bg:ImgLoader;
-	public var empLabel:Label;
-	public var moneyLabel:Label;
-	public var turnLabel:Label;
-	public var selectedUnits:DisplayArray;
+	private var empSymbol:ImgLoader;
+	public  var empLabel:Label;
+	public  var moneyLabel:Label;
+	public  var turnLabel:Label;
+	public  var selectedUnits:DisplayArray;
+	public  var eAtW:empiresAtWar;
 	
 	/*-- Arrays --*/
 	public var buttons:Object = new Object();
@@ -44,13 +49,27 @@ package control_panel {
 	private var over:Boolean = false;
 	private var clicked:Boolean = false;
 	
-    public function ControlPanel(empire, money, turn) {
+    public function ControlPanel(empire, turn, parent) {
+	  eAtW = parent;
+	  userEmp = empire;
 	  this.y = COLLAPSED;
 	  bg = new ImgLoader('controlPanel/control_panel.png');
 	  addChild(bg);
+	  addEmpireSymbol();
 	  createButtons();
-	  addEmpireInfo(empire, money, turn);
+	  addEmpireInfo(turn);
 	  addSelectedUnits();
+	}
+	
+	private function addEmpireSymbol() {
+	  var emp = GameConstants.parseEmpireName(userEmp.empire());
+	  empSymbol = new ImgLoader('empireSymbols/' + emp + '.png');
+	  empSymbol.scaleX = 0.9;
+	  empSymbol.scaleY = 0.9;
+	  empSymbol.x = 5;
+	  empSymbol.y = 10;
+	  empSymbol.alpha = 0.75;
+	  addChild(empSymbol);
 	}
 	
 	public function expand(isSelected, obj) {
@@ -81,6 +100,7 @@ package control_panel {
 		btnListenAndShadow(buttons[j]);
 	  }
 	  positionButtons();
+	  observeButtons();
 	}
 	
 	private function positionButtons() {
@@ -100,14 +120,19 @@ package control_panel {
 	  buttons['army'].y = hidden + 72;
 	}
 	
-	private function addEmpireInfo(empire, money, turn) {
+	private function observeButtons() {
+	  buttons['turn'].addEventListener(MouseEvent.CLICK, endTurn);
+	}
+	
+	private function addEmpireInfo(turn) {
 	  empLabel   = new Label(40, 0xffffff, 'Trebuchet MS', 'LEFT');
 	  moneyLabel = new Label(18, 0xffffff, 'Trebuchet MS', 'LEFT');
 	  turnLabel  = new Label(18, 0xffffff, 'Trebuchet MS', 'LEFT');
+	  var empStr = GameConstants.parseEmpireName(userEmp.empire());
 	  
-	  empLabel.text = empire.match(/(Gaul|Mongols)/) ? 'The ' + empire : empire;
+	  empLabel.text = empStr.match(/(Gaul|Mongols)/) ? 'The ' + empStr : empStr;
 	  turnLabel.text = 'Turn: ' + turn;
-	  moneyLabel.text = 'Money: ' + money;
+	  moneyLabel.text = 'Treasury: ' + userEmp.treasury();
 	  
 	  empLabel.x = 30;
 	  turnLabel.x = 230;
@@ -196,6 +221,12 @@ package control_panel {
 		clicked = true;
 		// TODO add removeEL. for onClickBtn and onComp func to addEL when tween done 
 	  }
+	}
+	
+	public function endTurn(event:MouseEvent) {
+	  eAtW.currentTurn++;
+	  turnLabel.text = "Turn: " + eAtW.currentTurn;
+	  userEmp.processTurn(this)
 	}
   }
 }

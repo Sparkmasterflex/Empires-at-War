@@ -55,7 +55,9 @@ package stage {
 	  for(var s:uint = 0; s < sGridArr.length; s++) {
 		sGridArr[s].createCoast();
 		if(int(params.status) == GameConstants.NEW_GAME) sGrid.recordSection(status);
-		if(s == (sGridArr.length - 1)) dispatchEvent(new StageBuildEvent(StageBuildEvent.ALL_DONE));  
+		if(s == (sGridArr.length - 1)) {
+		  dispatchEvent(new StageBuildEvent(StageBuildEvent.ALL_DONE, 'yes'));  
+		}
 	  }
 	}
   }

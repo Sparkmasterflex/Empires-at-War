@@ -14,20 +14,22 @@ package pieces {
 
   public class City extends GamePiece {
 	
-	public function City(e, s, num) {
-	  super();
-	  addCityImage(e.toLowerCase(), s);
+	public function City(emp, s, num) {
+	  super(emp);
 	  attr = new Object();
+	  empire(this_empire.empire());
+	  population(s);
+	  addCityImage();
 	  attr['pieceType'] = "city";
 	  attr['building']  = [CityConstants.MEETING]
-	  empire(e);
+	  taxes(0.07);
 	  population(s);
-	  named("city_" + num + "_" + e);
+	  named("city_" + num + "_" + empire()[1]);
 	}
 	
-	public function addCityImage(e, s) {
-	  var size = determineCitySize(s),
-		  str = e + '/city/' + size,
+	public function addCityImage() {
+	  var size = CityConstants.IMAGES[determineCitySize(population())],
+		  str = empire()[1].toLowerCase() + '/city/' + size,
 	      img:ImgLoader = new ImgLoader(str);
 	  img.x = -60;
 	  img.y = -60;
@@ -42,12 +44,17 @@ package pieces {
 					 	 (s <= CityConstants.LARGE_CITY) ? 'LARGE_CITY' :
 					   	   'METROPOLIOUS';
 	  
-      return CityConstants.IMAGES[size];
+      return size;
 	}
-
+	
 	public function population(p=null):String {
 	  if(p) attr['population'] = p;
 	  return attr['population'];
+	}
+	
+	public function taxes(t=null) {
+	  if(t) attr['taxes'] = t;
+	  return attr['taxes'];
 	}
 	
 	public function army(a=null) {
@@ -58,6 +65,18 @@ package pieces {
 	public function building(b=null) {
 	  if(b) attr['building'] += b;
 	  return attr['building'];
+	}
+	
+	public function advanceBuilding() {
+	  trace('not yet');
+	}
+
+	public function advanceTroops() {
+	  trace('not yet');
+	}
+	
+	public function collectTaxes() {
+	  return Number(population()) * Number(taxes())
 	}
   }
 }

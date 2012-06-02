@@ -4,12 +4,16 @@ package pieces {
   
   import common.ImgLoader;
   
-  import dispatch.ControlPanelEvent;
   import dispatch.AddListenerEvent;
+  import dispatch.ControlPanelEvent;
+  
+  import empires.Empire;
   
   import flash.display.MovieClip;
   import flash.events.*;
   import flash.utils.Timer;
+  
+  import static_return.GameConstants;
   
 
   public class GamePiece extends MovieClip {
@@ -17,6 +21,7 @@ package pieces {
 	public var selected:ImgLoader;
 	private var fadeTimer:Timer;
 	public var selection = null;
+	public var this_empire:Empire;
 	
 	/*--------Boolean-------*/
 	public var isSelected:Boolean = false;
@@ -26,8 +31,9 @@ package pieces {
 	public var directionKeys:Array = new Array(104, 105, 102, 99, 98, 97, 100, 103,
 		38, 33, 39, 34, 40, 35, 37, 36);
 	  
-    public function GamePiece() {
+    public function GamePiece(empire) {
       super();
+	  this_empire = empire;
 	  addEventListener(MouseEvent.CLICK, selectThis);
     }
 	
@@ -44,9 +50,17 @@ package pieces {
 	  return attr['name'];
 	}
 	
-	public function empire(e=null):String {
-	  if(e) attr['empire'] = e;
+	public function empire(e=null):Array {
+	  if(e) attr['empire'] = [e, GameConstants.parseEmpireName(e)];
 	  return attr['empire'];
+	}
+
+	public function empire_is(e=null):Boolean {
+	  if(e) {
+		return attr['empire'][0] == e;
+	  } else {
+	  	return attr['empire'];
+	  }
 	}
 	
 	public function square(sq=null):Object {
@@ -57,9 +71,16 @@ package pieces {
 	  return attr['square'];
 	}
 	
+	public function moves(num=null) {
+	  if(!obj_is('city')) {
+	    if(num) attr['moves'] = num;
+	    return attr['moves'];
+	  }
+	}
+	
 	public function selectThis(event:MouseEvent) {
 	  var stage = this.parent,
-		  allPieces = stage.pieceArray,
+		  allPieces = this_empire.pieceArray,
 		  current = this;
 	  for(var i:uint=0; i<allPieces.length; i++) { if(allPieces[i].isSelected) selection = allPieces[i]; }
 	  if(current.isSelected || selection) {
@@ -73,6 +94,27 @@ package pieces {
 		addSelected();
 	  }
 	  dispatchEvent(new ControlPanelEvent(ControlPanelEvent.ANIMATE, this.isSelected, attr));
+	}
+	
+	// adding piece1 with piece2 (GamePiece or Array)
+	public function combinePieces(piece2) {
+	  if(obj_is('army')) {
+		if(piece2.obj_is('army')) {
+		  piece2.addUnits(units());
+		} else if(piece2.obj_is('city')) {
+		  if(piece2.army()) {
+			var city_units = piece2.army()['units'];
+			addUnits(city_units);
+			piece2.army(attr);
+		  } else {
+		    piece2.army(attr);
+		  }
+		}
+	  } else if('support') {
+		trace('support');
+	  }
+	  piece2.selectThis(null);
+	  this_empire.gStage.removeChild(this);
 	}
 	
 	private function removeSelected(current) {
@@ -100,48 +142,14 @@ package pieces {
 	  TweenLite.to(selected, .75, { alpha: fade, ease:Sine.easeIn });
 	}
 	
-//	public function checkForMultipleUnits(sq):Array {
-//	  //TODO check to see if combined armies units > 18
-//	  //       if so do not remove prev Army and leave overflow 
-//	  var pieces = sq.gridInfo.pieces,
-//		  order:Array = new Array(),
-//		  armyOrder = new Array(), settlerOrder = new Array(), otherOrder = new Array();
-//		
-//		if(pieces.length > 1) {
-//		  //for (var m:int = 0; m < pieces.length; m++) trace(grabPiece.ret(pieces[m]).pieceDetails.type);
-//		  for(var i:uint = 0; i < pieces.length; i++) {
-//			switch(obj_is()) {
-//			  case 'city':	  var city = pieces[i];  			break;
-//			  case 'army':    armyOrder.push(pieces[i].attrs);  break;
-//			  case 'settler': settlerOrder.push(pieces[i]); 	break;
-//			  default:        otherOrder.push(pieces[i]);   	break;
-//		  }
-//		}
-//			
-//		if(city) { 
-//		  pieceStationedInCity(city, pieceSelected);
-//		} else if(armyOrder.length > 1) { 
-//		  for(var a:uint = 0; a < armyOrder.length; a++) pieceToNewSquare(armyOrder[a], null, sq);
-//		  var armyArr = combineArmies(armyOrder);
-//		  addUserArmy(1, armyArr[0], armyArr[1], sq);
-//		  changeSelected(pieceSelected, userPiece);
-//		}
-//			
-//		if(settlerOrder.length > 1) {
-//		  for(var s:uint = 1; s < settlerOrder.length; s++) {
-//			pieceToNewSquare(settlerOrder[s], null, sq);
-//			grabPiece.ret(settlerOrder[0]).pieceDetails.supportPieces.push('settler');
-//			removeChild(settlerOrder[s]);
-//			changeSelected(pieceSelected, settlerOrder[0]);
-//		  }
-//		}
-//			
-//		/*for(var a:uint = 0; a < armyOrder.length; a++) order.push(armyOrder[a]);
-//		for(var s:uint = 0; s < settlerOrder.length; s++) order.push(settlerOrder[s]);
-//		for(var o:uint = 0; o < otherOrder.length; o++) order.push(otherOrder[o]);*/
-//	  }
-//		
-//	  return order;
-//	}
+	/*-- over-written by Army.as --*/
+	public function units() { return null; }
+	
+	public function addUnits(units) { return units; }
+	
+/*--------------- Next Turn Functions -------------*/
+    public function nextTurn(turn) {
+	  moves(5);
+	}
   }
 }

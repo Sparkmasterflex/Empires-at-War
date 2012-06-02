@@ -26,7 +26,7 @@ package control_panel.ui {
 		  [1,1], [0,145], 75, 75,
 		  (3 * Math.PI) / 2, [75,75,15,15], 'rectangle'
 	  ),
-		  img_path = obj['empire'].toLowerCase() + '/' + obj['pieceType'] + image;
+		  img_path = obj['empire'][1].toLowerCase() + '/' + obj['pieceType'] + image;
 	  img = new ImgLoader(img_path);
 	  addChild(box);
 	  addChild(img);
