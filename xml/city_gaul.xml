@@ -6,26 +6,89 @@
   	<thumbnail>/thumb/meeting-hall.png</thumbnail>
   	<fullSize>/fullSize/meeting-hall.png</fullSize>
   	<name>Meeting Hall</name>
-  	<benefits>
-  	  <town>
-  	  	<order>2</order>
-  	  	<taxes>5%</taxes>
-  	  </town>
-  	  <army>1, 2</army>
-  	</benefits>
+  	<type>10</type>
+    <level>1</level>
+    <cost>150</cost>
+    <build_points>30000</build_points>
+    <benefits>
+      <army></army>
+      <population>0.5%</population>
+      <order>2</order>
+      <taxes>5%</taxes>
+      <other></other>
+    </benefits>
+    <allows>
+      <army>1</army>
+      <building></building>
+    </allows>
   </building>
+  
   <building>
   	<objCall>2</objCall>
   	<empire>gaul</empire>
   	<thumbnail>/thumb/training-yard.png</thumbnail>
   	<fullSize>/fullSize/training-yard.png</fullSize>
   	<name>Training Yard</name>
-  	<benefits>
-  	  <town>
-  	  	<order>3</order>
-  	  	<taxes>0%</taxes>
-  	  </town>
-  	  <army>1, 2, 3, 8</army>
-  	</benefits>
+  	<type>20</type>
+    <level>1</level>
+    <cost>250</cost>
+    <build_points>20000</build_points>
+    <benefits>
+      <army>1, 2</army>
+      <population></population>
+      <order>3</order>
+      <taxes></taxes>
+      <other></other>
+    </benefits>
+    <allows>
+      <army>1, 2</army>
+      <building></building>
+    </allows>
+  </building>
+  
+  <building>
+  	<objCall>3</objCall>
+  	<empire>gaul</empire>
+  	<thumbnail>/thumb/religion-placeholder.png</thumbnail>
+  	<fullSize>/fullSize/training-yard.png</fullSize>
+  	<name>Sacred Garden</name>
+  	<type>30</type>
+    <level>1</level>
+    <cost>200</cost>
+    <build_points>30000</build_points>
+    <benefits>
+      <army></army>
+      <population>2%</population>
+      <order>3</order>
+      <taxes></taxes>
+      <other></other>
+    </benefits>
+    <allows>
+      <army></army>
+      <building></building>
+    </allows>
+  </building>
+  
+  <building>
+  	<objCall>4</objCall>
+  	<empire>gaul</empire>
+  	<thumbnail>/thumb/hunt-placeholder.png</thumbnail>
+  	<fullSize>/fullSize/training-yard.png</fullSize>
+  	<name>The Hunt</name>
+  	<type>40</type>
+    <level>1</level>
+    <cost>250</cost>
+    <build_points>30000</build_points>
+    <benefits>
+      <army>{train: 2%, cost: -2%}</army>
+      <population></population>
+      <order>3</order>
+      <taxes></taxes>
+      <other></other>
+    </benefits>
+    <allows>
+      <army></army>
+      <building></building>
+    </allows>
   </building>
 </buildings>

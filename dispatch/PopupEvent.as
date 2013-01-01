@@ -7,23 +7,23 @@ package dispatch {
 	public var popup;
 	public var showPopup:Boolean;
 	public var parameters;
-	public var empire:String;
+	public var object;
 	public var something:String = "yes";
 		
 	public function get createPopup():String {
 	  return something;
 	}
 		
-	public function PopupEvent(type:String, pop:*, params:* = null, e:String = null, show:Boolean = false){
+	public function PopupEvent(type:String, pop:*, params:*=null, obj:*=null, show:Boolean=false){
 	  super(type, true);
 	  popup = pop;
 	  parameters = params;
-	  empire = e;
+	  object = obj;
 	  showPopup = show;
 	}
 		
 	public override function clone():Event {
-	  return new PopupEvent(type, popup, parameters, empire, showPopup);
+	  return new PopupEvent(type, popup, parameters, object, showPopup);
 	}
   }
 }

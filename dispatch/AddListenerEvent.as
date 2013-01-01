@@ -12,7 +12,7 @@ package dispatch {
 	  return something;
 	}
 	
-	public function AddListenerEvent(type:String, mc:MovieClip, l:Boolean) {
+	public function AddListenerEvent(type:String, mc, l:Boolean) {
 	  super(type, true);
 	  movieClip = mc;
 	  listen = l;

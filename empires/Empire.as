@@ -2,7 +2,6 @@ package empires {
   import flash.display.Sprite;
   
   import game_setup.StartsWith;
-  import static_return.GameConstants;
   
   import pieces.Army;
   import pieces.City;
@@ -10,6 +9,7 @@ package empires {
   import stage.GameStage;
   
   import static_return.CalculateStartPositions;
+  import static_return.GameConstants;
   
   public class Empire extends Sprite {
 	/*-- Classes--*/
@@ -47,76 +47,83 @@ package empires {
 	  
 	  for(var j:String in toStart) {
 	    switch(j) {
-		  case 'ARMY':
-		    addArmy(toStart.ARMY, toStart.armyUnits, posArr);
-		    break;
-		  case 'SETTLER':
-		    //addUserSettler(userObj.SETTLER);
-		    break;
-		  case 'CITY':
-		    addCity(toStart.CITY, startSq);
-		    break;
-		}
+  		  case 'ARMY':
+  		    addArmy(toStart.ARMY, toStart.armyUnits, posArr);
+  		    break;
+  		  case 'SETTLER':
+  		    //addUserSettler(userObj.SETTLER);
+  		    break;
+  		  case 'CITY':
+  		    addCity(toStart.CITY, startSq);
+  		    break;
+  		}
 	  }
 	}
 	
-	public function addCity(num, sq) {
-	  for(var i:uint = 0; i < num; i++) {
-		var city:City = new City(this, 10000, cityArray.length);
-		city.x = sq.x + 60;
-		city.y = sq.y + 60;
-		if(difficulty == GameConstants.EASYGAME && i == 0) city.attr['primary'] = true;
-		sq.addToSquare(city);
-		gStage.addChild(city);
-		pieceArray.push(city);
-		cityArray.push(city);
-	  }
-	}
+  	public function addCity(num, sq) {
+  	  for(var i:uint = 0; i < num; i++) {
+    		var city:City = new City(this, 10000, cityArray.length);
+    		city.x = sq.x + 60;
+    		city.y = sq.y + 60;
+    		if(difficulty == GameConstants.EASYGAME && i == 0) city.attr['primary'] = true;
+    		city.square(sq);
+    		gStage.addChild(city);
+    		pieceArray.push(city);
+    		cityArray.push(city);
+  	  }
+  	}
+  	
+  	public function addArmy(num, units, posArr) {
+  	  for(var i:uint = 0; i < num; i++) {
+    		var army:Army = new Army(this, units[i], armyArray.length),
+    			sq = getLandSquare(posArr);
+    		army.x = sq.x + 60;
+    		army.y = sq.y + 60;
+    		if(difficulty != GameConstants.EASYGAME && i == 0) army.attr['primary'] = true;
+    		army.square(sq);
+    		gStage.addChild(army);
+  	  }
+  	}
 	
-	public function addArmy(num, units, posArr) {
-	  for(var i:uint = 0; i < num; i++) {
-		var army:Army = new Army(this, units[i], armyArray.length),
-			sq = getLandSquare(posArr);
-		army.x = sq.x + 60;
-		army.y = sq.y + 60;
-		if(difficulty != GameConstants.EASYGAME && i == 0) army.attr['primary'] = true;
-		sq.addToSquare(army);
-		gStage.addChild(army);
-		pieceArray.push(army);
-		armyArray.push(army);
-	  }
-	}
+  	private function getLandSquare(pos) {
+  	  var rand = Math.round(Math.random() * 11),
+  		    sq_name = pos[rand],
+  		    section = gStage.getChildByName('section_' + sq_name.split('_')[0]),
+  		    sq = section.getChildByName(sq_name);
+  	  sq = (sq != null && !sq.gridInfo['army'] && sq.hasLand()) ? sq : getLandSquare(pos);
+  	
+  	  return sq;
+  	}
+  	
+  	public function treasury(m=null) {
+  	  if(m) {
+        attr['money'] += m;
+        if(eAtW.cp) eAtW.cp.moneyLabel.text = "Treasury: " + attr['money'];
+      }
+  	  return attr['money'];
+  	}
+  	
+  	public function empire(e=null) {
+  	  if(e) attr['empire'] = e;
+  	  return attr['empire'];
+  	}
+  	
+  	public function processTurn(cp) {
+  	  pieceArray.forEach(function(piece) {
+    		piece.nextTurn(eAtW.currentTurn);
+    		if(piece.obj_is('city')) {
+    		  piece.advanceBuilding();
+    		  piece.advanceTroops();
+    		}
+  	  });
+  	  calculateMoneyEarned();
+  	}
 	
-	private function getLandSquare(pos) {
-	  var rand = Math.round(Math.random() * 11),
-		  sq_name = pos[rand],
-		  section = gStage.getChildByName('section_' + sq_name.split('_')[0]),
-		  sq = section.getChildByName(sq_name);
-	  sq = (sq != null && !sq.gridInfo['army'] && sq.hasLand()) ? sq : getLandSquare(pos);
-	
-	  return sq;
-	}
-	
-	public function treasury(m=null) {
-	  if(m) attr['money'] += m;
-	  return attr['money'];
-	}
-	
-	public function empire(e=null) {
-	  if(e) attr['empire'] = e;
-	  return attr['empire'];
-	}
-	
-	public function processTurn(cp) {
-	  pieceArray.forEach(function(piece) {
-		piece.nextTurn(eAtW.currentTurn);
-		if(piece.obj_is('city')) {
-		  piece.advanceBuilding();
-		  piece.advanceTroops();
-		  treasury(piece.collectTaxes());
-		}
-	  });
-	  cp.moneyLabel.text = "Treasury: " + treasury();
-	}
+  	private function calculateMoneyEarned() {
+  	  var fromCities = 0;
+  	  cityArray.forEach(function(city) { treasury(city.collectTaxes()); });
+  	  
+  	  return treasury()
+  	}
   }
 }

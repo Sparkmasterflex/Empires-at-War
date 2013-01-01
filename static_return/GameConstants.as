@@ -37,6 +37,7 @@ package static_return {
 	
 	public static function parseEmpireName(emp):String {
 	  var empire:String;
+	  emp = int(emp);
       switch(emp) {
 		case EGYPT:
 		  empire = EMPIRES['EGYPT'];
