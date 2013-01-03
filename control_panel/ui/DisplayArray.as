@@ -71,13 +71,15 @@ package control_panel.ui {
   	}
   	
   	private function addThumb(item, index, arr) {
-  	  var thumb = new DisplayThumb(item, selectedPiece);
-      addChild(thumb);
-      positionThumb(thumb);
-      if(col == 7) {
-        col = 0;
-        row++;
-      } else { col++; }
+      if(item.build_points() <= 0) {
+    	  var thumb = new DisplayThumb(item, selectedPiece);
+        addChild(thumb);
+        positionThumb(thumb);
+        if(col == 7) {
+          col = 0;
+          row++;
+        } else { col++; }
+      }
   	}
   	
   	private function positionThumb(thumb) {

@@ -92,15 +92,15 @@ package control_panel {
   	  buttons['army'] = "recruit.png";
   	  buttons['building'] = "building.png";
   	  buttons['diplomacy'] = "diplomacy.png";
-    	  buttons['money'] = "money.png";
+    	buttons['money'] = "money.png";
   	  
   	  for(var j:String in buttons) {
-  		var str = buttons[j],
-  			width = j == 'turn' ? 150 : 65,
-  			fontSize = j == 'turn' ? 30 : null;
-  	    buttons[j] = new SquareButton(str, width, 57, fontSize);
-  		addChild(buttons[j]);
-  		btnListenAndShadow(buttons[j]);
+    		var str = buttons[j],
+      			width = j == 'turn' ? 150 : 65,
+      			fontSize = j == 'turn' ? 30 : null;
+      	    buttons[j] = new SquareButton(str, width, 57, fontSize);
+    		addChild(buttons[j]);
+    		btnListenAndShadow(buttons[j]);
   	  }
   	  positionButtons();
   	  observeButtons();
@@ -203,8 +203,9 @@ package control_panel {
   	
   	private function availableToBuild(event:Event) {
   	  var buildingXML = new XML(event.target.data),
-          unavailable:Array = currObj.building();
-      currObj.buildingQueue().forEach(function(build) { unavailable.push(build) });
+          unavailable:Array = new Array()
+      currObj.building().forEach(function(build) { unavailable.push(build); });
+      currObj.buildingQueue().forEach(function(build) { unavailable.push(build); });
       
       unavailable.forEach(function(build) {
   	    delete buildingXML.building.(level == build.level() && type == build.type())[0]; 

@@ -4,15 +4,15 @@ package pieces {
   
   import common.ImgLoader;
   
+  import dispatch.AddListenerEvent;
+  
   import flash.display.MovieClip;
   import flash.events.Event;
   import flash.events.MouseEvent;
   
-  import dispatch.AddListenerEvent;
-  
   import static_return.CityConstants;
-  import static_return.GameConstants;
   import static_return.FindAndTestSquare;
+  import static_return.GameConstants;
 
   public class City extends GamePiece {
 	
@@ -24,7 +24,8 @@ package pieces {
   	  addCityImage();
   	  attr['pieceType'] = "city";
   	  attr['building']  = []
-      building({1: [CityConstants.GOVERNMENT]});
+      var gov_build = new Building({level: 1, type: CityConstants.GOVERNMENT, build_points: 0}, this); 
+      building(gov_build);
   	  taxes(0.07);
   	  population(s);
   	  named("city_" + num + "_" + empire()[1]);
@@ -66,16 +67,12 @@ package pieces {
   	  if(b) {
         var any_dup = []
         if(b is Building) {
-          attr['building'].forEach(function(bld) {
-            if(bld.level() == b.level() && bld.type() == b.type()) any_dup.push(building) 
-          });
+          attr['building'].forEach(function(bld) { if(bld.level() == b.level() && bld.type() == b.type()) any_dup.push(building) });
           if(any_dup.length == 0) attr['building'].push(b);
         } else {
           for(var j:String in b) {
             b[j].forEach(function(building) {
-              attr['building'].forEach(function(bld) {
-                if(bld.level() == j && bld.type() == building) any_dup.push(building) 
-              });
+              attr['building'].forEach(function(bld) { if(bld.level() == j && bld.type() == building) any_dup.push(building) });
               if(any_dup.length == 0) {
                 var build = new Building({type: building, level: j}, this_city);
                 attr['building'].push(build);

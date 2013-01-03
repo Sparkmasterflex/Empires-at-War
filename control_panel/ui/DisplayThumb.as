@@ -6,6 +6,7 @@ package control_panel.ui {
   import flash.display.MovieClip;
   
   import pieces.Unit;
+  import pieces.Building;
 	
   public class DisplayThumb extends MovieClip {
   	/*-- Classes Added --*/
@@ -13,8 +14,8 @@ package control_panel.ui {
     private var menLbl:Label;
   	public var highlight:Gradient;
   	public var overlay:Gradient;
-  	public var building;
     public var responds_to;
+    public var parent_obj;
   	
   	/*-- Numbers --*/
   	/*-- Array and Objects --*/
@@ -31,8 +32,14 @@ package control_panel.ui {
   	public function DisplayThumb(item, obj) {
   	  super();
       responds_to = item;
-      img_string = item.is_a("Unit") ? "/army" : "/city";
-      img_string += item.thumb();
+      parent_obj = obj;
+      if(item is Building || item is Unit) {
+        img_string = responds_to.is_a("Unit") ? "/army" : "/city";
+        img_string += responds_to.thumb();
+      } else {
+        img_string = "/" + parent_obj.obj_is() + responds_to.thumb
+      }
+      
   	  var box = new Gradient(
           		  [1, 0x333333], 'linear', [0x444444, 0x999999],
           		  [1,1], [0,145], 75, 75,
@@ -42,23 +49,8 @@ package control_panel.ui {
   	  img = new ImgLoader(img_path);
   	  addChild(box);
   	  addChild(img);
-  	  if(obj.obj_is('army')) addMenTF(item.men());
+  	  if(item is Unit) addMenTF(item.men());
   	}
-    
-    public function key(k=null) {
-      if(k) attr['key'] = k;
-      return attr['key'];
-    }
-    
-    public function type(t=null) {
-      if(t) attr['type'] = t;
-      return attr['type'];
-    }
-    
-    public function men(m=null) {
-      if(m) attr['men'] = m;
-      return attr['men'];
-    }
   	
   	private function addMenTF(men) {
   	  menLbl = new Label(11, 0x000000, 'Arial', 'LEFT');

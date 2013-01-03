@@ -7,11 +7,12 @@ package pieces {
   
   public class Building {
   	public var attr:Object = new Object();
-    public var originalPoints = 0;
+    public var originalPoints = null;
   	
   	public function Building(building, c) {
       type(building.type);
       level(building.level);
+      if(building.build_points != null) originalPoints = building.build_points
       city(c);
   	  getXML();
   	}
@@ -92,13 +93,14 @@ package pieces {
     
     private function setupAttributes(event:Event) {
       var buildingXML = new XML(event.target.data),
-          tp = type(), lvl = level(),
-          list:XMLList = buildingXML.building.(type == tp && level == lvl);
+          tp = type(), lvl = level(), 
+          list:XMLList = buildingXML.building.(type == tp && level == lvl),
+          bp = originalPoints != null ? originalPoints : list.build_points;
       name(list.name);
       image(list.image);
       thumb(list.thumbnail);
       cost(list.cost);
-      build_points(list.build_points);
+      build_points(bp, false);
       for each (var benefit:XML in list.benefits.children()) benefits(benefit.name(), benefit);
       for each (var allow:XML in list.allows.children()) allows(allow.name(), allow);
     }
