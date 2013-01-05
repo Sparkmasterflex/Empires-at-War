@@ -34,6 +34,11 @@ package pieces {
   	  return attr['level'];
   	}
 
+    public function obj_call(oc=null) {
+  	  if(oc) attr['obj_call'] = oc;
+  	  return attr['obj_call'];
+  	}
+    
     public function name(n=null) {
   	  if(n) attr['name'] = n;
   	  return attr['name'];
@@ -78,7 +83,11 @@ package pieces {
   	public function allows(specific=null, value=null) {
       if(!attr['allows']) attr['allows'] = new Object();
       if(specific) {
-        if(value) attr['allows'][specific] = value;
+        if(!attr['allows'][specific]) attr['allows'][specific] = new Array();
+        if(value) {
+          var arr = value.split(',');
+          arr.forEach(function(item) { attr['allows'][specific].push(item); });
+        }
         return attr['allows'][specific];
       } else
         attr['allows'];
@@ -96,6 +105,7 @@ package pieces {
           tp = type(), lvl = level(), 
           list:XMLList = buildingXML.building.(type == tp && level == lvl),
           bp = originalPoints != null ? originalPoints : list.build_points;
+      obj_call(list.objCall);
       name(list.name);
       image(list.image);
       thumb(list.thumbnail);
@@ -113,7 +123,7 @@ package pieces {
   	public function other_benefits() { return benefits('other'); }
   	
   	/*-- allows --*/
-  	public function armies_allowed() { return allows('army') }
-  	public function buildings_allowed() { return allows('building') }
+  	public function armies_allowed() { return allows('army'); }
+  	public function buildings_allowed() { return allows('building'); }
   }
 }

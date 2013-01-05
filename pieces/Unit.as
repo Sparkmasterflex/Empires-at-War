@@ -71,6 +71,12 @@ package pieces {
       return attr['description'];
     }
     
+    public function build_points(bp=null) {
+      // should actually add this
+      // some units I think should take longer than 1 turn
+      return 0;
+    }
+    
     private function getXML() {
       var xml = type() >= 8 ? 
             "xml/army_" + army().empire()[1].toLowerCase() + ".xml" :

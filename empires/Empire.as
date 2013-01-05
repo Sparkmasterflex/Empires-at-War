@@ -113,7 +113,7 @@ package empires {
     		piece.nextTurn(eAtW.currentTurn);
     		if(piece.obj_is('city')) {
     		  piece.advanceBuilding();
-    		  piece.advanceTroops();
+    		  piece.advanceUnits();
     		}
   	  });
   	  calculateMoneyEarned();

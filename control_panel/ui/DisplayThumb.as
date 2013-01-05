@@ -23,7 +23,7 @@ package control_panel.ui {
     
   	/*-- MovieClips and Strings --*/
   	public var UnitType;
-  	public var callKey:String;
+  	public var callKey;
     public var img_string = ""
   	
   	/*-- Boolean --*/
@@ -33,11 +33,12 @@ package control_panel.ui {
   	  super();
       responds_to = item;
       parent_obj = obj;
+      obj_call(item.type);
       if(item is Building || item is Unit) {
         img_string = responds_to.is_a("Unit") ? "/army" : "/city";
         img_string += responds_to.thumb();
       } else {
-        img_string = "/" + parent_obj.obj_is() + responds_to.thumb
+        img_string = "/" + item.thumb_for.toLowerCase() + responds_to.thumb;
       }
       
   	  var box = new Gradient(
@@ -51,6 +52,11 @@ package control_panel.ui {
   	  addChild(img);
   	  if(item is Unit) addMenTF(item.men());
   	}
+    
+    public function obj_call(oc=null) {
+      if(oc) callKey = oc;
+      return callKey;
+    }
   	
   	private function addMenTF(men) {
   	  menLbl = new Label(11, 0x000000, 'Arial', 'LEFT');

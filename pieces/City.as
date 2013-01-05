@@ -9,6 +9,7 @@ package pieces {
   import flash.display.MovieClip;
   import flash.events.Event;
   import flash.events.MouseEvent;
+  import flash.utils.setTimeout;
   
   import static_return.CityConstants;
   import static_return.FindAndTestSquare;
@@ -60,15 +61,25 @@ package pieces {
   	  if(t) attr['taxes'] = t;
   	  return attr['taxes'];
   	}
+    
+    public function can_train(ct=null) {
+      if(!attr['can_train']) attr['can_train'] = new Array(); 
+      if(ct) attr['can_train'].push(ct);
+      return attr['can_train'];
+    }
   	
   	public function building(b=null) {
-      var this_city = this;
+      var this_city = this,
+          added_bld;
   	  if(!attr['building']) attr['building'] = new Array();
   	  if(b) {
         var any_dup = []
         if(b is Building) {
           attr['building'].forEach(function(bld) { if(bld.level() == b.level() && bld.type() == b.type()) any_dup.push(building) });
-          if(any_dup.length == 0) attr['building'].push(b);
+          if(any_dup.length == 0) {
+            attr['building'].push(b);
+            added_bld = b;
+          }
         } else {
           for(var j:String in b) {
             b[j].forEach(function(building) {
@@ -76,19 +87,39 @@ package pieces {
               if(any_dup.length == 0) {
                 var build = new Building({type: building, level: j}, this_city);
                 attr['building'].push(build);
+                added_bld = build;
               }
             });
           }
         }
+        setTimeout(function() {
+          unavailable(added_bld);
+          add_allowed_units(added_bld)
+        }, 1000);
   	  }
   	  return attr['building'];
   	}
   	
   	public function buildingQueue(cb=null) {
       if(!attr['build_queue']) attr['build_queue'] = new Array();
-  	  if(cb) attr['build_queue'].push(cb);
+  	  if(cb) {
+        attr['build_queue'].push(cb);
+        unavailable(cb);
+      }
   	  return attr['build_queue'];
   	}
+    
+    public function unavailable(bld=null) {
+      if(!attr['unavailable_buildings']) attr['unavailable_buildings'] = new Array();
+      if(bld) attr['unavailable_buildings'].push(bld.obj_call());
+      return attr['unavailable_buildings'];
+    }
+    
+    private function add_allowed_units(bld) {
+      bld.armies_allowed().forEach(function(u) {
+        if(can_train().indexOf(u) < 0) can_train(u);
+      });
+    }
   	
   	public function advanceBuilding() {
   	  if(buildingQueue()[0]) {
@@ -100,9 +131,19 @@ package pieces {
         }
       }
   	}
+    
+    public function unitsQueue(tr=null) {
+      if(!attr['units_queue']) attr['units_queue'] = new Array();
+      if(tr) attr['units_queue'].push(tr);
+      return attr['units_queue'];
+    }
   
-  	public function advanceTroops() {
-  	  trace('not yet');
+  	public function advanceUnits() {
+      if(unitsQueue()[0]) {
+        var first = unitsQueue()[0];
+        addUnits(first);
+        unitsQueue().splice(0, 1);
+      }
   	}
   	
   	public function collectTaxes() {

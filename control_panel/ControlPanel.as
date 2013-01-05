@@ -44,6 +44,7 @@ package control_panel {
   	/*-- Arrays --*/
   	public var buttons:Object = new Object();
   	public var currObj:Object;
+  	public var baseXML:XML;
   	/*-- Numbers --*/
   	/*-- MovieClips and Strings --*/
   	
@@ -202,21 +203,38 @@ package control_panel {
   	}
   	
   	private function availableToBuild(event:Event) {
-  	  var buildingXML = new XML(event.target.data),
-          unavailable:Array = new Array()
-      currObj.building().forEach(function(build) { unavailable.push(build); });
-      currObj.buildingQueue().forEach(function(build) { unavailable.push(build); });
-      
-      unavailable.forEach(function(build) {
-  	    delete buildingXML.building.(level == build.level() && type == build.type())[0]; 
-  	  });
-  	  dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Build', buildingXML, currObj, true));
+  	  var buildingXML = new XML(event.target.data);
+//          unavailable:Array = new Array()
+//      currObj.building().forEach(function(build) { unavailable.push(build); });
+//      currObj.buildingQueue().forEach(function(build) { unavailable.push(build); });
+//      
+//      unavailable.forEach(function(build) {
+//  	    delete buildingXML.building.(level == build.level() && type == build.type())[0]; 
+//  	  });
+  	  dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'City', buildingXML, currObj, true));
   	}
   
   	private function currentTraining(event:MouseEvent) {
-  	  trace('not yet');
-  	  //trace(selectedUnits.current['army']);
+  	  var xml = 'xml/army_base.xml',
+          xmlLoader = new URLLoader();
+      xmlLoader.load(new URLRequest(xml));
+      xmlLoader.addEventListener(Event.COMPLETE, setBaseUnits);
   	}
+    
+    private function setBaseUnits(event:Event) {
+      baseXML = new XML(event.target.data);
+      var emp_xml = 'xml/army_' + currObj.empire()[1].toLowerCase() + '.xml',
+          emp_xmlLoader = new URLLoader();
+      emp_xmlLoader.load(new URLRequest(emp_xml));
+      emp_xmlLoader.addEventListener(Event.COMPLETE, availableToTrain);  
+    }
+    
+    private function availableToTrain(event:Event) {
+      var empXML = new XML(event.target.data),
+          available = currObj.can_train(),
+          allUnits = baseXML.appendChild(empXML.*);
+      dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Army', allUnits, currObj, true));
+    }
   	
   	private function btnRoll(event:MouseEvent) {
   	  var curBtn = event.target;

@@ -34,14 +34,14 @@
     <cost>250</cost>
     <build_points>20000</build_points>
     <benefits>
-      <army>1, 2</army>
+      <army>1,2</army>
       <population></population>
       <order>3</order>
       <taxes></taxes>
       <other></other>
     </benefits>
     <allows>
-      <army>1, 2</army>
+      <army>1,2</army>
       <building></building>
     </allows>
   </building>

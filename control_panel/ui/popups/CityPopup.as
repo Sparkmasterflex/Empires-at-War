@@ -8,27 +8,30 @@ package control_panel.ui.popups {
   import flash.events.MouseEvent;
   import flash.net.URLLoader;
   import flash.net.URLRequest;
+  import flash.utils.setTimeout;
   
   import pieces.Building;
+  import pieces.Unit;
   
   import static_return.GameConstants;
 
   public class CityPopup extends Popup {
   	public var currObj;
-  	private var buildingLoader:URLLoader;
+    private var popup_for;
     public var availBG:Gradient;
     public var currentBG:Gradient;
   	
-  	public function CityPopup(params, object) {
+  	public function CityPopup(params, type, object) {
   	  super(700, 550);
   	  currObj = object;
+      popup_for = type;
   	  title.text = "City Information";
   	  setupAvailable(params);
   	  setupQueue();
   	}
   	
   	private function setupAvailable(params) {
-  	  var thumbs:XMLList = params.building,
+  	  var thumbs:XMLList = createXMLList(params, popup_for), //popup_for == 'Army' ? params.unit : params.building,
   	  	  emp = GameConstants.parseEmpireName(currObj.empire());
   		availBG = new Gradient(
 			  [1, 0x444444], 'linear', [0xeeeeee, 0xcccccc], 
@@ -39,7 +42,22 @@ package control_panel.ui.popups {
   	  addChild(availBG);
   	  createAndPositionThumbs(thumbs, availBG);
   	}
-	
+    
+    private function createXMLList(params, popup_for) {
+      if(popup_for == "Army") {
+        var xml:XML = new XML(<units></units>);
+        currObj.can_train().forEach(function(u) {
+          xml.appendChild(params.unit.(objCall == u.toString()))
+        });
+        return xml.unit
+      } else {
+        currObj.unavailable().forEach(function(ua) {
+          delete params.building.(objCall == ua.toString())[0];
+        });
+        return params.building
+      }
+    }
+    
   	private function setupQueue() {
       currentBG = new Gradient(
         [1, 0x444444], 'linear', [0xcccccc, 0x999999], 
@@ -48,7 +66,8 @@ package control_panel.ui.popups {
       currentBG.x = 50;
       currentBG.y = 400;
       addChild(currentBG);
-      createAndPositionThumbs(currObj.buildingQueue(), currentBG);
+      var queue = popup_for == 'Army' ? currObj.unitsQueue() : currObj.buildingQueue(); 
+      createAndPositionThumbs(queue, currentBG);
   	}
 	
   	  
@@ -57,9 +76,12 @@ package control_panel.ui.popups {
           length = thumbs is XMLList ? thumbs.length() : thumbs.length;
   	  for(var i:int=0; i<length; i++) {
     		if(thumbs is XMLList) {
-          var image = thumbs[i].thumbnail;
+          var image = thumbs[i].thumbnail,
+              attributes = popup_for == 'Army' ? 
+                {thumb_for: popup_for, type: thumbs[i].objCall, cost: thumbs[i].cost, thumb: image} :
+                  {thumb_for: popup_for, type: thumbs[i].type, level: thumbs[i].level, cost: thumbs[i].cost, points: thumbs[i].build_points, thumb: image}
           setOverlay = false;
-          thumb = new DisplayThumb({type: thumbs[i].type, level: thumbs[i].level, cost: thumbs[i].cost, points: thumbs[i].build_points, thumb: image}, currObj);
+          thumb = new DisplayThumb(attributes, currObj);
     		} else {
           thumb = new DisplayThumb(thumbs[i], currObj);
           setOverlay = true;
@@ -72,7 +94,7 @@ package control_panel.ui.popups {
     		thumb.mouseChildren = false;
     		thumb.doubleClickEnabled = true;
     //		thumb.addEventListener(MouseEvent.DOUBLE_CLICK, extendedDetails);
-    		thumb.addEventListener(MouseEvent.CLICK, selectBuilding);
+    		thumb.addEventListener(MouseEvent.CLICK, selectObject);
     		if(j == 7) {
     		  j = 0;
     		  k++;
@@ -80,19 +102,30 @@ package control_panel.ui.popups {
   	  }
   	}
 	
-  	public function selectBuilding(event:MouseEvent) {
+  	public function selectObject(event:MouseEvent) {
       var parent = this.parent,
           userEmp = parent.userEmpire,
           target = event.target;
 
       if(userEmp.treasury() >= target.responds_to.cost) {
-        var new_building:Building = new Building(target.responds_to, currObj),
-            thumb = new DisplayThumb(target.responds_to, currObj);
-    	  currObj.buildingQueue(new_building);
-        availBG.removeChild(target);
+        var new_obj;
+        if(popup_for == 'Army') {
+          new_obj = new Unit(target.obj_call(), currObj);
+          currObj.unitsQueue(new_obj);
+        } else {
+          new_obj = new Building(target.responds_to, currObj),
+          currObj.buildingQueue(new_obj);
+        }
+        var thumb = new DisplayThumb(target.responds_to, currObj);
+    	  
+        userEmp.treasury(target.responds_to.cost*-1)
+        if(popup_for != 'Army') availBG.removeChild(target);
+        if(target.responds_to.cost > userEmp.treasury()) {
+          target.alpha = .5;
+          target.removeEventListener(MouseEvent.CLICK, selectObject);
+        }
         thumb.x = currentBG.numChildren * 75;
         currentBG.addChild(thumb);
-        userEmp.treasury(target.responds_to.cost*-1)
       }
   	}
   }
