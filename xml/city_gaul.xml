@@ -12,9 +12,9 @@
     <build_points>30000</build_points>
     <benefits>
       <army></army>
-      <population>0.5%</population>
+      <population>0.0005</population>
       <order>2</order>
-      <taxes>5%</taxes>
+      <taxes>0.05</taxes>
       <other></other>
     </benefits>
     <allows>
@@ -35,9 +35,9 @@
     <build_points>20000</build_points>
     <benefits>
       <army>1,2</army>
-      <population></population>
+      <population>0</population>
       <order>3</order>
-      <taxes></taxes>
+      <taxes>0</taxes>
       <other></other>
     </benefits>
     <allows>
@@ -58,9 +58,9 @@
     <build_points>30000</build_points>
     <benefits>
       <army></army>
-      <population>2%</population>
+      <population>0.0002</population>
       <order>3</order>
-      <taxes></taxes>
+      <taxes>0</taxes>
       <other></other>
     </benefits>
     <allows>
@@ -80,10 +80,10 @@
     <cost>250</cost>
     <build_points>30000</build_points>
     <benefits>
-      <army>{train: 2%, cost: -2%}</army>
-      <population></population>
+      <army>{train: 0.002, cost: -0.002}</army>
+      <population>0</population>
       <order>3</order>
-      <taxes></taxes>
+      <taxes>0</taxes>
       <other></other>
     </benefits>
     <allows>

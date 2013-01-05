@@ -100,7 +100,7 @@ package empires {
         attr['money'] += m;
         if(eAtW.cp) eAtW.cp.moneyLabel.text = "Treasury: " + attr['money'];
       }
-  	  return attr['money'];
+  	  return Math.ceil(attr['money']);
   	}
   	
   	public function empire(e=null) {
@@ -122,6 +122,7 @@ package empires {
   	private function calculateMoneyEarned() {
   	  var fromCities = 0;
   	  cityArray.forEach(function(city) { treasury(city.collectTaxes()); });
+      armyArray.forEach(function(army) { treasury(army.payArmy()); });
   	  
   	  return treasury()
   	}

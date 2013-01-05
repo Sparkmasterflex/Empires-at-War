@@ -59,7 +59,11 @@ package pieces {
   	
   	public function taxes(t=null) {
   	  if(t) attr['taxes'] = t;
-  	  return attr['taxes'];
+      var additional_taxes = 0,
+          percent;
+      building().forEach(function(bld) { additional_taxes += parseFloat(bld.taxes_benefits()); });
+      percent = (attr['taxes'] + additional_taxes);
+  	  return Math.round(percent*100)/100
   	}
     
     public function can_train(ct=null) {

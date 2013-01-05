@@ -52,7 +52,7 @@ package control_panel.ui.popups {
         return xml.unit
       } else {
         currObj.unavailable().forEach(function(ua) {
-          delete params.building.(objCall == ua.toString())[0];
+          if(ua != null && ua.toString() != "") delete params.building.(objCall == ua.toString())[0];
         });
         return params.building
       }

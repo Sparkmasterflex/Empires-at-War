@@ -60,6 +60,11 @@ package pieces {
       if(c) attr['cost'] = c;
       return attr['cost'];
     }
+
+    public function upkeep(uk=null) {
+      if(uk) attr['upkeep'] = uk;
+      return attr['upkeep'];
+    }
     
     public function bonuses(b=null) {
       if(b) attr['bonuses'] = b;
@@ -97,6 +102,7 @@ package pieces {
       attack(list.attack);
       defense(list.defense);
       cost(list.cost);
+      upkeep(parseInt(list.upkeep));
       bonuses(list.bonuses);
       description(list.description);
     }
