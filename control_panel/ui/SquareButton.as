@@ -46,7 +46,7 @@ package control_panel.ui {
 	  addChild(btnBG);
 	  addChild(btnRoll);
 	  btnRoll.visible = false;
-	  label.match(/\.(png|jpg)/) ?
+	  label.match(/\.(png|jpg)$/) ?
 		addImage(label) :
 		  textFieldCreation(label)
 	}

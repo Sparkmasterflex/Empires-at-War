@@ -56,18 +56,27 @@ package control_panel.ui {
     		selectedPiece = piece;
     		addSelectedTabs(selectedPiece);
     		setupTabs(selectedPiece);
-  	    switch(selectedPiece.obj_is()) {
-    		  case 'city':
-            if(show == 'units') {
-              selectedPiece.units().forEach(addThumb);
-            } else
-              selectedPiece.building().forEach(addThumb);
-    		    break;
-    		  case 'army':
-      			selectedPiece.units().forEach(addThumb);
-    		    break;
-  	    }
-  	  }
+        switch(show) {
+          case 'units':
+            selectedPiece.units().forEach(addThumb);
+            break;
+          case 'agents':
+            selectedPiece.agents().forEach(addThumb);
+            break;
+          default:
+            switch(selectedPiece.obj_is()) {
+              case 'agent':
+                selectedPiece.agents().forEach(addThumb);
+                break;
+              case 'army':
+                selectedPiece.units().forEach(addThumb);
+                break;
+              case 'city':
+                selectedPiece.building().forEach(addThumb);
+                break;
+            }
+        }
+      }
   	}
   	
   	private function addThumb(item, index, arr) {
@@ -162,10 +171,10 @@ package control_panel.ui {
   	  if(piece.obj_is('city')) {
     		enableTab(cityTab, false);
     		if(piece.units() && piece.units().length > 0) enableTab(armyTab);
-    		if(piece.support() && piece.support().length > 0) enableTab(agentTab);
+    		if(piece.agents() && piece.agents().length > 0) enableTab(agentTab);
 	    } else if(piece.obj_is('army')) {
     		enableTab(armyTab, false);
-    		if(piece.support() && piece.support().length > 0) enableTab(agentTab);
+    		if(piece.agents() && piece.agents().length > 0) enableTab(agentTab);
 	    } else {
     		enableTab(agentTab, false);
   	  }
@@ -198,7 +207,7 @@ package control_panel.ui {
   	}
   	
   	private function showAgents(event:MouseEvent) {
-  	  trace('not yet');
+  	  displayThumbnails(selectedPiece, true, 'agents');
   	}
   	
   	private function extendedDetails(event:MouseEvent) {

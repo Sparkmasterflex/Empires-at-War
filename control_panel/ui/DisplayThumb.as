@@ -5,8 +5,10 @@ package control_panel.ui {
   
   import flash.display.MovieClip;
   
-  import pieces.Unit;
+  import pieces.Agent;
   import pieces.Building;
+  import pieces.Unit;
+  import pieces.agents.Settler;
 	
   public class DisplayThumb extends MovieClip {
   	/*-- Classes Added --*/
@@ -33,29 +35,36 @@ package control_panel.ui {
   	  super();
       responds_to = item;
       parent_obj = obj;
-      obj_call(item.type);
-      if(item is Building || item is Unit) {
-        img_string = responds_to.is_a("Unit") ? "/army" : "/city";
-        img_string += responds_to.thumb();
-      } else {
-        img_string = "/" + item.thumb_for.toLowerCase() + responds_to.thumb;
-      }
-      
-  	  var box = new Gradient(
+      if(!obj.obj_is('agent')) obj_call(item.type);
+      var image_path = (item is Building || item is Unit) ? createDefaultImage() :
+            is_Agent(item) ? responds_to.img_path() :
+              obj.empire()[1].toLowerCase() + "/" + item.thumb_for.toLowerCase() + responds_to.thumb,
+          box = new Gradient(
           		  [1, 0x333333], 'linear', [0x444444, 0x999999],
           		  [1,1], [0,145], 75, 75,
           		  (3 * Math.PI) / 2, [75,75,15,15], 'rectangle'
-          	  ),
-  		    img_path = obj.empire()[1].toLowerCase() + img_string;
-  	  img = new ImgLoader(img_path);
+          	  );
+  		    
+  	  img = new ImgLoader(image_path);
   	  addChild(box);
   	  addChild(img);
   	  if(item is Unit) addMenTF(item.men());
   	}
+  
+    public function createDefaultImage() {
+      img_string = responds_to.is_a("Unit") ? "/army" : "/city";
+      img_string += responds_to.thumb();
+      return parent_obj.empire()[1].toLowerCase() + img_string;
+    }
     
     public function obj_call(oc=null) {
       if(oc) callKey = oc;
       return callKey;
+    }
+    
+    private function is_Agent(item) {
+      // need to add each Agent object as I build them
+      return item is Settler;
     }
   	
   	private function addMenTF(men) {
@@ -77,9 +86,9 @@ package control_panel.ui {
   	  selected = true;
   	  setChildIndex(highlight, this.numChildren - index); 
   	  highlight.name = 'sprite';
-      }
+    }
     
-     public function removeHighlight() {
+    public function removeHighlight() {
 	    var hL = getChildByName('sprite');
 	    if(hL) removeChild(hL);
 	    selected = false;

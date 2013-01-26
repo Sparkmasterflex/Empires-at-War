@@ -11,7 +11,6 @@ package pieces {
       type(t);
       army(a);
       getXML();
-//      setMenAndImage()
     }
     
     public function is_a(str) { return (str == "Unit"); }
@@ -95,9 +94,9 @@ package pieces {
       var unitXML = new XML(event.target.data),
           tp = type(),
           list:XMLList = unitXML.unit.(objCall == tp);
-      men(list.menStart)
-      thumb(list.thumbnail)
-      image(list.image)
+      men(list.menStart);
+      thumb(list.thumbnail);
+      image(list.image);
       name(list.unitName);
       attack(list.attack);
       defense(list.defense);

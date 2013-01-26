@@ -11,18 +11,27 @@ package pieces {
   import flash.events.MouseEvent;
   import flash.utils.setTimeout;
   
+  import pieces.agents.Settler;
+  
+  import settlerBase;
+  
   import static_return.CityConstants;
   import static_return.FindAndTestSquare;
   import static_return.GameConstants;
 
   public class City extends GamePiece {
+    
+    /*------ Arrays and Objects -----*/
+    public var builders:Array;
 	
   	public function City(emp, s, num) {
   	  super(emp);
-  	  attr = new Object();
-  	  empire(this_empire.empire());
+      attr = new Object();
+      this_empire = emp;
+      empire(this_empire.empire());
   	  population(s);
   	  addCityImage();
+      if(population() == 0) addBuilders();
   	  attr['pieceType'] = "city";
   	  attr['building']  = []
       var gov_build = new Building({level: 1, type: CityConstants.GOVERNMENT, build_points: 0}, this); 
@@ -34,7 +43,7 @@ package pieces {
   	
   	public function addCityImage() {
   	  var size = CityConstants.IMAGES[determineCitySize(population())],
-  		  str = empire()[1].toLowerCase() + '/city/' + size,
+  		    str = empire()[1].toLowerCase() + '/city/' + size,
   	      img:ImgLoader = new ImgLoader(str);
   	  img.x = -60;
   	  img.y = -60;
@@ -52,18 +61,35 @@ package pieces {
       return size;
   	}
   	
-  	public function population(p=null):String {
+  	public function population(p=null):int {
   	  if(p) attr['population'] = p;
   	  return attr['population'];
   	}
+    
+    public function increasePopulation() {
+      var population_effects = 0,
+          pop = population(),
+          percent;
+      if(pop >= 10000) {
+        if(builders && builders.length > 0) removeBuilders();
+        building().forEach(function(bld) { population_effects += parseFloat(bld.population_benefits()); });
+        percent = (1.015 + population_effects);
+        population(pop*percent);
+      } else {
+        population(pop + 10000);
+      }
+    }
   	
   	public function taxes(t=null) {
   	  if(t) attr['taxes'] = t;
-      var additional_taxes = 0,
-          percent;
-      building().forEach(function(bld) { additional_taxes += parseFloat(bld.taxes_benefits()); });
-      percent = (attr['taxes'] + additional_taxes);
-  	  return Math.round(percent*100)/100
+      if(population() > 10000) {
+        var additional_taxes = 0,
+            percent;
+        building().forEach(function(bld) { additional_taxes += parseFloat(bld.taxes_benefits()); });
+        percent = (attr['taxes'] + additional_taxes);
+        return Math.round(percent*100)/100
+      } else
+        return 0;
   	}
     
     public function can_train(ct=null) {
@@ -149,9 +175,28 @@ package pieces {
         unitsQueue().splice(0, 1);
       }
   	}
+    
+    private function addBuilders() {
+      builders = new Array();
+      for(var i:int=0; i<3; i++) {
+        var builder = new settlerBase();
+        builder.scaleX = i%2 == 0 ? -0.35 : 0.35;
+        builder.scaleY = 0.35;
+        builder.x = (40*i) - 50;
+        builder.y = 20;
+        addChild(builder);
+        builder.gotoAndPlay('build');
+        builders.push(builder);
+      }
+    }
+    
+    private function removeBuilders() {
+      for(var i:int=0; i<builders.length; i++) removeChild(builders[i]);
+      builders = null;
+    }
   	
   	public function collectTaxes() {
-  	  return Number(population()) * Number(taxes())
+  	  return Math.round(population() * taxes())
   	}
     
     public function pieceMoveKeyBoard(event:*) {

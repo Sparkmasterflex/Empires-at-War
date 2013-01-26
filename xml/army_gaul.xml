@@ -11,7 +11,7 @@
   <attack>1</attack>
   <defense>2</defense>
   <cost>200</cost>
-  <upkeep>10</upkeep>
+  <upkeep>30</upkeep>
   <menStart>200</menStart>
   <bonuses>none</bonuses>
   <description>Peasants are the lowest class, whose men are drafted into the army given a spear and told to defend their homelands. Do not depend on these troops to do anything more than distract your enemy while your better troops get into position. Cannon Fodder, but cheap cannon fodder.</description>
@@ -27,7 +27,7 @@
   <attack>2</attack>
   <defense>3</defense>
   <cost>250</cost>
-  <upkeep>30</upkeep>
+  <upkeep>35</upkeep>
   <menStart>200</menStart>
   <bonuses>none</bonuses>
   <description>Rather cheap units, militia are best for defending cities and adding sheer numbers to an army. Still the poorest in their empire, militias are given some training and even a bit of armor.</description>
@@ -43,7 +43,7 @@
   <attack>4</attack>
   <defense>5</defense>
   <cost>300</cost>
-  <upkeep>75</upkeep>
+  <upkeep>90</upkeep>
   <menStart>200</menStart>
   <bonuses>none</bonuses>
   <description>Good, hearty troops, the common spearman is equipted with various armor, a shield and a long spear. These men are excellent for defending agains cavalry and will hold their own against almost any enemy is thrown at them.</description>

@@ -3,6 +3,7 @@ package empires {
   
   import game_setup.StartsWith;
   
+  import pieces.Agent;
   import pieces.Army;
   import pieces.City;
   
@@ -20,8 +21,9 @@ package empires {
 	public var pieceArray:Array;
 	public var armyArray:Array;
 	public var cityArray:Array;
-	public var supportArray:Array;
+	public var agentArray:Array;
 	public var attr:Object;
+	public var posArr:Array;
 	
 	/*-- Numbers --*/
 	private var difficulty:int; 
@@ -35,23 +37,23 @@ package empires {
 	  pieceArray = new Array();
 	  armyArray = new Array()
 	  cityArray = new Array()
-	  supportArray = new Array()
+	  agentArray = new Array()
 	  difficulty = params['difficulty'];
 	  
 	  var toStart = StartsWith.userStarts(difficulty),
-		  randGrid = gStage.sGridArr[0],  //[Math.round(Math.random() * gStage.sGridArr.length)],
-		  startSq = randGrid.landSquares[Math.round(Math.random() * randGrid.landSquares.length)],
-		  posArr = CalculateStartPositions.ret(startSq);
+  		  randGrid = gStage.sGridArr[0],  //[Math.round(Math.random() * gStage.sGridArr.length)],
+  		  startSq = randGrid.landSquares[Math.round(Math.random() * randGrid.landSquares.length)];
+  	posArr = CalculateStartPositions.ret(startSq);
 	  
 	  treasury(params['money']);
 	  
 	  for(var j:String in toStart) {
 	    switch(j) {
   		  case 'ARMY':
-  		    addArmy(toStart.ARMY, toStart.armyUnits, posArr);
+  		    addArmy(toStart.ARMY, toStart.armyUnits);
   		    break;
   		  case 'SETTLER':
-  		    //addUserSettler(userObj.SETTLER);
+  		    addSettler(toStart.SETTLER);
   		    break;
   		  case 'CITY':
   		    addCity(toStart.CITY, startSq);
@@ -73,24 +75,40 @@ package empires {
   	  }
   	}
   	
-  	public function addArmy(num, units, posArr) {
+  	public function addArmy(num, units) {
   	  for(var i:uint = 0; i < num; i++) {
-    		var army:Army = new Army(this, units[i], armyArray.length),
-    			sq = getLandSquare(posArr);
-    		army.x = sq.x + 60;
-    		army.y = sq.y + 60;
-    		if(difficulty != GameConstants.EASYGAME && i == 0) army.attr['primary'] = true;
-    		army.square(sq);
-    		gStage.addChild(army);
+    		var sq = getLandSquare(),
+            army:Army = new Army(this, units[i], armyArray.length);
+        army.x = sq.x + 60;
+        army.y = sq.y + 60;
+        army.square(sq);
+        gStage.addChild(army);
+        if(difficulty != GameConstants.EASYGAME && i == 0) army.attr['primary'] = true;
   	  }
   	}
+    
+    public function addSettler(num) {
+      for(var i:int = 0; i<num; i++) {
+        var sq = getLandSquare();
+        if(!sq.pieces()) {
+          var settler = new Agent(this, [GameConstants.SETTLER]);
+          settler.x = sq.x + 60;
+          settler.y = sq.y + 60;
+          settler.square(sq);
+          gStage.addChild(settler);
+        } else {
+          sq.pieces().addAgents([GameConstants.SETTLER]);
+        }
+      }
+    }
 	
-  	private function getLandSquare(pos) {
-  	  var rand = Math.round(Math.random() * 11),
-  		    sq_name = pos[rand],
+  	private function getLandSquare() {
+  	  var rand = Math.round(Math.random() * (posArr.length-1));
+  		var sq_name = posArr[rand],
   		    section = gStage.getChildByName('section_' + sq_name.split('_')[0]),
   		    sq = section.getChildByName(sq_name);
-  	  sq = (sq != null && !sq.gridInfo['army'] && sq.hasLand()) ? sq : getLandSquare(pos);
+      posArr.splice(posArr.indexOf(sq_name), 1);
+  	  sq = (sq != null && !sq.pieces() && sq.hasLand()) ? sq : getLandSquare();
   	
   	  return sq;
   	}
@@ -112,6 +130,7 @@ package empires {
   	  pieceArray.forEach(function(piece) {
     		piece.nextTurn(eAtW.currentTurn);
     		if(piece.obj_is('city')) {
+          piece.increasePopulation();
     		  piece.advanceBuilding();
     		  piece.advanceUnits();
     		}
@@ -120,11 +139,11 @@ package empires {
   	}
 	
   	private function calculateMoneyEarned() {
-  	  var fromCities = 0;
-  	  cityArray.forEach(function(city) { treasury(city.collectTaxes()); });
-      armyArray.forEach(function(army) { treasury(army.payArmy()); });
-  	  
-  	  return treasury()
+      var fromCities = 0,
+          before = treasury();
+  	  cityArray.forEach(function(city) { trace(city.collectTaxes()); treasury(city.collectTaxes()); });
+      armyArray.forEach(function(army) { trace(army.payArmy()); treasury(army.payArmy()); });
+  	  return treasury();
   	}
   }
 }

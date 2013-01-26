@@ -11,7 +11,7 @@
     <attack>1</attack>
     <defense>2</defense>
     <cost>100</cost>
-    <upkeep>10</upkeep>
+    <upkeep>15</upkeep>
     <menStart>200</menStart>
     <bonuses>none</bonuses>
     <description>Peasants are the lowest class, whose men are drafted into the army given a spear and told to defend their homelands. Do not depend on these troops to do anything more than distract your enemy while your better troops get into position. Cannon Fodder, but cheap cannon fodder.</description>
@@ -27,7 +27,7 @@
     <attack>2</attack>
     <defense>3</defense>
     <cost>150</cost>
-    <upkeep>20</upkeep>
+    <upkeep>25</upkeep>
     <menStart>200</menStart>
     <bonuses>none</bonuses>
     <description>Rather cheap units, militia are best for defending cities and adding sheer numbers to an army. Still the poorest in their empire, militias are given some training and even a bit of armor.</description>
@@ -106,8 +106,8 @@
     <unitName>Sorcerer</unitName>
     <attack>1500 / 2000@</attack>
     <defense>1000</defense>
-    <cost>300</cost>
-    <upkeep>30</upkeep>
+    <cost>400</cost>
+    <upkeep>100</upkeep>
     <menStart>1</menStart>
     <bonuses>@ If enemy army has no Sorcerer</bonuses>
     <description>Sorcerers are very inexpensive to maintain but provide a tremendous amount of power to the army. Able to call on the elements, conjour demons, monsters and other terrifying creatures to destroy enemy units, A Sorcerer can turn the tide of a losing battle.</description>

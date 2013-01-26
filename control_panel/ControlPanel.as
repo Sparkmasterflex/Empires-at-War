@@ -79,24 +79,39 @@ package control_panel {
   	public function expand(isSelected, piece) {
   	  currObj = piece;
   	  var to = expanded && !isSelected ? COLLAPSED : !expanded ? EXPANDED : null,
-  		  d  = expanded ? .25 : 0;
+  		    d  = expanded ? .25 : 0;
   	  if(to) {
     		TweenLite.to(this, .35, { y: to, ease:Sine.easeIn, delay: d });
     		repositionButtons(expanded);
     		expanded = expanded ? false : true;
   	  }
+      if(currObj.obj_is('agent')) {
+        buttons['build_city'].visible = true;
+        buttons['building'].visible = false;
+        buttons['army'].visible = false;
+      } else if(currObj.obj_is('city')) {
+        buttons['build_city'].visible = false;
+        buttons['building'].visible = true;
+        buttons['army'].visible = true;
+      } else {
+        buttons['build_city'].visible = currObj.hasSettler();
+        buttons['building'].visible = false;
+        buttons['army'].visible = false;
+      }
   	  selectedUnits.displayThumbnails(currObj, expanded);
   	}
   	
   	private function createButtons() {
-  	  buttons['turn'] = "End Turn";
-  	  buttons['army'] = "recruit.png";
-  	  buttons['building'] = "building.png";
-  	  buttons['diplomacy'] = "diplomacy.png";
-    	buttons['money'] = "money.png";
+      var for_buttons:Object = new Object();
+  	  for_buttons['turn'] = "End Turn";
+      for_buttons['army'] = "recruit.png";
+      for_buttons['building'] = "building.png";
+      for_buttons['diplomacy'] = "diplomacy.png";
+      for_buttons['money'] = "money.png";
+      for_buttons['build_city'] = "buildcity.png";
   	  
-  	  for(var j:String in buttons) {
-    		var str = buttons[j],
+  	  for(var j:String in for_buttons) {
+    		var str = for_buttons[j],
       			width = j == 'turn' ? 150 : 65,
       			fontSize = j == 'turn' ? 30 : null;
       	    buttons[j] = new SquareButton(str, width, 57, fontSize);
@@ -120,6 +135,8 @@ package control_panel {
   	  
   	  buttons['building'].x = buttons['diplomacy'].x;
   	  buttons['building'].y = hidden;
+  	  buttons['build_city'].x = buttons['diplomacy'].x;
+      buttons['build_city'].y = hidden;
   	  buttons['army'].x = buttons['diplomacy'].x;
   	  buttons['army'].y = hidden + 72;
   	}
@@ -128,6 +145,7 @@ package control_panel {
   	  buttons['turn'].addEventListener(MouseEvent.CLICK, endTurn);
   	  buttons['building'].addEventListener(MouseEvent.CLICK, currentConstruction);
   	  buttons['army'].addEventListener(MouseEvent.CLICK, currentTraining);
+  	  buttons['build_city'].addEventListener(MouseEvent.CLICK, dispatchBuildCity);
   	}
   	
   	private function addEmpireInfo(turn) {
@@ -176,8 +194,9 @@ package control_panel {
   	  TweenLite.to(buttons['turn'], .25, {y: endTurnY, ease:Sine.easeIn, delay: turnDelay});
   	  TweenLite.to(buttons['diplomacy'], .25, {x: toX, ease:Sine.easeIn, delay: diplomDelay});
   	  TweenLite.to(buttons['money'], .25, {x: (toX - 80), ease:Sine.easeIn, delay: diplomDelay});
-  	  TweenLite.to(buttons['building'], buildSpeed, {y: buildY, ease:Sine.easeIn, delay: buildDelay});
-  	  TweenLite.to(buttons['army'], buildSpeed, {y: (buildY + 72), ease:Sine.easeIn, delay: buildDelay});
+      TweenLite.to(buttons['building'], buildSpeed, {y: buildY, ease:Sine.easeIn, delay: buildDelay});
+    	TweenLite.to(buttons['army'], buildSpeed, {y: (buildY + 72), ease:Sine.easeIn, delay: buildDelay});
+      TweenLite.to(buttons['build_city'], buildSpeed, {y: buildY, ease:Sine.easeIn, delay: buildDelay});
   	  
   	  TweenLite.to(turnLabel, .2, {y: turnY, x: labelX, ease: Sine.easeIn});
   	  TweenLite.to(moneyLabel, .2, {y: moneyY, x: labelX, ease: Sine.easeIn});
@@ -204,13 +223,6 @@ package control_panel {
   	
   	private function availableToBuild(event:Event) {
   	  var buildingXML = new XML(event.target.data);
-//          unavailable:Array = new Array()
-//      currObj.building().forEach(function(build) { unavailable.push(build); });
-//      currObj.buildingQueue().forEach(function(build) { unavailable.push(build); });
-//      
-//      unavailable.forEach(function(build) {
-//  	    delete buildingXML.building.(level == build.level() && type == build.type())[0]; 
-//  	  });
   	  dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'City', buildingXML, currObj, true));
   	}
   
@@ -269,6 +281,10 @@ package control_panel {
   		// TODO add removeEL. for onClickBtn and onComp func to addEL when tween done 
   	  }
   	}
+    
+    private function dispatchBuildCity(event:MouseEvent) {
+      currObj.buildCity()
+    }
   	
   	public function endTurn(event:MouseEvent) {
   	  eAtW.currentTurn++;
