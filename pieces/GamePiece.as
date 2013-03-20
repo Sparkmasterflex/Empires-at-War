@@ -68,7 +68,7 @@ package pieces {
   	public function moves(num=null) {
   	  if(!obj_is('city')) {
   	    if(num) attr['moves'] = num;
-  	    return attr['moves'];
+  	    return 100;//attr['moves'];
   	  }
   	}
   	
@@ -199,6 +199,10 @@ package pieces {
       setTimeout(displayTotalMenBar, 1000);
     }
     
+    public function removeUnit(unit) {
+      units().splice(units().indexOf(unit), 1);
+    }
+    
     public function addAgents(agents:*) {
       var agent;
       if(!attr['agents']) attr['agents'] = new Array();
@@ -248,13 +252,17 @@ package pieces {
       TweenLite.to(bar, .1, {dropShadowFilter:{blurX:1, blurY:1, distance:1, alpha:0.6}});
     }
     
-    private function percentOfMen() {
-      var totalMen = 0,
-        percent = 0;
+    public function totalMen() {
+      var totalMen = 0;
       units().forEach(function(unit) {
         totalMen += parseInt(unit.men()); 
       });
-      percent = Math.round((totalMen / GameConstants.TOTAL_TROOPS) * 100);
+      return totalMen;
+    }
+    
+    private function percentOfMen() {
+      var percent = 0;
+      percent = Math.round((totalMen() / GameConstants.TOTAL_TROOPS) * 100);
       return percent;
     }
 	

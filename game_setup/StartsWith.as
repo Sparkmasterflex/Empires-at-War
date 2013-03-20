@@ -12,14 +12,14 @@ package game_setup {
 	  switch(difficulty) {
 		case GameConstants.EASYGAME:
 		  userStarts.ARMY = 3;
-		  userStarts.armyUnits = [[2, 2, 3, 4, 5, 8, 8, 10, 7],[2, 2, 3, 8, 10],[2, 2, 3, 4, 5, 8, 8, 10, 7]];
+		  userStarts.armyUnits = [[2, 2, 3, 4, 5, 8, 8, 10],[2, 2, 3, 8, 7],[2, 2, 3, 4, 5, 8, 8, 10]];
 		  userStarts.CITY = 1;
 		  userStarts.SETTLER = 2;
 		  userStarts.AGENT = ['spy_scout','diplomat'];
 		  break;
 		case GameConstants.MEDGAME:
 		  userStarts.ARMY = 2;
-		  userStarts.armyUnits = [[2, 2, 3, 4, 5, 8, 8, 7],[2, 2, 3, 8, 10]];
+		  userStarts.armyUnits = [[2, 2, 3, 4, 5, 8, 8, 10],[2, 2, 3, 8, 7]];
 		  userStarts.CITY = 0;
 		  userStarts.SETTLER = 1;
 		  userStarts.AGENT = ['diplomat'];

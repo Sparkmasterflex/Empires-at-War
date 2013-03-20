@@ -5,6 +5,7 @@ package pieces {
   import flash.events.MouseEvent;
   import dispatch.RemoveEvent;
   import common.ImgLoader;
+  import static_return.GameConstants;
 	
   public class PercentBar extends MovieClip {
 	private var bar:Sprite;
@@ -12,35 +13,35 @@ package pieces {
 	private var empFlag:ImgLoader;
 	
 	public function PercentBar(empire, percent){
-	  var color:Number,
-		  flag;
+	  var color, flag;
 			
 	  switch(int(empire)) {
-		case 10:
-		  color = 0xf4c10f;
-		  break;
-		case 20:
-		  color = 0x820b08;
-		  break;
-		case 30:
-		  color = 0x5bc9d6;
-		  break;
-		case 40:
-		  color = 0x5b8e14;
-		  flag = 'gaul.png';
-		  break;
-		case 50:
-		  color = 0x1b3a93;
-		  break;
-		case 60:
-		  color = 0x48750a;
-		  break;
-		case 70:
-		  color = 0x8e5109;
-		  break;
-		case 80:
-		  color = 0x383838;
-		  break;
+  		case GameConstants.EGYPT:
+  		  color = 'EGYPT';
+  		  break;
+  		case GameConstants.ROME:
+  		  color = 'ROME';
+        flag = 'rome.png';
+  		  break;
+  		case GameConstants.GREECE:
+        color = 'GREECE';
+  		  break;
+  		case GameConstants.GAUL:
+        color = 'GAUL';
+  		  flag = 'gaul.png';
+  		  break;
+  		case GameConstants.CARTHAGE:
+  		  color = 'CARTHAGE';
+  		  break;
+  		case GameConstants.JAPAN:
+  		  color = 'JAPAN';
+  		  break;
+  		case GameConstants.MONGOLS:
+  		  color = 'MONGOLS';
+  		  break;
+  		case GameConstants.UNDEAD:
+  		  color = 'UNDEAD';
+  		  break;
 		}
 	  bgBar = new Sprite();
 	  bgBar.graphics.lineStyle(1, 0x111111, .4);		
@@ -52,7 +53,7 @@ package pieces {
 	  addChild(bgBar);
 	
 	  bar = new Sprite();
-	  bar.graphics.beginFill(color, 1);
+	  bar.graphics.beginFill(GameConstants.EMPIRE_COLORS[color], 1);
 	  bar.graphics.drawRect(0, 0, 20, 5);
 	  bar.graphics.endFill();
 	  addChild(bar);

@@ -4,7 +4,7 @@
   <unit title="1">
     <objCall>1</objCall>
     <empire>all</empire>
-    <type>Infantry</type>
+    <type>10</type>
     <thumbnail>/thumb/peasant.png</thumbnail>
     <image>/fullSize/peasant.png</image>
     <unitName>Peasants</unitName>
@@ -20,7 +20,7 @@
   <unit title="2">
     <objCall>2</objCall>
     <empire>all</empire>
-    <type>Infantry</type>
+    <type>10</type>
     <thumbnail>/thumb/militia.png</thumbnail>
     <image>/fullSize/militia.png</image>
     <unitName>Militia</unitName>
@@ -36,7 +36,7 @@
   <unit title="3">
     <objCall>3</objCall>
     <empire>all</empire>
-    <type>Infantry</type>
+    <type>10</type>
     <thumbnail>/thumb/spearMan.png</thumbnail>
     <image>/fullSize/spearMan.png</image>
     <unitName>SpearMen</unitName>
@@ -52,7 +52,7 @@
   <unit title="4">
     <objCall>4</objCall>
     <empire>all</empire>
-    <type>Missile</type>
+    <type>20</type>
     <thumbnail>/thumb/archer.png</thumbnail>
     <image>/fullSize/archer.png</image>
     <unitName>Common Archer</unitName>
@@ -68,7 +68,7 @@
   <unit title="5">
     <objCall>5</objCall>
     <empire>all</empire>
-    <type>Cavalry</type>
+    <type>30</type>
     <thumbnail>/thumb/lightCavalry.png</thumbnail>
     <image>/fullSize/lightCavalry.png</image>
     <unitName>Light Cavalry</unitName>
@@ -84,7 +84,7 @@
   <unit title="6">
     <objCall>6</objCall>
     <empire>all</empire>
-    <type>Cavalry</type>
+    <type>30</type>
     <thumbnail>/thumb/heavyCavalry.png</thumbnail>
     <image>/fullSize/heavyCavalry.png</image>
     <unitName>Heavy Cavalry</unitName>
@@ -100,7 +100,7 @@
   <unit title="7">
     <objCall>7</objCall>
     <empire>all</empire>
-    <type>Magic</type>
+    <type>40</type>
     <thumbnail>/thumb/sorcerer.png</thumbnail>
     <image>/fullSize/sorcerer.png</image>
     <unitName>Sorcerer</unitName>

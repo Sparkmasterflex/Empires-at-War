@@ -171,7 +171,11 @@ package pieces {
   	public function advanceUnits() {
       if(unitsQueue()[0]) {
         var first = unitsQueue()[0];
-        addUnits(first);
+        if(unitsQueue()[0].parent_type == 'agent') {
+          addAgents(first);
+        } else {
+          addUnits(first);
+        }
         unitsQueue().splice(0, 1);
       }
   	}

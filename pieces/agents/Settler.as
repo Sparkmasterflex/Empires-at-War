@@ -10,6 +10,8 @@ package pieces.agents {
   public class Settler extends MovieClip {
     public var parent_obj:GamePiece;
     public var type = 'settler';
+    public var parent_type = 'agent';
+    public var cost = 750;
     
     public function Settler(p) {
       parent_obj = p;

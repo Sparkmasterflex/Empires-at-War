@@ -10,6 +10,16 @@ package static_return {
   	public static const MONGOLS:int 		 = 70;
   	public static const UNDEAD:int 			 = 80;
   	public static const EMPIRES:Object = {EGYPT: "Egypt", ROME: "Rome", JAPAN: "Japan", GAUL: "Gaul"};
+  	public static const EMPIRE_COLORS:Object = {
+      EGYPT: 0xf4c10f, 
+      ROME: 0x820b08, 
+      JAPAN: 0x48750a, 
+      GAUL: 0x5b8e14, 
+      GREECE: 0x5bc9d6, 
+      CARTHAGE: 0x1b3a93,
+      MONGOLS: 0x8e5109,
+      UNDEAD: 0x383838
+    };
   	
   	public static const STAGE_WIDTH:Number   = 1200;
   	public static const STAGE_HEIGHT:Number  = 800;
@@ -34,7 +44,12 @@ package static_return {
     public static const SPY_FEMALE:int =  15
     public static const DIPLOMAT:int   =  20
     public static const SETTLER:int    = 100
-	
+
+    public static const INFINTRY:int    = 10
+    public static const MISSLE:int      = 20
+    public static const CAVALRY:int     = 30
+    public static const MAGIC:int       = 40
+    
 	
   	public function GameConstants() {
   	  

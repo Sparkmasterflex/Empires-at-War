@@ -4,7 +4,7 @@
 <unit title="8">
   <objCall>8</objCall>
   <empire>gaul</empire>
-  <type>Infantry</type>
+  <type>10</type>
   <thumbnail>/thumb/swordMan.png</thumbnail>
   <image>/fullSize/swordMan.png</image>
   <unitName>Swordsman</unitName>
@@ -20,7 +20,7 @@
 <unit title="9">
   <objCall>9</objCall>
   <empire>all</empire>
-  <type>Infantry</type>
+  <type>10</type>
   <thumbnail>/thumb/axeMan.png</thumbnail>
   <image>/fullSize/axeMan.png</image>
   <unitName>Axeman</unitName>
@@ -36,7 +36,7 @@
 <unit title="10">
   <objCall>10</objCall>
   <empire>gaul</empire>
-  <type>Infantry/Magic</type>
+  <type>15</type>
   <thumbnail>/thumb/druid.png</thumbnail>
   <image>/fullSize/druid.png</image>
   <unitName>Druid</unitName>

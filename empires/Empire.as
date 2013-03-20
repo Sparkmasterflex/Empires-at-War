@@ -141,8 +141,8 @@ package empires {
   	private function calculateMoneyEarned() {
       var fromCities = 0,
           before = treasury();
-  	  cityArray.forEach(function(city) { trace(city.collectTaxes()); treasury(city.collectTaxes()); });
-      armyArray.forEach(function(army) { trace(army.payArmy()); treasury(army.payArmy()); });
+  	  cityArray.forEach(function(city) { treasury(city.collectTaxes()); });
+      armyArray.forEach(function(army) { treasury(army.payArmy()); });
   	  return treasury();
   	}
   }

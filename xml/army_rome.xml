@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<units>
+
+<unit title="8">
+  <objCall>8</objCall>
+  <empire>rome</empire>
+  <type>10</type>
+  <thumbnail>/thumb/romeWarrior.png</thumbnail>
+  <image>/fullSize/romeWarrior.png</image>
+  <unitName>Legionaire</unitName>
+  <attack>1</attack>
+  <defense>2</defense>
+  <cost>200</cost>
+  <upkeep>30</upkeep>
+  <menStart>200</menStart>
+  <bonuses>none</bonuses>
+  <description>Pending</description>
+</unit>
+
+<unit title="9">
+  <objCall>9</objCall>
+  <empire>rome</empire>
+  <type>30</type>
+  <thumbnail>/thumb/clibanarii.png</thumbnail>
+  <image>/fullSize/clibanarii.png</image>
+  <unitName>Clibanarii</unitName>
+  <attack>2</attack>
+  <defense>3</defense>
+  <cost>250</cost>
+  <upkeep>35</upkeep>
+  <menStart>200</menStart>
+  <bonuses>none</bonuses>
+  <description>Pending</description>
+</unit>
+
+<unit title="10">
+  <objCall>10</objCall>
+  <empire>rome</empire>
+  <type>15</type>
+  <thumbnail>/thumb/druid.png</thumbnail>
+  <image>/fullSize/druid.png</image>
+  <unitName>Druid</unitName>
+  <attack>4</attack>
+  <defense>5</defense>
+  <cost>300</cost>
+  <upkeep>90</upkeep>
+  <menStart>200</menStart>
+  <bonuses>none</bonuses>
+  <description>Pending</description>
+</unit>
+
+</units>

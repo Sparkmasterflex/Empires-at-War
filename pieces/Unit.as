@@ -6,6 +6,7 @@ package pieces {
   public class Unit {
     /*---- Arrays and Objects ----*/
     public var attr:Object = new Object();
+    public var parent_type = 'army';
     
     public function Unit(t, a) {
       type(t);
@@ -19,14 +20,24 @@ package pieces {
       if(t) attr['type'] = t;
       return attr['type'];
     }
+    
+    public function unit_type(ut=null) {
+      if(ut) attr['unit_type'] = ut;
+      return attr['unit_type'];
+    }
 
     public function army(a=null) {
       if(a) attr['army'] = a;
       return attr['army'];
     }
 
-    public function men(m=null) {
-      if(m) attr['men'] = m;
+    public function men(m=null, subtract=false) {
+      if(m) {
+        if(subtract)          
+          attr['men'] -= m;
+        else
+          attr['men'] = parseInt(m);
+      }
       return attr['men'];
     }
     
@@ -46,12 +57,12 @@ package pieces {
     }
 
     public function attack(a=null) {
-      if(a) attr['attack'] = a;
+      if(a) attr['attack'] = parseInt(a);
       return attr['attack'];
     }
 
     public function defense(d=null) {
-      if(d) attr['defense'] = d;
+      if(d) attr['defense'] = parseInt(d);
       return attr['defense'];
     }
 
@@ -97,6 +108,7 @@ package pieces {
       men(list.menStart);
       thumb(list.thumbnail);
       image(list.image);
+      unit_type(list.type);
       name(list.unitName);
       attack(list.attack);
       defense(list.defense);

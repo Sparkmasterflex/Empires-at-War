@@ -50,8 +50,7 @@ package control_panel {
   	
   	/*---- Boolean ----*/
   	private var expanded:Boolean = false;
-  	private var over:Boolean = false;
-  	private var clicked:Boolean = false;
+  	
 	
     public function ControlPanel(empire, turn, parent) {
   	  eAtW = parent;
@@ -116,7 +115,7 @@ package control_panel {
       			fontSize = j == 'turn' ? 30 : null;
       	    buttons[j] = new SquareButton(str, width, 57, fontSize);
     		addChild(buttons[j]);
-    		btnListenAndShadow(buttons[j]);
+//    		btnListenAndShadow(buttons[j]);
   	  }
   	  positionButtons();
   	  observeButtons();
@@ -204,14 +203,14 @@ package control_panel {
   	  TweenLite.to(selectedUnits, .2, {y: selUnitY, ease: Sine.easeIn, delay: selUnitDelay});
   	}
   	
-  	private function btnListenAndShadow(btn) {
-  	  btn.addEventListener(MouseEvent.MOUSE_OVER, btnRoll);
-  	  btn.addEventListener(MouseEvent.MOUSE_OUT, btnRoll);
-  	  btn.addEventListener(MouseEvent.MOUSE_DOWN, onClickBtn);
-  	  btn.addEventListener(MouseEvent.MOUSE_UP, onClickBtn);
-  	  btn.buttonMode = true;
-  	  btn.mouseChildren = false;
-  	}
+//  	private function btnListenAndShadow(btn) {
+//  	  btn.addEventListener(MouseEvent.MOUSE_OVER, btnRoll);
+//  	  btn.addEventListener(MouseEvent.MOUSE_OUT, btnRoll);
+//  	  btn.addEventListener(MouseEvent.MOUSE_DOWN, onClickBtn);
+//  	  btn.addEventListener(MouseEvent.MOUSE_UP, onClickBtn);
+//  	  btn.buttonMode = true;
+//  	  btn.mouseChildren = false;
+//  	}
   	
   	/*----- Button Functions -----*/
   	private function currentConstruction(event:MouseEvent) {
@@ -248,40 +247,6 @@ package control_panel {
       dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Army', allUnits, currObj, true));
     }
   	
-  	private function btnRoll(event:MouseEvent) {
-  	  var curBtn = event.target;
-  	  over = over ? false : true;
-  	  curBtn.btnRoll.visible = over;
-  	}
-  	
-  	private function rollLabelVisible(event:MouseEvent) {
-  	  var curBtn = event.target;
-  	  if(over) {
-    		curBtn.rollLabel.visible = false;
-    		curBtn.btnLabel.visible = true;
-  		  over = false;
-  	  } else {
-    		curBtn.rollLabel.visible = true;
-    		curBtn.btnLabel.visible = false;
-    		over = true;
-  	  }
-  	}
-  	
-  	private function onClickBtn(event:Event) {
-  	  var curBtn = event.target,
-  		    yPos = curBtn.y; 
-  	  if(clicked) {
-  		//TweenLite.to(curBtn, .25, { y:yPos - 2, dropShadowFilter:{blurX:.5, blurY:.5, distance:1, alpha:0.45}});
-  		clicked = false;
-  	  } else {
-  //		clickChannel = btnClickSound.play();
-  //		clickChannel.soundTransform = soundVol;
-  		//TweenLite.to(curBtn, .25, { y:yPos + 2, dropShadowFilter:{blurX:0, blurY:0, distance:0, alpha:0}});
-  		clicked = true;
-  		// TODO add removeEL. for onClickBtn and onComp func to addEL when tween done 
-  	  }
-  	}
-    
     private function dispatchBuildCity(event:MouseEvent) {
       currObj.buildCity()
     }
@@ -289,7 +254,7 @@ package control_panel {
   	public function endTurn(event:MouseEvent) {
   	  eAtW.currentTurn++;
   	  turnLabel.text = "Turn: " + eAtW.currentTurn;
-  	  userEmp.processTurn(this)
+      eAtW.empireArr.forEach(function(empire) { empire.processTurn(this) });
   	}
   }
 }

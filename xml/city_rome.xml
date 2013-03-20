@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<buildings>
+  <building>
+    <objCall>1</objCall>
+    <empire>rome</empire>
+    <thumbnail>/thumb/meeting-hall.png</thumbnail>
+    <fullSize>/fullSize/meeting-hall.png</fullSize>
+    <name>Meeting Hall</name>
+    <type>10</type>
+    <level>1</level>
+    <cost>150</cost>
+    <build_points>30000</build_points>
+    <benefits>
+      <army></army>
+      <population>0.0005</population>
+      <order>2</order>
+      <taxes>0.05</taxes>
+      <other></other>
+    </benefits>
+    <allows>
+      <army>1</army>
+      <building></building>
+    </allows>
+  </building>
+  
+  <building>
+    <objCall>2</objCall>
+    <empire>rome</empire>
+    <thumbnail>/thumb/training-yard.png</thumbnail>
+    <fullSize>/fullSize/training-yard.png</fullSize>
+    <name>Training Yard</name>
+    <type>20</type>
+    <level>1</level>
+    <cost>250</cost>
+    <build_points>20000</build_points>
+    <benefits>
+      <army>1,2</army>
+      <population>0</population>
+      <order>3</order>
+      <taxes>0</taxes>
+      <other></other>
+    </benefits>
+    <allows>
+      <army>1,2</army>
+      <building></building>
+    </allows>
+  </building>
+  
+  <building>
+    <objCall>3</objCall>
+    <empire>rome</empire>
+    <thumbnail>/thumb/religion-placeholder.png</thumbnail>
+    <fullSize>/fullSize/training-yard.png</fullSize>
+    <name>Sacred Garden</name>
+    <type>30</type>
+    <level>1</level>
+    <cost>200</cost>
+    <build_points>30000</build_points>
+    <benefits>
+      <army></army>
+      <population>0.0002</population>
+      <order>3</order>
+      <taxes>0</taxes>
+      <other></other>
+    </benefits>
+    <allows>
+      <army></army>
+      <building></building>
+    </allows>
+  </building>
+  
+  <building>
+    <objCall>4</objCall>
+    <empire>rome</empire>
+    <thumbnail>/thumb/hunt-placeholder.png</thumbnail>
+    <fullSize>/fullSize/training-yard.png</fullSize>
+    <name>The Hunt</name>
+    <type>40</type>
+    <level>1</level>
+    <cost>250</cost>
+    <build_points>30000</build_points>
+    <benefits>
+      <army>{train: 0.002, cost: -0.002}</army>
+      <population>0</population>
+      <order>3</order>
+      <taxes>0</taxes>
+      <other></other>
+    </benefits>
+    <allows>
+      <army></army>
+      <building></building>
+    </allows>
+  </building>
+</buildings>

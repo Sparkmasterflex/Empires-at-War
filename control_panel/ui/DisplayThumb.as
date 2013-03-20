@@ -13,7 +13,7 @@ package control_panel.ui {
   public class DisplayThumb extends MovieClip {
   	/*-- Classes Added --*/
   	private var img:ImgLoader;
-    private var menLbl:Label;
+    public var menLbl:Label;
   	public var highlight:Gradient;
   	public var overlay:Gradient;
     public var responds_to;
@@ -44,7 +44,6 @@ package control_panel.ui {
           		  [1,1], [0,145], 75, 75,
           		  (3 * Math.PI) / 2, [75,75,15,15], 'rectangle'
           	  );
-  		    
   	  img = new ImgLoader(image_path);
   	  addChild(box);
   	  addChild(img);
