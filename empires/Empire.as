@@ -1,5 +1,7 @@
 package empires {
   import flash.display.Sprite;
+  import flash.external.ExternalInterface;
+  import flash.utils.setTimeout;
   
   import game_setup.StartsWith;
   
@@ -33,19 +35,21 @@ package empires {
 	  eAtW = parent;
 	  attr = new Object();
 	  attr['money'] = 0;
-	  empire(params['empire'])
+	  attr['id'] = params['empire'].id;
+	  empire(params['empire'].empire)
 	  pieceArray = new Array();
 	  armyArray = new Array()
 	  cityArray = new Array()
 	  agentArray = new Array()
-	  difficulty = params['difficulty'];
+	  difficulty = params['game'].difficulty;
 	  
 	  var toStart = StartsWith.userStarts(difficulty),
   		  randGrid = gStage.sGridArr[0],  //[Math.round(Math.random() * gStage.sGridArr.length)],
   		  startSq = randGrid.landSquares[Math.round(Math.random() * randGrid.landSquares.length)];
+    
   	posArr = CalculateStartPositions.ret(startSq);
 	  
-	  treasury(params['money']);
+	  treasury(params['empire'].money);
 	  
 	  for(var j:String in toStart) {
 	    switch(j) {
@@ -72,6 +76,7 @@ package empires {
     		gStage.addChild(city);
     		pieceArray.push(city);
     		cityArray.push(city);
+        setTimeout(city.saveAttributes,500);
   	  }
   	}
   	
@@ -84,6 +89,7 @@ package empires {
         army.square(sq);
         gStage.addChild(army);
         if(difficulty != GameConstants.EASYGAME && i == 0) army.attr['primary'] = true;
+        setTimeout(army.saveAttributes,500);
   	  }
   	}
     
@@ -99,6 +105,7 @@ package empires {
         } else {
           sq.pieces().addAgents([GameConstants.SETTLER]);
         }
+        setTimeout(settler.saveAttributes,500);
       }
     }
 	

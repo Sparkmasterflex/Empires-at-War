@@ -20,11 +20,15 @@ package pieces {
   public class Agent extends GamePiece {
     public var piece;
     
-    public function Agent(empire:*, agents) {
-      super(empire);
+    public function Agent(emp, agents, id=null) {
+      super(emp);
+      attr = new Object();
+      this_empire = emp;
       attr = new Object()
-      empire.pieceArray.push(this);
-      empire.agentArray.push(this);
+      this_empire.pieceArray.push(this);
+      this_empire.agentArray.push(this);
+      if(id != null) this_id(id);
+      empire_id(this_empire.attr['id']);
       setAttributes(agents);
       createAgentType();
       facing(true);
@@ -32,8 +36,7 @@ package pieces {
     }
 
     private function setAttributes(agents) {
-      attr = new Object();
-      attr['pieceType'] = "agent"
+      attr['pieceType'] = "agent";
       moves(4);
       empire(this_empire.empire());
       addAgents(agents);
@@ -46,6 +49,21 @@ package pieces {
       // ie Diplomat and Spies
       if(agents().indexOf(Settler)) piece = new settlerBase();
       addChild(piece);
+    }
+    
+    public override function createJSON() {
+      var json = {};
+      json = {
+        pieceType: 10,
+        empire_id: empire_id(),
+        built_id: empire_id(),
+        name: named(),
+        square: square().name,
+        agents: ""
+      }
+      if(agents()) agents().forEach(function(agent) { json['agents'] +=  agent.type + "||"; });
+      
+      return json;
     }
     
     public function agent_is(type=null, set=false) {

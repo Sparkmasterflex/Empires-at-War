@@ -72,7 +72,7 @@ package control_panel.ui {
                 selectedPiece.units().forEach(addThumb);
                 break;
               case 'city':
-                selectedPiece.building().forEach(addThumb);
+                selectedPiece.buildings().forEach(addThumb);
                 break;
             }
         }

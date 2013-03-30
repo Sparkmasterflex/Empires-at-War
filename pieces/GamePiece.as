@@ -12,6 +12,7 @@ package pieces {
   import flash.display.MovieClip;
   import flash.events.*;
   import flash.utils.*;
+  import flash.external.ExternalInterface;
   
   import pieces.PercentBar;
   import pieces.agents.Settler;
@@ -46,6 +47,16 @@ package pieces {
   	  return obj ? (obj == attr['pieceType']) : attr['pieceType'];
   	}
   	
+    public function this_id(id=null) {
+      if(id) attr['id'] = id;
+      return attr['id'];
+    }
+      
+    public function empire_id(emp_id=null) {
+      if(emp_id) attr['empire_id'] = emp_id;
+      return attr['empire_id'];
+    }
+    
   	public function named(named=null) {
   	  if(named) attr['name'] = named;
   	  return attr['name'];
@@ -68,9 +79,13 @@ package pieces {
   	public function moves(num=null) {
   	  if(!obj_is('city')) {
   	    if(num) attr['moves'] = num;
-  	    return 100;//attr['moves'];
+  	    return attr['moves'];
   	  }
   	}
+    
+    public function saveAttributes() {
+      ExternalInterface.call("savePiece", createJSON());
+    }
   	
   	public function selectThis(event:MouseEvent) {
       var stage = this.parent,
@@ -265,6 +280,8 @@ package pieces {
       percent = Math.round((totalMen() / GameConstants.TOTAL_TROOPS) * 100);
       return percent;
     }
+    
+    public function createJSON() { return null; }
 	
 /*--------------- Next Turn Functions -------------*/
     public function nextTurn(turn) { moves(5); }
