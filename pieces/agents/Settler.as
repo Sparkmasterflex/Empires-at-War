@@ -8,17 +8,30 @@ package pieces.agents {
   import pieces.GamePiece;
   
   public class Settler extends MovieClip {
-    public var parent_obj:GamePiece;
+    public var parent_obj;
     public var type = 'settler';
     public var parent_type = 'agent';
     public var cost = 750;
     
-    public function Settler(p) {
-      parent_obj = p;
+    public function Settler(p=null) {
+      if(p) this_parent(p);
     }
     
     public function img_path() {
       return 'agents/settler.png'
+    }
+
+    /* Sets parent Object (Army, City or Agent)
+     * 
+     * ==== Parameters:
+     * p::GamePiece (Army, City or Agent)
+     *
+     * ==== Returns
+     * GamePiece (Army, City or Agent)
+     */
+    public function this_parent(p=null) {
+      if(p) parent_obj = p;
+      return parent_obj;
     }
     
     public function build_points(bp=null) {

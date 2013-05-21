@@ -1,7 +1,7 @@
 package pieces {
   import com.greensock.*;
   import com.greensock.easing.*;
-  
+
   import common.ImgLoader;
   
   import dispatch.AddListenerEvent;
@@ -25,23 +25,30 @@ package pieces {
     public var builders:Array;
 	
   	public function City(emp, s, num, id=null) {
-  	  super(emp);
+      super(emp);
       attr = new Object();
       this_empire = emp;
       if(id != null) this_id(id);
       empire_id(emp.attr['id']);
       empire(this_empire.empire());
-  	  population(s);
+      this_empire.cityArray.push(this);
+      this_empire.pieceArray.push(this);
+      setAttributes(s, num);
   	  addCityImage();
-      if(population() == 0) addBuilders();
-  	  attr['pieceType'] = "city";
-  	  attr['buildings']  = []
-      var gov_build = new Building({level: 1, type: CityConstants.GOVERNMENT, build_points: 0}, this); 
-      buildings(gov_build);
-  	  taxes(0.07);
-  	  population(s);
-  	  named("city_" + num + "_" + empire()[0]);
   	}
+
+    private function setAttributes(pop, num) {
+      attr['pieceType'] = "city";
+      attr['buildings']  = []
+      population(pop);
+      named("city_" + num + "_" + empire()[0]);
+      if(population() <= CityConstants.START) {
+        var gov_build = new Building({level: 1, type: CityConstants.GOVERNMENT, build_points: 0}, this);
+        setTimeout(function() { buildings([gov_build]); }, 200);
+        if(population() == 0) addBuilders();
+      }
+      taxes(0.07);
+    }
   	
   	public function addCityImage() {
   	  var size = CityConstants.IMAGES[determineCitySize(population())],
@@ -80,11 +87,28 @@ package pieces {
       } else {
         population(pop + 10000);
       }
+      level();
+    }
+
+    /* Sets/returns city level based on population
+     *
+     * ==== Returns:
+     * Integer
+     */
+    public function level() {
+      var level = population() <= CityConstants.VILLAGE ? 1 :
+                    population() <= CityConstants.TOWN ? 2 :
+                      population() <= CityConstants.SMALL_CITY ? 3 :
+                        population() <= CityConstants.CITY ? 4 :
+                          population() <= CityConstants.LARGE_CITY ? 5 :
+                            6;
+      return level;
     }
     
     public override function createJSON() {
       var json = {};
       json = {
+        id: this_id(),
         pieceType: 30,
         empire_id: empire_id(),
         built_id: empire_id(),
@@ -114,43 +138,37 @@ package pieces {
         return 0;
   	}
     
-    public function can_train(ct=null) {
-      if(!attr['can_train']) attr['can_train'] = new Array(); 
-      if(ct) attr['can_train'].push(ct);
-      return attr['can_train'];
+    public function can_train() {
+      var arr = null;
+      buildings().forEach(function(bld) {
+        if(arr) {
+          arr.concat(bld.armies_allowed());
+        } else {
+          arr = bld.armies_allowed();
+        }
+      });
+      return arr;
     }
   	
   	public function buildings(b=null) {
-      var this_city = this,
-          added_bld;
-  	  if(!attr['buildings']) attr['buildings'] = new Array();
-  	  if(b) {
-        var any_dup = []
-        if(b is Building) {
-          attr['buildings'].forEach(function(bld) { if(bld.level() == b.level() && bld.type() == b.type()) any_dup.push(buildings()) });
-          if(any_dup.length == 0) {
-            attr['buildings'].push(b);
-            added_bld = b;
-          }
-        } else {
-          for(var j:String in b) {
-            b[j].forEach(function(building) {
-              attr['buildings'].forEach(function(bld) { if(bld.level() == j && bld.type() == building) any_dup.push(building) });
-              if(any_dup.length == 0) {
-                var build = new Building({type: building, level: j}, this_city);
-                attr['buildings'].push(build);
-                added_bld = build;
-              }
-            });
-          }
-        }
-        setTimeout(function() {
-          unavailable(added_bld);
-          add_allowed_units(added_bld)
-        }, 1000);
-  	  }
-  	  return attr['buildings'];
+      var _this = this;
+      if(b) {
+        b.forEach(function(bld) { 
+          bld.this_parent(_this);
+          unavailable(bld);
+        });
+        attr['buildings'] = b;
+      }
+      
+      return attr['buildings'];
   	}
+
+    public function addBuilding(building=null) {
+      if(!attr['buildings']) attr['buildings'] = new Array();
+      attr['buildings'].push(building);
+      unavailable(building);
+      return attr['buildings'];
+    }
   	
   	public function buildingQueue(cb=null) {
       if(!attr['build_queue']) attr['build_queue'] = new Array();
@@ -167,11 +185,11 @@ package pieces {
       return attr['unavailable_buildings'];
     }
     
-    private function add_allowed_units(bld) {
-      bld.armies_allowed().forEach(function(u) {
-        if(can_train().indexOf(u) < 0) can_train(u);
-      });
-    }
+    //private function add_allowed_units(bld) {
+      //bld.armies_allowed().forEach(function(u) {
+        //if(can_train().indexOf(u) < 0) can_train(u);
+      //});
+    //}
   	
   	public function advanceBuilding() {
   	  if(buildingQueue()[0]) {
@@ -196,7 +214,7 @@ package pieces {
         if(unitsQueue()[0].parent_type == 'agent') {
           addAgents(first);
         } else {
-          addUnits(first);
+          addUnit(first);
         }
         unitsQueue().splice(0, 1);
       }

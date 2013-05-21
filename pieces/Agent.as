@@ -20,7 +20,7 @@ package pieces {
   public class Agent extends GamePiece {
     public var piece;
     
-    public function Agent(emp, agents, id=null) {
+    public function Agent(emp, num, id=null) {
       super(emp);
       attr = new Object();
       this_empire = emp;
@@ -29,17 +29,17 @@ package pieces {
       this_empire.agentArray.push(this);
       if(id != null) this_id(id);
       empire_id(this_empire.attr['id']);
-      setAttributes(agents);
+      setAttributes(num);
       createAgentType();
       facing(true);
       addEventListener(MouseEvent.CLICK, animateSelect);
     }
 
-    private function setAttributes(agents) {
+    private function setAttributes(num) {
       attr['pieceType'] = "agent";
       moves(4);
       empire(this_empire.empire());
-      addAgents(agents);
+      named("agent_" + num + "_" + empire()[0]);
       scaleX = .75;
       scaleY = .75;
     }
@@ -47,13 +47,28 @@ package pieces {
     private function createAgentType() {
       // will have to add other options as they get built
       // ie Diplomat and Spies
-      if(agents().indexOf(Settler)) piece = new settlerBase();
+      if(!agents() || agents().indexOf(Settler)) piece = new settlerBase();
+      setEmpire();
       addChild(piece);
+    }
+
+    private function setEmpire() {
+      switch(empire()[0]) {
+        case GameConstants.GAUL:
+          piece.settlerIsGaul();
+          break;
+        case GameConstants.ROME:
+          piece.settlerIsRome();
+          break;
+        default:
+          trace('none');
+      }
     }
     
     public override function createJSON() {
       var json = {};
       json = {
+        id: this_id(),
         pieceType: 10,
         empire_id: empire_id(),
         built_id: empire_id(),

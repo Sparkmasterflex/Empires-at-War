@@ -75,7 +75,6 @@ package control_panel.ui.popups {
           thumb = new DisplayThumb(thumbs[i], currObj);
           setOverlay = true;
         }
-    	  
         if(setOverlay) thumb.addOverlay(thumbs[i].build_points(), thumbs[i].originalPoints);
         addThumbnail(thumb, bg, j, k);
     		if(j == 7) {
@@ -91,7 +90,7 @@ package control_panel.ui.popups {
       bg.addChild(thumb);
       thumb.mouseChildren = false;
       thumb.doubleClickEnabled = true;
-      //		thumb.addEventListener(MouseEvent.DOUBLE_CLICK, extendedDetails);
+      //  thumb.addEventListener(MouseEvent.DOUBLE_CLICK, extendedDetails);
       thumb.addEventListener(MouseEvent.CLICK, selectObject);
     }
     
@@ -122,7 +121,7 @@ package control_panel.ui.popups {
       }
   	}
     
-    public function createXMLList(params) { return false; }
+    public function createXMLList(params) { trace("CityPopup createXMLList"); return false; }
     public function createThumbAttributes(thumb, image) { return false; }
     public function createSelectedObject(target) { return false; }
     public function getQueue() { return false; }

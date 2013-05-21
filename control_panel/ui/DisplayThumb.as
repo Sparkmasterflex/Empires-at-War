@@ -14,6 +14,7 @@ package control_panel.ui {
   	/*-- Classes Added --*/
   	private var img:ImgLoader;
     public var menLbl:Label;
+    public var nameLbl:Label;
   	public var highlight:Gradient;
   	public var overlay:Gradient;
     public var responds_to;
@@ -48,6 +49,7 @@ package control_panel.ui {
   	  addChild(box);
   	  addChild(img);
   	  if(item is Unit) addMenTF(item.men());
+      if(!(item is Unit)) addNameTF();
   	}
   
     public function createDefaultImage() {
@@ -66,12 +68,23 @@ package control_panel.ui {
       return item is Settler;
     }
   	
-  	private function addMenTF(men) {
-  	  menLbl = new Label(11, 0x000000, 'Arial', 'LEFT');
-  	  menLbl.text = men;
-  	  menLbl.x = 3;
-  	  menLbl.y = 3;
-  	  addChild(menLbl);
+    private function addMenTF(men) {
+      menLbl = new Label(11, 0x000000, 'Arial', 'LEFT');
+      menLbl.text = men;
+      menLbl.x = 3;
+      menLbl.y = 3;
+      addChild(menLbl);
+    }
+
+  	private function addNameTF() {
+      var txt = responds_to is Building ? responds_to.name() : responds_to.name;
+      if(txt) {
+        nameLbl = new Label(11, 0x000000, 'Arial', 'LEFT');
+        nameLbl.text = txt;
+        nameLbl.x = 3;
+        nameLbl.y = 55;
+        addChild(nameLbl);
+      }
   	}
   
     public function createHighLight() {

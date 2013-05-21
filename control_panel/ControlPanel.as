@@ -5,6 +5,8 @@ package control_panel {
   import com.greensock.plugins.TweenPlugin;
   
   import empires.Empire;
+
+  import flash.external.ExternalInterface;
   
   import empiresAtWar;
   TweenPlugin.activate([DropShadowFilterPlugin]);
@@ -50,6 +52,9 @@ package control_panel {
   	
   	/*---- Boolean ----*/
   	private var expanded:Boolean = false;
+
+    /*----- Strings -----*/
+    private var to_xml = 'xml/'
   	
 	
     public function ControlPanel(empire, turn, parent) {
@@ -216,7 +221,7 @@ package control_panel {
   	private function currentConstruction(event:MouseEvent) {
   	  var xml = 'city_' + currObj.empire()[1].toLowerCase() + '.xml',
   		  xmlLoader = new URLLoader();
-  	  xmlLoader.load(new URLRequest('xml/' + xml));
+  	  xmlLoader.load(new URLRequest(to_xml + xml));
   	  xmlLoader.addEventListener(Event.COMPLETE, availableToBuild);
   	}
   	
@@ -226,25 +231,15 @@ package control_panel {
   	}
   
   	private function currentTraining(event:MouseEvent) {
-  	  var xml = 'xml/army_base.xml',
-          xmlLoader = new URLLoader();
-      xmlLoader.load(new URLRequest(xml));
-      xmlLoader.addEventListener(Event.COMPLETE, setBaseUnits);
-  	}
-    
-    private function setBaseUnits(event:Event) {
-      baseXML = new XML(event.target.data);
-      var emp_xml = 'xml/army_' + currObj.empire()[1].toLowerCase() + '.xml',
+  	  var emp_xml = to_xml + 'army_' + currObj.empire()[1].toLowerCase() + '.xml',
           emp_xmlLoader = new URLLoader();
       emp_xmlLoader.load(new URLRequest(emp_xml));
-      emp_xmlLoader.addEventListener(Event.COMPLETE, availableToTrain);  
-    }
-    
+      emp_xmlLoader.addEventListener(Event.COMPLETE, availableToTrain);
+  	}
+        
     private function availableToTrain(event:Event) {
-      var empXML = new XML(event.target.data),
-          available = currObj.can_train(),
-          allUnits = baseXML.appendChild(empXML.*);
-      dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Army', allUnits, currObj, true));
+      var empXML = new XML(event.target.data);
+      dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Army', empXML, currObj, true));
     }
   	
     private function dispatchBuildCity(event:MouseEvent) {
@@ -252,9 +247,10 @@ package control_panel {
     }
   	
   	public function endTurn(event:MouseEvent) {
-  	  eAtW.currentTurn++;
+      eAtW.currentTurn++;
   	  turnLabel.text = "Turn: " + eAtW.currentTurn;
       eAtW.empireArr.forEach(function(empire) { empire.processTurn(this) });
+      ExternalInterface.call('saveGame', eAtW.currentTurn);
   	}
   }
 }

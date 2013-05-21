@@ -6,8 +6,6 @@ package control_panel.ui.popups {
   
     public function BuildPopup(params:*, object:*) {
       super(params, object);
-      
-      
     }
     
     private function addPopupImage() {
@@ -18,15 +16,16 @@ package control_panel.ui.popups {
       createQueueLabel("Building Queue");
     }
     
+    // TODO: fix this
     public override function createXMLList(params) {
       currObj.unavailable().forEach(function(ua) {
         if(ua != null && ua.toString() != "") delete params.building.(objCall == ua.toString())[0];
       });
-      return params.building
+      return params.building.(level == currObj.level())
     }
     
     public override function createThumbAttributes(thumb, image) {
-      return {thumb_for: 'City', type: thumb.type, level: thumb.level, cost: thumb.cost, points: thumb.build_points, thumb: image}
+      return {thumb_for: 'City', type: thumb.type, level: thumb.level, cost: thumb.cost, points: thumb.build_points, thumb: image, name: thumb.name}
     }
     
     public override function createSelectedObject(target) {

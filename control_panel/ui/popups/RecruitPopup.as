@@ -21,8 +21,9 @@ package control_panel.ui.popups {
     }
     
     public override function createXMLList(params) {
-      var xml:XML = new XML(<units></units>);
-      currObj.can_train().forEach(function(u) {
+      var xml:XML = new XML(<units></units>),
+          arr = currObj.can_train();
+      arr.forEach(function(u) {
         xml.appendChild(params.unit.(objCall == u.toString()))
       });
       return xml.unit
@@ -35,7 +36,7 @@ package control_panel.ui.popups {
     public override function createSelectedObject(target) {
       var new_obj = target.responds_to.parent_type == 'agent' ?
         target.responds_to :
-          new Unit(target.obj_call(), currObj);
+          new Unit(target.obj_call(), currObj.empire()[1], currObj);
       currObj.unitsQueue(new_obj);
     }
     

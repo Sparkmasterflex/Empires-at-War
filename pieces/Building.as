@@ -34,6 +34,11 @@ package pieces {
   	  return attr['level'];
   	}
 
+    public function this_parent(p=null) {
+      if(p) attr['parent'] = p;
+      return attr['parent'];
+    }
+
     public function obj_call(oc=null) {
   	  if(oc) attr['obj_call'] = oc;
   	  return attr['obj_call'];
@@ -90,7 +95,7 @@ package pieces {
         }
         return attr['allows'][specific];
       } else
-        attr['allows'];
+        return attr['allows'];
   	}
     
     private function getXML() {
@@ -123,7 +128,9 @@ package pieces {
   	public function other_benefits() { return benefits('other'); }
   	
   	/*-- allows --*/
-  	public function armies_allowed() { return allows('army'); }
+  	public function armies_allowed() { 
+      return allows('army'); 
+    }
   	public function buildings_allowed() { return allows('building'); }
   }
 }

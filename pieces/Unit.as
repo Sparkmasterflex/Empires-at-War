@@ -7,10 +7,17 @@ package pieces {
     /*---- Arrays and Objects ----*/
     public var attr:Object = new Object();
     public var parent_type = 'army';
+    private var empire:String;
     
-    public function Unit(t, a) {
-      type(t);
-      army(a);
+    public function Unit(t, emp, p=null) {
+      if(t is int) { 
+        type(t);
+      } else {
+        type(t[0]);
+        men(t[1]);
+      }
+      empire = emp;
+      if(p) this_parent(p);
       getXML();
     }
     
@@ -26,9 +33,17 @@ package pieces {
       return attr['unit_type'];
     }
 
-    public function army(a=null) {
-      if(a) attr['army'] = a;
-      return attr['army'];
+    /* Sets parent Object (Army or City)
+     * 
+     * ==== Parameters:
+     * p::GamePiece (Army or City)
+     *
+     * ==== Returns
+     * GamePiece (Army or City)
+     */
+    public function this_parent(p=null) {
+      if(p) attr['parent'] = p;
+      return attr['parent'];
     }
 
     public function men(m=null, subtract=false) {
@@ -39,6 +54,11 @@ package pieces {
           attr['men'] = parseInt(m);
       }
       return attr['men'];
+    }
+
+    public function img_path(ip=null) {
+      if(ip) attr['img_path'] = ip;
+      return attr['img_path'];
     }
     
     public function thumb(img=null) {
@@ -93,9 +113,8 @@ package pieces {
     }
     
     private function getXML() {
-      var xml = type() >= 8 ? 
-            "xml/army_" + army().empire()[1].toLowerCase() + ".xml" :
-              'xml/army_base.xml',
+      trace(empire);
+      var xml = "xml/army_" + empire.toLowerCase() + ".xml",
           xmlLoader = new URLLoader();
       xmlLoader.load(new URLRequest(xml));
       xmlLoader.addEventListener(Event.COMPLETE, setupAttributes);
@@ -105,7 +124,8 @@ package pieces {
       var unitXML = new XML(event.target.data),
           tp = type(),
           list:XMLList = unitXML.unit.(objCall == tp);
-      men(list.menStart);
+      if(!men()) men(list.menStart);
+      img_path(empire.toLowerCase() + "/" + "army")
       thumb(list.thumbnail);
       image(list.image);
       unit_type(list.type);

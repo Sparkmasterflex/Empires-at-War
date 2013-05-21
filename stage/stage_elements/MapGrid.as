@@ -208,6 +208,8 @@ package stage.stage_elements {
   	public function addToSquare(obj, prevSq=null) {
   	  if(prevSq) prevSq.gridInfo['pieces'] = null;
   	  gridInfo['pieces'] = obj;
+      obj.x = x+60;
+      obj.y = y+60;
   	  if(obj.attr['primary'] == true) {
   		  dispatchEvent(new MoveWindowEvent(MoveWindowEvent.WINDOW, obj.x, obj.y));
   	  }

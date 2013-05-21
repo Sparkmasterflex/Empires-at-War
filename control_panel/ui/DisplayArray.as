@@ -211,10 +211,8 @@ package control_panel.ui {
   	}
   	
   	private function extendedDetails(event:MouseEvent) {
-  	  var thumb  = event.currentTarget;//,
-  //		  men    = int(thumb.menTF.text),
-  //		  info   = [thumb.unitXML, men];
-  	  dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'UnitInfo', null, current.empire().toLowerCase(), true));
+  	  var thumb  = event.currentTarget;
+  	  dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Unit', null, thumb.responds_to, true));
   	}
   	
   	private function removeAllHighlights() {

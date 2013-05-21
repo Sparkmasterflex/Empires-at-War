@@ -1,13 +1,14 @@
 package pieces {
   import com.greensock.*;
   import com.greensock.easing.*;
-  
+
   import common.ImgLoader;
   
   import dispatch.AddListenerEvent;
   import dispatch.ControlPanelEvent;
   
   import empires.Empire;
+  import stage.GameStage;
   
   import flash.display.MovieClip;
   import flash.events.*;
@@ -27,11 +28,12 @@ package pieces {
   	public var selection = null;
   	public var this_empire:Empire;
     public var bar:PercentBar;
+    public var this_stage:GameStage;
   	
   	/*--------Boolean-------*/
   	public var isSelected:Boolean = false;
 	
-	/*--------Arrays and Objects-------*/
+	  /*--------Arrays and Objects-------*/
   	public var attr:Object;
     public var selectedArr:Array;
   	public var directionKeys:Array = new Array(104, 105, 102, 99, 98, 97, 100, 103,
@@ -72,6 +74,8 @@ package pieces {
   		  var prev = attr['square'];
     		attr['square'] = sq;
     		sq.addToSquare(this, prev);
+        x = sq.gridInfo.posX;
+        y = sq.gridInfo.posY;
   	  }
   	  return attr['square'];
   	}
@@ -193,25 +197,44 @@ package pieces {
   	  TweenLite.to(selected, .75, { alpha: fade, ease:Sine.easeIn });
   	}
     
-    public function agents() { return attr['agents']; }
-  	
-  	public function units() { return attr['units']; }
-  	
-    public function addUnits(troops:*) {
-      if(!attr['units']) attr['units'] = new Array();
-      if(troops is Array) {
-        for(var i:int=0; i<troops.length; i++) {
-          if(troops[i] is int) {
-            var unit = new Unit(troops[i], this);
-            attr['units'].push(unit);
-          } else {
-            attr['units'].push(troops[i]);
-          }
-        }
-      } else {
-        attr['units'].push(troops);
+    public function agents(agents=null) {
+      var _this = this;
+      if(agents) {
+        agents.forEach(function(a) { a.this_parent(_this); });
+        attr['agents'] = agents;
       }
-      setTimeout(displayTotalMenBar, 1000);
+      return attr['agents']; 
+    }
+  	
+    /* Sets units
+     *
+     * ==== Parameters:
+     * units::Array
+     *
+     * ==== Returns:
+     * Array
+     */
+  	public function units(un=null) {
+      var _this = this;
+      if(un) {
+        un.forEach(function(u) { u.this_parent(_this); });
+        attr['units'] = un;
+      }
+      return attr['units'];
+    }
+  	
+    /* Add a single Unit class
+     *
+     * ==== Parameters:
+     * units::Array
+     *
+     * ==== Returns:
+     * Array
+     */
+    public function addUnit(unit) {
+      if(!attr['units']) attr['units'] = new Array();
+      attr['units'].push(unit);
+      return units();
     }
     
     public function removeUnit(unit) {
@@ -255,6 +278,10 @@ package pieces {
         if(obj_is('agent') && agents().length == 0) this_empire.gStage.removeChild(this);
       }
     }
+
+    public function destroy() {
+      this_stage.removeChild(this);
+    }
     
     public function hasSettler():Boolean { return agents() && agents().some(function(agent) { return agent is Settler; }); }
     
@@ -270,7 +297,7 @@ package pieces {
     public function totalMen() {
       var totalMen = 0;
       units().forEach(function(unit) {
-        totalMen += parseInt(unit.men()); 
+        totalMen += parseInt(unit.men());
       });
       return totalMen;
     }
@@ -281,7 +308,7 @@ package pieces {
       return percent;
     }
     
-    public function createJSON() { return null; }
+    public function createJSON() { return JSON.stringify({general: 'Hannabal'}); }
 	
 /*--------------- Next Turn Functions -------------*/
     public function nextTurn(turn) { moves(5); }

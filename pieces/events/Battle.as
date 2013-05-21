@@ -14,10 +14,12 @@ package pieces.events {
     
     /*---- Classes added -----*/
     public var popup:BattlePopup;
+    public var attacker_army:Army;
+    public var defender_army:Army;
     
     /*---- Objects and Arrays -----*/
-    public var attacker:Array; 
-    public var defender:Array;
+    public var attacker_thumbs:Array; 
+    public var defender_thumbs:Array;
     public var attk_points:Object;
     public var defn_points:Object;
         
@@ -28,11 +30,13 @@ package pieces.events {
     public function Battle(pop) {
       super();
       popup = pop;
-      attacker = popup.attacker_thumbs;
-      defender = popup.defender_thumbs;
+      attacker_army = popup.attacker
+      defender_army = popup.defender
+      attacker_thumbs = popup.attacker_thumbs;
+      defender_thumbs = popup.defender_thumbs;
       
-      attk_points = parsePoints(attacker);
-      defn_points = parsePoints(defender);
+      attk_points = parsePoints(attacker_thumbs);
+      defn_points = parsePoints(defender_thumbs);
       num_skirmish = 0;
     }
     
@@ -55,7 +59,7 @@ package pieces.events {
     
     private function skirmish() {
       if(attk_points['men'] > 0 && defn_points['men'] > 0) {
-        var larger = attacker.length > defender.length ? attacker.length : defender.length,
+        var larger = attacker_thumbs.length > defender_thumbs.length ? attacker_thumbs.length : defender_thumbs.length,
             attk_percent = Math.round((attk_points['attack']/(attk_points['attack']+defn_points['attack']))*100),
             defn_percent = Math.round((attk_points['defense']/(attk_points['defense']+defn_points['defense']))*100),
             men_percent = Math.round((attk_points['men']/(attk_points['men']+defn_points['men']))*100),
@@ -67,32 +71,33 @@ package pieces.events {
               d_rand = Math.random()*100,
               m_rand = Math.random()*100;
 
-          var attk_loser = a_rand > attk_percent ? attacker[i] : defender[i],
-              defn_loser = d_rand > defn_percent ? attacker[i] : defender[i],
-              men_loser = m_rand > men_percent ? attacker[i] : defender[i];
+          var attk_loser = a_rand > attk_percent ? attacker_thumbs[i] : defender_thumbs[i],
+              defn_loser = d_rand > defn_percent ? attacker_thumbs[i] : defender_thumbs[i],
+              men_loser = m_rand > men_percent ? attacker_thumbs[i] : defender_thumbs[i];
           
           if(attk_loser) attk_loser.responds_to.men(Math.ceil(attk_loser.responds_to.men()*(multiplier*0.07)), true);
           if(defn_loser) defn_loser.responds_to.men(Math.ceil(defn_loser.responds_to.men()*(multiplier*0.10)), true);
           if(men_loser) men_loser.responds_to.men(Math.round(men_loser.responds_to.men()*(multiplier*0.05)), true);
-          if(attacker[i]) {
-            var a_th = attacker[i],
+          if(attacker_thumbs[i]) {
+            var a_th = attacker_thumbs[i],
                 a_u = a_th.responds_to;
             a_th.menLbl.text = a_u.men();
             if(a_u.men() == 0) popup.removeDestroyedUnit(a_th, true)
           }
-          if(defender[i]) {
-            var d_th = defender[i],
+          if(defender_thumbs[i]) {
+            var d_th = defender_thumbs[i],
                 d_u = d_th.responds_to;
             d_th.menLbl.text = d_u.men();
             if(d_u.men() == 0) popup.removeDestroyedUnit(d_th, false)
           }
         }
-        attk_points = parsePoints(attacker);
-        defn_points = parsePoints(defender);
+        attk_points = parsePoints(attacker_thumbs);
+        defn_points = parsePoints(defender_thumbs);
         popup.updateStats()
         num_skirmish++;
       } else {
-        trace('battle over');
+        if(attacker_army.totalMen() == 0) attacker_army.destroy()
+        if(defender_army.totalMen() == 0) defender_army.destroy()
         clearInterval(skimish_interval);
       }
     }

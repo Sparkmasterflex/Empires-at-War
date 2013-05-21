@@ -1,67 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  --- type ---
+  CROPS         = 10
+  MARKETS       = 20
+  MILITARY      = 30
+  RELIGION      = 40
+  ENTERTAINMENT = 50
+  GOVERNMENT    = 60
+-->
 <buildings>
+
+  <!-- CROPS -->
   <building>
-  	<objCall>1</objCall>
-  	<empire>gaul</empire>
-  	<thumbnail>/thumb/meeting-hall.png</thumbnail>
-  	<fullSize>/fullSize/meeting-hall.png</fullSize>
-  	<name>Meeting Hall</name>
-  	<type>10</type>
+    <objCall>1</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Local Magistrate</name>
+    <type>10</type>
     <level>1</level>
     <cost>150</cost>
     <build_points>30000</build_points>
     <benefits>
-      <army></army>
-      <population>0.0005</population>
-      <order>2</order>
+      <population>0.005</population>
+      <order></order>
       <taxes>0.05</taxes>
-      <other></other>
     </benefits>
     <allows>
-      <army>1</army>
+      <army></army>
       <building></building>
     </allows>
   </building>
   
   <building>
-  	<objCall>2</objCall>
-  	<empire>gaul</empire>
-  	<thumbnail>/thumb/training-yard.png</thumbnail>
-  	<fullSize>/fullSize/training-yard.png</fullSize>
-  	<name>Training Yard</name>
+    <objCall>2</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Communal Farming</name>
+    <type>10</type>
+    <level>2</level>
+    <cost>200</cost>
+    <build_points>35000</build_points>
+    <benefits>
+      <population>0.005</population>
+      <order></order>
+      <taxes></taxes>
+    </benefits>
+    <allows>
+      <army></army>
+      <building></building>
+    </allows>
+  </building>
+  
+  <building>
+    <objCall>3</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Crop Caravans</name>
+    <type>10</type>
+    <level>3</level>
+    <cost>300</cost>
+    <build_points>45000</build_points>
+    <benefits>
+      <population>0.002</population>
+      <order></order>
+      <taxes>0.0003</taxes>
+    </benefits>
+    <allows>
+      <army>5</army>
+      <building></building>
+    </allows>
+  </building>
+    
+  <building>
+  	<objCall>4</objCall>
+  	<thumbnail>/thumb/pending.png</thumbnail>
+  	<fullSize>/fullSize/pending.png</fullSize>
+  	<name>Grain Storage</name>
+  	<type>10</type>
+    <level>4</level>
+    <cost>450</cost>
+    <build_points>45000</build_points>
+    <benefits>
+      <population>0.001</population>
+      <order></order>
+      <taxes>0.005</taxes>
+    </benefits>
+    <allows>
+      <army></army>
+      <building></building>
+    </allows>
+  </building>
+  
+
+  <!-- MARKETS -->
+  <building>
+  	<objCall>5</objCall>
+  	<thumbnail>/thumb/pending.png</thumbnail>
+  	<fullSize>/fullSize/pending.png</fullSize>
+  	<name>Local Market</name>
   	<type>20</type>
     <level>1</level>
     <cost>250</cost>
     <build_points>20000</build_points>
     <benefits>
-      <army>1,2</army>
-      <population>0</population>
-      <order>3</order>
-      <taxes>0</taxes>
-      <other></other>
+      <population></population>
+      <order></order>
+      <taxes>0.005</taxes>
     </benefits>
     <allows>
-      <army>1,2</army>
+      <army></army>
       <building></building>
     </allows>
   </building>
   
   <building>
-  	<objCall>3</objCall>
-  	<empire>gaul</empire>
-  	<thumbnail>/thumb/religion-placeholder.png</thumbnail>
-  	<fullSize>/fullSize/training-yard.png</fullSize>
-  	<name>Sacred Garden</name>
-  	<type>30</type>
-    <level>1</level>
-    <cost>200</cost>
+    <objCall>6</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Regional Market</name>
+    <type>20</type>
+    <level>2</level>
+    <cost>350</cost>
     <build_points>30000</build_points>
     <benefits>
-      <army></army>
-      <population>0.0002</population>
-      <order>3</order>
-      <taxes>0</taxes>
-      <other></other>
+      <population></population>
+      <order></order>
+      <taxes>0.0075</taxes>
     </benefits>
     <allows>
       <army></army>
@@ -70,24 +134,269 @@
   </building>
   
   <building>
-  	<objCall>4</objCall>
-  	<empire>gaul</empire>
-  	<thumbnail>/thumb/hunt-placeholder.png</thumbnail>
-  	<fullSize>/fullSize/training-yard.png</fullSize>
-  	<name>The Hunt</name>
-  	<type>40</type>
+    <objCall>7</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Port</name>
+    <type>20</type>
+    <level>2</level>
+    <cost>375</cost>
+    <build_points>35000</build_points>
+    <benefits>
+      <population>0.001</population>
+      <order></order>
+      <taxes>0.05</taxes>
+    </benefits>
+    <allows>
+      <!-- Small Ships -->
+      <army></army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+    <objCall>8</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Bazaar</name>
+    <type>20</type>
+    <level>3</level>
+    <cost>450</cost>
+    <build_points>45000</build_points>
+    <benefits>
+      <population></population>
+      <order>-0.05</order>
+      <taxes>0.01</taxes>
+    </benefits>
+    <allows>
+      <army></army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+  	<objCall>9</objCall>
+  	<thumbnail>/thumb/pending.png</thumbnail>
+  	<fullSize>/fullSize/pending.png</fullSize>
+  	<name>Ship Yard</name>
+  	<type>20</type>
+    <level>3</level>
+    <cost>600</cost>
+    <build_points>65000</build_points>
+    <benefits>
+      <population>0.0015</population>
+      <order>-0.05</order>
+      <taxes>0.0075</taxes>
+    </benefits>
+    <allows>
+      <!-- Large ships and Warships -->
+      <army></army>
+      <building></building>
+    </allows>
+  </building>
+
+  <!-- MILITARY -->
+  <building>
+    <objCall>10</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Training Yard</name>
+    <type>30</type>
     <level>1</level>
     <cost>250</cost>
     <build_points>30000</build_points>
     <benefits>
-      <army>{train: 0.002, cost: -0.002}</army>
-      <population>0</population>
-      <order>3</order>
-      <taxes>0</taxes>
-      <other></other>
+      <population></population>
+      <order>0.05</order>
+      <taxes></taxes>
+    </benefits>
+    <allows>
+      <army>2</army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+    <objCall>11</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Barracks</name>
+    <type>30</type>
+    <level>2</level>
+    <cost>300</cost>
+    <build_points>40000</build_points>
+    <benefits>
+      <population></population>
+      <order>0.075</order>
+      <taxes></taxes>
+    </benefits>
+    <allows>
+      <army>3</army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+    <objCall>12</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Regional Draft</name>
+    <type>30</type>
+    <level>3</level>
+    <cost>350</cost>
+    <build_points>55000</build_points>
+    <benefits>
+      <population>-0.01</population>
+      <order></order>
+      <taxes></taxes>
+    </benefits>
+    <allows>
+      <army>8</army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+    <objCall>13</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>War Academy</name>
+    <type>30</type>
+    <level>4</level>
+    <cost>450</cost>
+    <build_points>65000</build_points>
+    <benefits>
+      <population></population>
+      <order></order>
+      <taxes></taxes>
+    </benefits>
+    <allows>
+      <army>6, 9</army>
+      <building></building>
+    </allows>
+  </building>
+
+  <!-- RELIGION -->
+  <building>
+    <objCall>14</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Small Temple</name>
+    <type>40</type>
+    <level>1</level>
+    <cost>150</cost>
+    <build_points>20000</build_points>
+    <benefits>
+      <population>0.02</population>
+      <order>0.05</order>
+      <taxes>0.005</taxes>
     </benefits>
     <allows>
       <army></army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+    <objCall>15</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Mistic Workshop</name>
+    <type>40</type>
+    <level>2</level>
+    <cost>350</cost>
+    <build_points>40000</build_points>
+    <benefits>
+      <population></population>
+      <order>0.03</order>
+      <taxes></taxes>
+    </benefits>
+    <allows>
+      <army>7</army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+    <objCall>16</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Temple</name>
+    <type>40</type>
+    <level>3</level>
+    <cost>450</cost>
+    <build_points>45000</build_points>
+    <benefits>
+      <population>0.03</population>
+      <order>0.10</order>
+      <taxes>0.005</taxes>
+    </benefits>
+    <allows>
+      <army>10</army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+    <objCall>17</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Temple to Artaius</name>
+    <type>40</type>
+    <level>4</level>
+    <cost>500</cost>
+    <build_points>65000</build_points>
+    <benefits>
+      <population>0.04</population>
+      <order>0.15</order>
+      <taxes>0.01</taxes>
+    </benefits>
+    <allows>
+      <army>11</army>
+      <building></building>
+    </allows>
+  </building>
+
+  <building>
+    <objCall>18</objCall>
+    <thumbnail>/thumb/pending.png</thumbnail>
+    <fullSize>/fullSize/pending.png</fullSize>
+    <name>Sacrificial Platform</name>
+    <type>40</type>
+    <level>5</level>
+    <cost>550</cost>
+    <build_points>70000</build_points>
+    <benefits>
+      <population>0.06</population>
+      <order>0.1</order>
+      <taxes></taxes>
+    </benefits>
+    <allows>
+      <army>12</army>
+      <building></building>
+    </allows>
+  </building>
+
+  <!-- ENTERTAINMENT -->
+
+
+  <!-- GOVERNMENT -->
+  <building>
+  	<objCall>19</objCall>
+  	<thumbnail>/thumb/pending.png</thumbnail>
+  	<fullSize>/fullSize/pending.png</fullSize>
+  	<name>Meeting Hall</name>
+  	<type>60</type>
+    <level>1</level>
+    <cost>150</cost>
+    <build_points>20000</build_points>
+    <benefits>
+      <population>0.02</population>
+      <order>0.05</order>
+      <taxes>0.005</taxes>
+    </benefits>
+    <allows>
+      <army>1</army>
       <building></building>
     </allows>
   </building>

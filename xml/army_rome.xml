@@ -1,52 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
 <units>
+    <unit>
+    <objCall>1</objCall>
+    <type>10</type>
+    <thumbnail>/thumb/peasant.png</thumbnail>
+    <image>/fullSize/peasant.png</image>
+    <unitName>Peasants</unitName>
+    <attack>1</attack>
+    <defense>2</defense>
+    <cost>100</cost>
+    <upkeep>15</upkeep>
+    <menStart>200</menStart>
+    <bonuses>none</bonuses>
+    <description>Peasants are the lowest class, whose men are drafted into the army given a spear and told to defend their homelands. Do not depend on these troops to do anything more than distract your enemy while your better troops get into position. Cannon Fodder, but cheap cannon fodder.</description>
+  </unit>
 
-<unit title="8">
-  <objCall>8</objCall>
-  <empire>rome</empire>
-  <type>10</type>
-  <thumbnail>/thumb/romeWarrior.png</thumbnail>
-  <image>/fullSize/romeWarrior.png</image>
-  <unitName>Legionaire</unitName>
-  <attack>1</attack>
-  <defense>2</defense>
-  <cost>200</cost>
-  <upkeep>30</upkeep>
-  <menStart>200</menStart>
-  <bonuses>none</bonuses>
-  <description>Pending</description>
-</unit>
+  <unit>
+    <objCall>2</objCall>
+    <type>10</type>
+    <thumbnail>/thumb/militia.png</thumbnail>
+    <image>/fullSize/militia.png</image>
+    <unitName>Militia</unitName>
+    <attack>2</attack>
+    <defense>3</defense>
+    <cost>150</cost>
+    <upkeep>25</upkeep>
+    <menStart>200</menStart>
+    <bonuses>none</bonuses>
+    <description>Rather cheap units, militia are best for defending cities and adding sheer numbers to an army. Still the poorest in their empire, militias are given some training and even a bit of armor.</description>
+  </unit>
 
-<unit title="9">
-  <objCall>9</objCall>
-  <empire>rome</empire>
-  <type>30</type>
-  <thumbnail>/thumb/clibanarii.png</thumbnail>
-  <image>/fullSize/clibanarii.png</image>
-  <unitName>Clibanarii</unitName>
-  <attack>2</attack>
-  <defense>3</defense>
-  <cost>250</cost>
-  <upkeep>35</upkeep>
-  <menStart>200</menStart>
-  <bonuses>none</bonuses>
-  <description>Pending</description>
-</unit>
+  <unit>
+    <objCall>3</objCall>
+    <type>10</type>
+    <thumbnail>/thumb/spearMan.png</thumbnail>
+    <image>/fullSize/spearMan.png</image>
+    <unitName>SpearMen</unitName>
+    <attack>4</attack>
+    <defense>5</defense>
+    <cost>175</cost>
+    <upkeep>75</upkeep>
+    <menStart>200</menStart>
+    <bonuses>none</bonuses>
+    <description>Good, hearty troops, the common spearman is equipted with various armor, a shield and a long spear. These men are excellent for defending agains cavalry and will hold their own against almost any enemy is thrown at them.</description>
+  </unit>
 
-<unit title="10">
-  <objCall>10</objCall>
-  <empire>rome</empire>
-  <type>15</type>
-  <thumbnail>/thumb/druid.png</thumbnail>
-  <image>/fullSize/druid.png</image>
-  <unitName>Druid</unitName>
-  <attack>4</attack>
-  <defense>5</defense>
-  <cost>300</cost>
-  <upkeep>90</upkeep>
-  <menStart>200</menStart>
-  <bonuses>none</bonuses>
-  <description>Pending</description>
-</unit>
+  <unit>
+    <objCall>4</objCall>
+    <type>20</type>
+    <thumbnail>/thumb/archer.png</thumbnail>
+    <image>/fullSize/archer.png</image>
+    <unitName>Common Archer</unitName>
+    <attack>8 / 2*</attack>
+    <defense>4</defense>
+    <cost>175</cost>
+    <upkeep>30</upkeep>
+    <menStart>100</menStart>
+    <bonuses>* If archers are in an army with three or less non-missile units.</bonuses>
+    <description>Archers are one of the most powerful and weakest warrior on the battle field.  If properly protected by a strong infantry base army they will reign down hell on enemy troops, but if they are left on their own they will be runned down like dogs.</description>
+  </unit>
+
+  <unit>
+    <objCall>5</objCall>
+    <type>30</type>
+    <thumbnail>/thumb/lightCavalry.png</thumbnail>
+    <image>/fullSize/lightCavalry.png</image>
+    <unitName>Light Cavalry</unitName>
+    <attack>10</attack>
+    <defense>6 / 3**</defense>
+    <cost>200</cost>
+    <upkeep>75</upkeep>
+    <menStart>100</menStart>
+    <bonuses>** If enemy infantry out numbers allied infantry.</bonuses>
+    <description>Light cavalry are very mobile and deadly troops to steer any army to victory.  Lightly armored and armed with a spear, these troops are best used flanking already engaged spearmen, running down archers or defending the line from flanking enemy cavalry. Expect heavy casualties if against infantry troops without a proper infantry support of their own.</description>
+  </unit>
+
+  <unit>
+    <objCall>6</objCall>
+    <type>30</type>
+    <thumbnail>/thumb/heavyCavalry.png</thumbnail>
+    <image>/fullSize/heavyCavalry.png</image>
+    <unitName>Heavy Cavalry</unitName>
+    <attack>18</attack>
+    <defense>14 / 8**</defense>
+    <cost>250</cost>
+    <upkeep>115</upkeep>
+    <menStart>100</menStart>
+    <bonuses>** If enemy infantry out numbers allied infantry.</bonuses>
+    <description>Heavily armored and armed, heavy infantry will dish out a hurtin' on any troops they are pinned against.  Like all cavalry be weary of enemy infantry verses your own infantry support.</description>
+  </unit>
+
+  <unit>
+    <objCall>7</objCall>
+    <type>40</type>
+    <thumbnail>/thumb/sorcerer.png</thumbnail>
+    <image>/fullSize/sorcerer.png</image>
+    <unitName>Sorcerer</unitName>
+    <attack>1500 / 2000@</attack>
+    <defense>1000</defense>
+    <cost>400</cost>
+    <upkeep>100</upkeep>
+    <menStart>1</menStart>
+    <bonuses>@ If enemy army has no Sorcerer</bonuses>
+    <description>Sorcerers are very inexpensive to maintain but provide a tremendous amount of power to the army. Able to call on the elements, conjour demons, monsters and other terrifying creatures to destroy enemy units, A Sorcerer can turn the tide of a losing battle.</description>
+  </unit>
+
+  <unit>
+    <objCall>8</objCall>
+    <empire>rome</empire>
+    <type>10</type>
+    <thumbnail>/thumb/romeWarrior.png</thumbnail>
+    <image>/fullSize/romeWarrior.png</image>
+    <unitName>Legionaire</unitName>
+    <attack>1</attack>
+    <defense>2</defense>
+    <cost>200</cost>
+    <upkeep>30</upkeep>
+    <menStart>200</menStart>
+    <bonuses>none</bonuses>
+    <description>Pending</description>
+  </unit>
+
+  <unit>
+    <objCall>9</objCall>
+    <empire>rome</empire>
+    <type>30</type>
+    <thumbnail>/thumb/clibanarii.png</thumbnail>
+    <image>/fullSize/clibanarii.png</image>
+    <unitName>Clibanarii</unitName>
+    <attack>2</attack>
+    <defense>3</defense>
+    <cost>250</cost>
+    <upkeep>35</upkeep>
+    <menStart>200</menStart>
+    <bonuses>none</bonuses>
+    <description>Pending</description>
+  </unit>
+
+  <unit>
+    <objCall>10</objCall>
+    <empire>rome</empire>
+    <type>15</type>
+    <thumbnail>/thumb/druid.png</thumbnail>
+    <image>/fullSize/druid.png</image>
+    <unitName>Druid</unitName>
+    <attack>4</attack>
+    <defense>5</defense>
+    <cost>300</cost>
+    <upkeep>90</upkeep>
+    <menStart>200</menStart>
+    <bonuses>none</bonuses>
+    <description>Pending</description>
+  </unit>
 
 </units>
