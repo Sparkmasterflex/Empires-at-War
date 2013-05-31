@@ -5,21 +5,16 @@ package control_panel.ui.popups {
   import common.ImgLoader;
   import common.Label;
   
-  import control_panel.ui.DisplayThumb;
-  import control_panel.ui.Popup;
-  import control_panel.ui.SquareButton;
-  import control_panel.ui.BalanceBar;
+  import flash.events.*;
   
-  import flash.events.Event;
-  import flash.events.MouseEvent;
-  
-  import pieces.Army;
+  import control_panel.ui.*;
+  import pieces.*;
   import pieces.events.Battle;
   
   public class BattlePopup extends Popup {
     /*---- Classes Added ----*/
-    public var attacker:Army;
-    public var defender:Army;
+    public var attacker:GamePiece;
+    public var defender:GamePiece;
     public var battle:Battle;
     public var balanceBar:BalanceBar;
 

@@ -61,7 +61,7 @@ package control_panel {
   	  eAtW = parent;
   	  userEmp = empire;
   	  this.y = COLLAPSED;
-  	  bg = new ImgLoader('controlPanel/control_panel.png');
+  	  bg = new ImgLoader('ui/controlPanel/control_panel.png');
   	  addChild(bg);
   	  addEmpireSymbol();
   	  createButtons();

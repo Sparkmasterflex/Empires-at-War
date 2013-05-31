@@ -204,6 +204,8 @@ package stage.stage_elements {
   	public function pieces() {
   	  return gridInfo['pieces'];
   	}
+
+    public function empty() { return !pieces(); }
   	
   	public function addToSquare(obj, prevSq=null) {
   	  if(prevSq) prevSq.gridInfo['pieces'] = null;

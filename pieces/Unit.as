@@ -113,7 +113,6 @@ package pieces {
     }
     
     private function getXML() {
-      trace(empire);
       var xml = "xml/army_" + empire.toLowerCase() + ".xml",
           xmlLoader = new URLLoader();
       xmlLoader.load(new URLRequest(xml));

@@ -4,8 +4,7 @@ package pieces {
 
   import common.ImgLoader;
   
-  import dispatch.AddListenerEvent;
-  import dispatch.ControlPanelEvent;
+  import dispatch.*;
   
   import empires.Empire;
   import stage.GameStage;
@@ -18,17 +17,17 @@ package pieces {
   import pieces.PercentBar;
   import pieces.agents.Settler;
   
-  import static_return.GameConstants;
+  import static_return.*;
   
 
   public class GamePiece extends MovieClip {
   	/*--------Classes Added------------*/
-  	public var selected:ImgLoader;
+  	public var highlight:ImgLoader;
   	private var fadeTimer:Timer;
-  	public var selection = null;
   	public var this_empire:Empire;
     public var bar:PercentBar;
     public var this_stage:GameStage;
+    public var game_piece;
   	
   	/*--------Boolean-------*/
   	public var isSelected:Boolean = false;
@@ -36,10 +35,14 @@ package pieces {
 	  /*--------Arrays and Objects-------*/
   	public var attr:Object;
     public var selectedArr:Array;
-  	public var directionKeys:Array = new Array(104, 105, 102, 99, 98, 97, 100, 103,
-  		38, 33, 39, 34, 40, 35, 37, 36);
+  	public var directionKeys:Array = new Array(
+      81, 87, 69, 65, 68, 90, 88, 67, // Q, W, E, A, D, Z, X, C
+      104, 105, 102, 99, 98, 97, 100, 103, // numbers
+  		38, 33, 39, 34, 40, 35, 37, 36 // arrow keys
+    );
 	  
     public function GamePiece(empire) {
+      this_stage = empire.gStage
       attr = new Object();
   	  this_empire = empire;
   	  addEventListener(MouseEvent.CLICK, selectThis);
@@ -90,60 +93,148 @@ package pieces {
     public function saveAttributes() {
       ExternalInterface.call("savePiece", createJSON());
     }
-  	
+
+    //---------------------- Selecting GamePiece
+    /* Select GamePiece
+     *
+     * ==== Parameters:
+     * event::   MouseEvent
+     */    
   	public function selectThis(event:MouseEvent) {
-      var stage = this.parent,
-  		    allPieces = this_empire.pieceArray,
-  		    current = this;
-  	  for(var i:uint=0; i<allPieces.length; i++) { if(allPieces[i].isSelected) selection = allPieces[i]; }
-  	  if(current.isSelected || selection) {
-    		if(selection) {
-    		  current = selection;
-    		  addSelected();
-    		}
-    		removeSelected(current);
-    		selection = null;
-  	  } else {
-  		  addSelected();
-  	  }
-  	  dispatchEvent(new ControlPanelEvent(ControlPanelEvent.ANIMATE, this.isSelected, this));
-  	}
-    
-    public function newArmy(arr) { selectedArr = arr; }
-  	
-  	// adding piece1 with piece2 (GamePiece or Array)
-  	public function combinePieces(piece2) {
-      if(obj_is('agent')) {
-        piece2.addAgents(agents());
-      } else if(piece2.obj_is('agent')) {
-        addAgents(piece2.agents());
-        square(piece2.square());
-        x = square().x + 60;
-        y = square().y + 60;
-        piece2.square().removeFromSquare();
-        this_empire.gStage.removeChild(piece2);
+      if(this_empire.selected_piece == this) {
+        remove_highlight();
+        this_empire.selected_piece = null;
       } else {
-        piece2.addUnits(units());
-        if(agents()) piece2.addAgents(agents());
+        if(this_empire.selected_piece) this_empire.selected_piece.remove_highlight();
+        add_highlight()
+        this_empire.selected_piece = this;
       }
-      if(!piece2.obj_is('agent')) {
-        piece2.selectThis(null);
-        square().removeFromSquare();
-        this_empire.gStage.removeChild(this);
-      }
+
+      dispatchEvent(new ControlPanelEvent(ControlPanelEvent.ANIMATE, isSelected, this));
   	}
-    
+
+    /* 
+     * Add selection highlight
+     */
+    private function add_highlight() {
+      highlight = new ImgLoader('ui/selected.png');
+      highlight.x = -80;
+      highlight.y = -40;
+      addChild(highlight);
+      setChildIndex(highlight, 0);
+
+      // highlight fade in and out
+      fadeTimer = new Timer(1500);
+      fadeTimer.addEventListener(TimerEvent.TIMER, fadeInOut);
+      fadeTimer.start();
+
+      isSelected = true;
+    }
+
+    private function remove_highlight() {
+      removeChild(highlight);
+      fadeTimer.removeEventListener(TimerEvent.TIMER, fadeInOut);
+      fadeTimer.stop();
+      isSelected = false;
+    }
+    //---------------------- End Selecting GamePiece
+
+    public function pieceMoveKeyBoard(event:*) {
+      var key = event.keyCode,
+          currSq = square(),
+          obj = event.eventPhase ? this : event.prevObj,
+          toSq = FindAndTestSquare.ret(key, obj),
+          sq_arr = toSq.split('_'),
+          section = this_stage.sGridArr[0];
+
+      if(directionKeys.indexOf(key) >= 0) {
+        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, false));
+        var toSquare = section.getChildByName(toSq);
+
+        if(toSquare.hasLand() && (moves() > 0 || obj_is('city'))) {
+          // set piece to face direction headed
+          if(currSq) changeDirection(currSq, toSquare);
+
+          //------ standard move
+          if(toSquare.empty() && selectedArr == null) {
+            if(!obj_is('city')) {
+              game_piece.gotoAndPlay('walk');
+              TweenLite.to(this, .5, { x:(toSquare.gridInfo.posX), y: (toSquare.gridInfo.posY), onComplete: stopWalk, onCompleteParams: [toSquare]});
+            }
+
+          //------ splitting piece
+          } else if(selectedArr && selectedArr.length > 0) {
+            split_piece_children(toSquare, key, toSquare.pieces());
+            selectedArr = null;
+
+          //------ simple combine pieces
+          } else {
+            var other = toSquare.pieces();
+            is_enemy(other) ? 
+              attack(other) : 
+                combinePieces(other);
+          }
+        } else {
+          dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
+        }
+      }
+    }
+
+    private function changeDirection(sq, newSq) {
+      var left = GetDirection.ret(sq, newSq);
+      if(facing() != left) {
+        left ? this.scaleX = 0.85 : this.scaleX = -0.85;
+        facing(left);
+      }
+    }
+
+    public function facing(left=null) {
+      if(left != null) attr['facing'] = left;
+      return attr['facing'];
+    }
+
+    /* Split selectArr
+     *
+     * ==== Parameters:
+     * sq::      MapGrid
+     * key::     Integer
+     * piece::   GamePiece
+     */
+    public function split_piece_children(sq, key, piece=null) {
+      if(selectedArr.every(isAgent))
+        split_agents_out(sq, key, piece);
+      else
+        split_army(sq, key, piece);
+    }
+
     // splitting army
-    public function split_army(toSquare, key) {
-      selectedArr.forEach(function(unit) { units().splice(units().indexOf(unit),1) });
-      var new_army = new Army(this_empire, selectedArr, this_empire.armyArray.length);
-      addAndMove(new_army, key);
+    public function split_army(toSquare, key, piece=null) {
+      // remove selected units from units()
+      selectedArr.forEach(function(unit) { units().splice(units().indexOf(unit),1); });
+      displayTotalMenBar();
+
+      // if piece != null then add selected to piece.units()
+      if(piece && !piece.obj_is('agent')) {
+        piece.concat_units(selectedArr);
+        piece.displayTotalMenBar();
+        piece.selectThis(null);
+      } else {
+        // else make new army
+        var new_army = new Army(this_empire, this_empire.armyArray.length);
+        new_army.units(selectedArr);
+        new_army.displayTotalMenBar();
+        addAndMove(new_army, key);
+
+        // if piece(agent) add agents to new_army and destroy piece
+        if(piece) new_army.agents(piece.agents()); // TODO: somehow piece is being removed, find out how/where
+      }
     }
     
     // creating new Agent and add agents() to it
-    public function split_agents_out(toSquare, key) {
+    public function split_agents_out(toSquare, key, piece=null) {
       selectedArr.forEach(function(agent) { agents().splice(agents().indexOf(agent),1) });
-      var new_agent = new Agent(this_empire, selectedArr);
+      var new_agent = new Agent(this_empire, this_empire.agentArray.length);
+      new_agent.agents(selectedArr);
       addAndMove(new_agent, key);
     }
     
@@ -155,6 +246,66 @@ package pieces {
       obj.pieceMoveKeyBoard({type: "keyDown", keyCode: key, prevObj: this, eventPhase: null});
       obj = null;
     }
+
+    /* Tests if GamePiece is an enemy
+     *
+     * ==== Parameters:
+     * piece::  GamePiece
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function is_enemy(piece) {
+      return empire()[0] != piece.empire()[0];
+    }
+
+    /* Begins attack process
+     *
+     * ==== Parameters:
+     * enemy::  GamePiece
+     */
+    public function attack(enemy) {
+      if(enemy.obj_is('agent'))
+        combinePieces(enemy);
+      else {
+        if(enemy.obj_is('city') && !enemy.units()) {
+          enemy.conquored_by(this);
+        } else {
+          game_piece.gotoAndPlay('attack');
+          var _this = this;
+          setTimeout(function() {
+            dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Battle', null, [_this, enemy], true));
+          }, 1250)
+        }
+      }
+    }
+    
+    public function newArmy(arr) { selectedArr = arr; }
+  	
+  	/* Adds children to GamePiece passed and removes self
+     *
+     * ==== Parameters:
+     * piece2::  GamePiece
+     */
+  	public function combinePieces(piece2) {
+      if(obj_is('agent')) {
+        piece2.addAgents(agents());
+      } else if(piece2.obj_is('agent')) {
+        addAgents(piece2.agents());
+        square(piece2.square());
+        x = square().x + 60;
+        y = square().y + 60;
+        piece2.destroy();
+      } else {
+        piece2.concat_units(units());
+        piece2.displayTotalMenBar();
+        if(agents()) piece2.addAgents(agents());
+      }
+      if(!piece2.obj_is('agent')) {
+        piece2.selectThis(null);
+        destroy();
+      }
+  	}
     
     // sending units to another army
     public function send_troops_to(other) {
@@ -172,29 +323,9 @@ package pieces {
       dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, other, true));
     }
   	
-  	private function removeSelected(current) {
-  	  if(!current.obj_is('city')) dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, current, false));
-  	  current.removeChild(current.selected);
-  	  current.fadeTimer.removeEventListener(TimerEvent.TIMER, fadeInOut);
-  	  current.fadeTimer.stop();
-  	  current.isSelected = false;
-  	}
-  	
-  	private function addSelected() {
-  	  selected = new ImgLoader('ui/selected.png');
-  	  fadeTimer = new Timer(1000);
-  	  selected.x = -80;
-  	  selected.y = -40;
-  	  addChild(selected);
-  	  setChildIndex(selected, 0);
-  	  fadeTimer.addEventListener(TimerEvent.TIMER, fadeInOut);
-  	  fadeTimer.start();
-  	  isSelected = true;
-  	}
-  	
   	private function fadeInOut(event:TimerEvent) {
-  	  var fade = selected.alpha == 1 ? 0 : 1;
-  	  TweenLite.to(selected, .75, { alpha: fade, ease:Sine.easeIn });
+  	  var fade = highlight.alpha == 1 ? 0 : 1;
+  	  TweenLite.to(highlight, .75, { alpha: fade, ease:Sine.easeIn });
   	}
     
     public function agents(agents=null) {
@@ -204,6 +335,10 @@ package pieces {
         attr['agents'] = agents;
       }
       return attr['agents']; 
+    }
+
+    private function isAgent(obj, index, arr) {
+      return (obj is Settler);
     }
   	
     /* Sets units
@@ -235,6 +370,19 @@ package pieces {
       if(!attr['units']) attr['units'] = new Array();
       attr['units'].push(unit);
       return units();
+    }
+
+    /* Concatinating array of units into units()
+     *
+     * ==== Parameters:
+     * new_units::   Array
+     *
+     * ==== Returns:
+     * Array
+     */
+    public function concat_units(new_units) {
+      attr['units'] = attr['units'] ? attr['units'].concat(new_units) : new_units;
+      return attr['units'];
     }
     
     public function removeUnit(unit) {
@@ -280,6 +428,7 @@ package pieces {
     }
 
     public function destroy() {
+      square().removeFromSquare();
       this_stage.removeChild(this);
     }
     
@@ -296,9 +445,9 @@ package pieces {
     
     public function totalMen() {
       var totalMen = 0;
-      units().forEach(function(unit) {
-        totalMen += parseInt(unit.men());
-      });
+      if(units()) {
+        units().forEach(function(unit) { totalMen += parseInt(unit.men()); });
+      }
       return totalMen;
     }
     
@@ -309,6 +458,7 @@ package pieces {
     }
     
     public function createJSON() { return JSON.stringify({general: 'Hannabal'}); }
+    public function stopWalk(sq) { return false; }
 	
 /*--------------- Next Turn Functions -------------*/
     public function nextTurn(turn) { moves(5); }

@@ -5,7 +5,7 @@ package pieces.events {
   import flash.utils.clearInterval;
   import flash.utils.setInterval;
   
-  import pieces.Army;
+  import pieces.*;
   
   public class Battle extends MovieClip {
     private const ATTACK_TOTAL:int  = 15;
@@ -14,8 +14,8 @@ package pieces.events {
     
     /*---- Classes added -----*/
     public var popup:BattlePopup;
-    public var attacker_army:Army;
-    public var defender_army:Army;
+    public var attacker_army:GamePiece;
+    public var defender_army:GamePiece;
     
     /*---- Objects and Arrays -----*/
     public var attacker_thumbs:Array; 
@@ -96,6 +96,7 @@ package pieces.events {
         popup.updateStats()
         num_skirmish++;
       } else {
+        // TODO: only destroy if army
         if(attacker_army.totalMen() == 0) attacker_army.destroy()
         if(defender_army.totalMen() == 0) defender_army.destroy()
         clearInterval(skimish_interval);

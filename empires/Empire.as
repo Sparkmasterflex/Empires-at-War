@@ -7,11 +7,7 @@ package empires {
   
   import game_setup.StartsWith;
   
-  import pieces.Agent;
-  import pieces.Army;
-  import pieces.City;
-  import pieces.Building;
-  import pieces.Unit;
+  import pieces.*;
   import pieces.agents.Settler;
   
   import stage.GameStage;
@@ -32,6 +28,7 @@ package empires {
   	public var agentArray:Array;
   	public var attr:Object;
   	public var posArr:Array;
+    public var selected_piece:GamePiece;
   	
   	/*-- Numbers --*/
   	private var difficulty:int;
@@ -166,10 +163,11 @@ package empires {
       
       army = new Army(this, armyArray.length, piece.id);
       army.units(build_units(unit_arr));
-      
+
       gStage.addChild(army);
       army.this_stage = gStage;
       army.square(sq);
+      setTimeout(function() { army.displayTotalMenBar(); }, 200);
     }
 
     /* Creates and adds Agent to stage

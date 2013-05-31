@@ -18,7 +18,6 @@ package pieces {
   import static_return.GetDirection;
   
   public class Agent extends GamePiece {
-    public var piece;
     
     public function Agent(emp, num, id=null) {
       super(emp);
@@ -47,18 +46,18 @@ package pieces {
     private function createAgentType() {
       // will have to add other options as they get built
       // ie Diplomat and Spies
-      if(!agents() || agents().indexOf(Settler)) piece = new settlerBase();
+      if(!agents() || agents().indexOf(Settler)) game_piece = new settlerBase();
       setEmpire();
-      addChild(piece);
+      addChild(game_piece);
     }
 
     private function setEmpire() {
       switch(empire()[0]) {
         case GameConstants.GAUL:
-          piece.settlerIsGaul();
+          game_piece.settlerIsGaul();
           break;
         case GameConstants.ROME:
-          piece.settlerIsRome();
+          game_piece.settlerIsRome();
           break;
         default:
           trace('none');
@@ -90,11 +89,6 @@ package pieces {
       }
     }
     
-    public function facing(left=null) {
-      if(left) attr['facing'] = left;
-      return attr['facing'];
-    }
-    
     public function animateSelect(event:MouseEvent) {
       var frame = '';
       if(isSelected) {
@@ -104,10 +98,10 @@ package pieces {
         frame = 'unselect-ed';
         dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, false));
       }
-      piece.gotoAndPlay(frame);
+      game_piece.gotoAndPlay(frame);
     }
 
-    public function pieceMoveKeyBoard(event:*) {
+/*    public function pieceMoveKeyBoard(event:*) {
       var key = event.keyCode,
           currSq = square(),
           obj = event.eventPhase ? this : event.prevObj, 
@@ -134,10 +128,10 @@ package pieces {
           dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
         }
       }
-    }
+    }*/
     
-    public function stopWalk(sq) {
-      piece.gotoAndPlay('stand');
+    public override function stopWalk(sq) {
+      game_piece.gotoAndPlay('stand');
       square(sq);
       attr['moves']--;
       dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));

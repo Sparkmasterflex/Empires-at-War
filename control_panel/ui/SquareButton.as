@@ -24,7 +24,7 @@ package control_panel.ui {
   	/*-- Arrays --*/		
   	/*-- Numbers --*/
   	/*-- MovieClips and Strings --*/
-  	private var img_path = "controlPanel/buttons/";
+  	private var img_path = "ui/controlPanel/buttons/";
   	
   	/*-- Boolean --*/
     private var over:Boolean = false;

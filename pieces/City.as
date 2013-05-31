@@ -128,7 +128,7 @@ package pieces {
   	
   	public function taxes(t=null) {
   	  if(t) attr['taxes'] = t;
-      if(population() > 10000) {
+      if(population() >= 10000) {
         var additional_taxes = 0,
             percent;
         buildings().forEach(function(bld) { additional_taxes += parseFloat(bld.taxes_benefits()); });
@@ -243,24 +243,17 @@ package pieces {
   	  return Math.round(population() * taxes())
   	}
     
-    public function pieceMoveKeyBoard(event:*) {
-      var key = event.keyCode,
-        currSq = square(),
-        toSq = FindAndTestSquare.ret(key, this),
-        stage = this.parent,
-        section = stage.sGridArr[toSq.split('_')[0]],
-        toSquare = section.getChildByName(toSq);
-      
-      if(directionKeys.indexOf(key) >= 0 && toSquare.hasLand()) {
-        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, false));
-        if(!toSquare.pieces() && (selectedArr && selectedArr.length > 0)) {
-          selectedArr[0].parent_type == 'army' ? split_army(toSquare, key) : split_agents_out(toSquare, key);
-        } else if(toSquare.pieces() && (selectedArr && selectedArr.length > 0)) {
-          send_troops_to(toSquare.pieces());
-        } else {
-          (toSquare.pieces().empire_is(empire()[0])) ? combinePieces(toSquare.pieces()) : trace('enemy');
-        }
-      }
+    /* Sets self conquored by enemy passed
+     *
+     * ==== Parameters:
+     * enemy:: GamePiece
+     */
+    public function conquored_by(enemy) {
+      // set cities empire as enemy's
+      empire(enemy.empire()[0]);
+      enemy.combinePieces(this);
+      // TODO: create popup to alert user that this has been conquored
+      //----- Also allow them to choose (occupy, sack or raze)
     }
   }
 }

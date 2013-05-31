@@ -58,21 +58,21 @@ package control_panel.ui {
     		setupTabs(selectedPiece);
         switch(show) {
           case 'units':
-            selectedPiece.units().forEach(addThumb);
+            piece.units().forEach(addThumb);
             break;
           case 'agents':
-            selectedPiece.agents().forEach(addThumb);
+            piece.agents().forEach(addThumb);
             break;
           default:
-            switch(selectedPiece.obj_is()) {
+            switch(piece.obj_is()) {
               case 'agent':
-                selectedPiece.agents().forEach(addThumb);
+                piece.agents().forEach(addThumb);
                 break;
               case 'army':
-                selectedPiece.units().forEach(addThumb);
+                piece.units().forEach(addThumb);
                 break;
               case 'city':
-                selectedPiece.buildings().forEach(addThumb);
+                piece.buildings().forEach(addThumb);
                 break;
             }
         }
@@ -142,7 +142,7 @@ package control_panel.ui {
       				[1,1], [0,255], btnDim, btnDim,
       				(3 * Math.PI) / 2, [btnDim,btnDim], 'rectangle'
       			),
-      			img:ImgLoader = new ImgLoader('controlPanel/buttons/' + tab);
+      			img:ImgLoader = new ImgLoader('ui/controlPanel/buttons/' + tab);
       	    btn.addChild(bg);
     		img.alpha = 0.5;
     		btn.addChild(img);

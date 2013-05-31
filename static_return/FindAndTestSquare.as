@@ -33,36 +33,51 @@ package static_return {
 			switch(key) {
 			  case 104:
 			  case 38:
-				d = UP;
+			  case 87:
+					d = UP;
 			    break;
+
 			  case 105:
 			  case 33:
-				d = UP_RIGHT;
-				break;
+			  case 69:
+					d = UP_RIGHT;
+					break;
+
 			  case 102:
 			  case 39:
-				d = RIGHT;
-				break;
+			  case 68:
+					d = RIGHT;
+					break;
+
 			  case 99:
 			  case 34:
-				d = DOWN_RIGHT;
-				break;
+			  case 67:
+					d = DOWN_RIGHT;
+					break;
+
 			  case 98:
 			  case 40:
-				d = DOWN;
-				break;
+			  case 88:
+					d = DOWN;
+					break;
+
 			  case 97:
 			  case 35:
-				d = DOWN_LEFT;
-				break;
+			  case 90:
+					d = DOWN_LEFT;
+					break;
+
 			  case 100:
 			  case 37:
-				d = LEFT;
-				break;
+			  case 65:
+					d = LEFT;
+					break;
+
 			  case 103:
 			  case 36:
-				d = UP_LEFT;
-				break;
+			  case 81:
+					d = UP_LEFT;
+					break;
 		    }
 		  return d;
 		}
