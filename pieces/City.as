@@ -10,6 +10,7 @@ package pieces {
   import flash.events.Event;
   import flash.events.MouseEvent;
   import flash.utils.setTimeout;
+  import flash.external.ExternalInterface;
   
   import pieces.agents.Settler;
   
@@ -44,7 +45,7 @@ package pieces {
       named("city_" + num + "_" + empire()[0]);
       if(population() <= CityConstants.START) {
         var gov_build = new Building({level: 1, type: CityConstants.GOVERNMENT, build_points: 0}, this);
-        setTimeout(function() { buildings([gov_build]); }, 200);
+        setTimeout(function() { buildings(gov_build); }, 200);
         if(population() == 0) addBuilders();
       }
       taxes(0.07);
@@ -105,27 +106,6 @@ package pieces {
       return level;
     }
     
-    public override function createJSON() {
-      var json = {};
-      json = {
-        id: this_id(),
-        pieceType: 30,
-        empire_id: empire_id(),
-        built_id: empire_id(),
-        name: named(),
-        square: square().name,
-        population: population(),
-        buildings: "",
-        units: "",
-        agents: ""
-      }
-      if(buildings()) buildings().forEach(function(bld) { json['buildings'] += bld.type() + "," + bld.level() + "||"; });
-      if(units()) units().forEach(function(unit) { json['units'] += unit.type() + "," + unit.men() + "||"; });
-      if(agents()) agents().forEach(function(agent) { json['agents'] += agent.type + "||"; });
-      
-      return json;
-    }
-  	
   	public function taxes(t=null) {
   	  if(t) attr['taxes'] = t;
       if(population() >= 10000) {
@@ -153,11 +133,9 @@ package pieces {
   	public function buildings(b=null) {
       var _this = this;
       if(b) {
-        b.forEach(function(bld) { 
-          bld.this_parent(_this);
-          unavailable(bld);
-        });
-        attr['buildings'] = b;
+        b.this_parent(_this);
+        unavailable(b);
+        attr['buildings'].push(b)
       }
       
       return attr['buildings'];
@@ -242,6 +220,31 @@ package pieces {
   	public function collectTaxes() {
   	  return Math.round(population() * taxes())
   	}
+
+    public override function saveAttributes() {
+      ExternalInterface.call("savePiece", createJSON());
+    }
+
+    public override function createJSON() {
+      var json = {};
+      json = {
+        id: this_id(),
+        pieceType: 30,
+        empire_id: empire_id(),
+        built_id: empire_id(),
+        name: named(),
+        square: square().name,
+        population: population(),
+        buildings: "",
+        units: "",
+        agents: ""
+      }
+      if(buildings()) buildings().forEach(function(bld) { json['buildings'] += bld.type() + "," + bld.level() + "||"; });
+      if(units()) units().forEach(function(unit) { json['units'] += unit.type() + "," + unit.men() + "||"; });
+      if(agents()) agents().forEach(function(agent) { json['agents'] += agent.type + "||"; });
+      
+      return json;
+    }
     
     /* Sets self conquored by enemy passed
      *

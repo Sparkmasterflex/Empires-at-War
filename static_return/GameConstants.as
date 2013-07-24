@@ -58,21 +58,20 @@ package static_return {
   	public static function parseEmpireName(emp):String {
   	  var empire:String;
   	  emp = int(emp);
-        switch(emp) {
-  		case EGYPT:
-  		  empire = EMPIRES['EGYPT'];
-  		  break;
-  		case ROME:
-  		  empire = EMPIRES['ROME'];
-  		  break;
-  		case JAPAN:
-  		  empire = EMPIRES['JAPAN'];
-  		  break;
-  		case GAUL:
-  		  empire = EMPIRES['GAUL'];
-  		  break;
-  	  }
-  		
+      switch(emp) {
+    		case EGYPT:
+    		  empire = EMPIRES['EGYPT'];
+    		  break;
+    		case ROME:
+    		  empire = EMPIRES['ROME'];
+    		  break;
+    		case JAPAN:
+    		  empire = EMPIRES['JAPAN'];
+    		  break;
+    		case GAUL:
+    		  empire = EMPIRES['GAUL'];
+    		  break;
+    	}
   	  return empire;
   	}
   }

@@ -1,5 +1,7 @@
 package control_panel.ui.popups {
   import com.greensock.*;
+
+  import dispatch.PopupEvent;
   
   import common.Gradient;
   import common.ImgLoader;
@@ -17,6 +19,8 @@ package control_panel.ui.popups {
     public var defender:GamePiece;
     public var battle:Battle;
     public var balanceBar:BalanceBar;
+    public var startButton:SquareButton;
+    public var cancelButton:SquareButton;
 
     /*---- Arrays and Objects----*/
     public var attacker_thumbs:Array;
@@ -41,7 +45,7 @@ package control_panel.ui.popups {
       
       // create popup ui
       addBattleImage();
-      addStartButton();
+      addControlButtons();
       createBalanceBar();
     }
     
@@ -53,12 +57,29 @@ package control_panel.ui.popups {
       return img;
     }
     
-    private function addStartButton() {
-      var startButton = new SquareButton("Start Battle", 200, 50, 21);
-      startButton.x = this.width - (startButton.width + 15);
-      startButton.y = 349 - startButton.height;
+    private function addControlButtons() {
+      startButton = new SquareButton("Start Battle", 170, 40, 24),
+      cancelButton = new SquareButton("Cancel", 130, 40, 24);
+
+      cancelButton.x = this.width - (cancelButton.width + 20);
+      cancelButton.y = 349 - cancelButton.height;
+      startButton.x = cancelButton.x - (startButton.width + 10);
+      startButton.y = cancelButton.y;
       addChild(startButton);
+
+      addChild(cancelButton);
+      cancelButton.addEventListener(MouseEvent.CLICK, cancelBattle);
       startButton.addEventListener(MouseEvent.CLICK, startBattle);
+    }
+
+    /* 
+     * Add 'close' button for battle
+     */
+    public function addCloseButton() {
+      var closeBtn = new SquareButton("Close", 130, 40, 24);
+      closeBtn.x = cancelButton.x;
+      closeBtn.y = cancelButton.y;
+      closeBtn.addEventListener(MouseEvent.CLICK, concludeBattle);
     }
     
     private function createBalanceBar() {
@@ -126,7 +147,29 @@ package control_panel.ui.popups {
     
     private function startBattle(event:MouseEvent) {
       battle.startBattle();
-      TweenLite.to(event.target, .25, {alpha: 0});
+      TweenLite.to(startButton, .25, {alpha: 0});
+      TweenLite.to(cancelButton, .25, {alpha: 0});
+    }
+
+    /* Conclude battle, close popup
+     *
+     * ==== Parameters:
+     * event::  MouseEvent
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    private function concludeBattle(event:MouseEvent) {
+      return dispatchEvent(new PopupEvent(PopupEvent.POPUP, this));
+    }
+
+    /* Conclude battle, close popup
+     *
+     * ==== Parameters:
+     * event::  MouseEvent
+     */
+    private function cancelBattle(event:MouseEvent) {
+      dispatchEvent(new PopupEvent(PopupEvent.POPUP, this));
     }
     
     public function removeDestroyedUnit(thumb, is_attk) {

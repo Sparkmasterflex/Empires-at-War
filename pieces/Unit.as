@@ -135,6 +135,7 @@ package pieces {
       upkeep(parseInt(list.upkeep));
       bonuses(list.bonuses);
       description(list.description);
+      this_parent().u_length++;
     }
   }
 }

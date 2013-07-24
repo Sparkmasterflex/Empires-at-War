@@ -11,6 +11,7 @@ package game_setup {
 	  var userStarts:Object = new Object();
 	  switch(difficulty) {
 			case GameConstants.EASYGAME:
+			  userStarts.TOTAL = 6; // need to accunt for userStarts.AGENT when these are added
 			  userStarts.ARMY = 3;
 			  userStarts.armyUnits = [[2, 2, 3, 4, 5, 8, 8, 10],[2, 2, 3, 8, 7],[2, 2, 3, 4, 5, 8, 8, 10]];
 			  userStarts.CITY = 1;
@@ -18,6 +19,7 @@ package game_setup {
 			  userStarts.AGENT = ['spy_scout','diplomat'];
 			  break;
 			case GameConstants.MEDGAME:
+				userStarts.TOTAL = 3;
 			  userStarts.ARMY = 2;
 			  userStarts.armyUnits = [[2, 2, 3, 4, 5, 8, 8, 10],[2, 2, 3, 8, 7]];
 			  userStarts.CITY = 0;
@@ -25,6 +27,7 @@ package game_setup {
 			  userStarts.AGENT = ['diplomat'];
 			  break;
 			case GameConstants.HARDGAME:
+			  userStarts.TOTAL = 2;
 			  userStarts.ARMY = 1;
 			  userStarts.armyUnits = [[2, 2, 3, 4, 8, 8, 7]];
 			  userStarts.CITY = 0;

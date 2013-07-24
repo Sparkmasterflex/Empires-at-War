@@ -1,6 +1,7 @@
 package pieces {
   import com.greensock.*;
   import com.greensock.easing.*;
+  import com.demonsters.debugger.MonsterDebugger;
 
   import common.ImgLoader;
   
@@ -42,6 +43,7 @@ package pieces {
     );
 	  
     public function GamePiece(empire) {
+      MonsterDebugger.initialize(this);
       this_stage = empire.gStage
       attr = new Object();
   	  this_empire = empire;
@@ -91,7 +93,70 @@ package pieces {
   	}
     
     public function saveAttributes() {
-      ExternalInterface.call("savePiece", createJSON());
+      if(changed()) {
+        ExternalInterface.call("savePiece", createJSON());
+        changed(false);
+      }
+    }
+
+    /* builds array of Units
+     * 
+     * ==== Parameters:
+     * arr::Array
+     * 
+     * ==== Returns
+     * Array
+     */
+    public function build_units(arr) {
+      var units = new Array();
+      arr.forEach(function(u) {
+        units.push(new Unit(u, this_empire.named()));
+      });
+      return units;
+    }
+
+    /* creates array of unit data based on string from DB
+     * 
+     * ==== Parameters:
+     * str::String
+     * 
+     * ==== Returns
+     * Array
+     */
+    public function parseUnitsString(str) {
+      var units = new Array(),
+          arr = str.split('||');
+      arr.forEach(function(str) {
+        if(str != "") units.push(str.split(','));
+      });
+
+      return units;
+    }
+
+    /* creates array of agent data based on string from DB
+     * 
+     * ==== Parameters:
+     * str::String
+     * 
+     * ==== Returns
+     * Array
+     */
+    private function parseAgentsString(str) {
+      var agents = new Array(),
+          agent = '',
+          arr = str.split('||');
+      arr.forEach(function(str) {
+        if(str != "") {
+          switch(str) {
+            case 'settler':
+              agent = GameConstants.SETTLER;
+              break;
+          }
+          agents.push(agent);
+        }
+      });
+
+      return agents;
     }
 
     //---------------------- Selecting GamePiece
@@ -193,6 +258,19 @@ package pieces {
       return attr['facing'];
     }
 
+    /* Set and/or test piece has been changed since last save
+     *
+     * ==== Parameters:
+     * has_change:: Boolean
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function changed(has_change=null) {
+      if(has_change != null) attr['changed'] = has_change;
+      return attr['changed'];
+    }
+
     /* Split selectArr
      *
      * ==== Parameters:
@@ -202,31 +280,32 @@ package pieces {
      */
     public function split_piece_children(sq, key, piece=null) {
       if(selectedArr.every(isAgent))
-        split_agents_out(sq, key, piece);
+        split_agents_out(sq, key, piece); // TODO: handle changed()/saveAttributes()
       else
         split_army(sq, key, piece);
     }
 
     // splitting army
     public function split_army(toSquare, key, piece=null) {
-      // remove selected units from units()
+      // remove selected units from units() and update piece attributes
       selectedArr.forEach(function(unit) { units().splice(units().indexOf(unit),1); });
       displayTotalMenBar();
+      changed(true);
 
       // if piece != null then add selected to piece.units()
       if(piece && !piece.obj_is('agent')) {
         piece.concat_units(selectedArr);
         piece.displayTotalMenBar();
+        piece.changed(true);
         piece.selectThis(null);
       } else {
         // else make new army
-        var new_army = new Army(this_empire, this_empire.armyArray.length);
-        new_army.units(selectedArr);
-        new_army.displayTotalMenBar();
+        var attr = {
+          units: selectedArr,
+          agents: (piece ? piece.agents() : null)
+        },
+            new_army = new Army(this_empire, this_empire.armyArray.length, attr);
         addAndMove(new_army, key);
-
-        // if piece(agent) add agents to new_army and destroy piece
-        if(piece) new_army.agents(piece.agents()); // TODO: somehow piece is being removed, find out how/where
       }
     }
     
@@ -295,6 +374,7 @@ package pieces {
         square(piece2.square());
         x = square().x + 60;
         y = square().y + 60;
+        changed(true);
         piece2.destroy();
       } else {
         piece2.concat_units(units());
@@ -429,6 +509,7 @@ package pieces {
 
     public function destroy() {
       square().removeFromSquare();
+      this_empire.destroying.push(this_id())
       this_stage.removeChild(this);
     }
     

@@ -52,7 +52,7 @@ package control_panel.ui {
   	  btnRoll.visible = false;
   	  label.match(/\.(png|jpg)$/) ?
   		addImage(label) :
-  		textFieldCreation(label)
+  		textFieldCreation(label, fontSize)
       addEventListener(MouseEvent.MOUSE_OVER, buttonRoll);
       addEventListener(MouseEvent.MOUSE_OUT, buttonRoll);
       addEventListener(MouseEvent.MOUSE_DOWN, onClickBtn);
@@ -61,8 +61,9 @@ package control_panel.ui {
       mouseChildren = false;
   	}
   	
-  	private function textFieldCreation(label) {
-  	  var tF:Label = new Label(30, 0xffffff, 'Trebuchet MS', 'LEFT');
+  	private function textFieldCreation(label, fs=null) {
+  	  var fontSize = fs || 30,
+          tF:Label = new Label(fontSize, 0xffffff, 'Trebuchet MS', 'LEFT');
   	  tF.text = label;
   	  tF.x = (btnBG.width / 2) - (tF.width / 2);
   	  tF.y = (btnBG.height / 2) - (tF.height / 2);	

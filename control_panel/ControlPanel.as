@@ -54,7 +54,7 @@ package control_panel {
   	private var expanded:Boolean = false;
 
     /*----- Strings -----*/
-    private var to_xml = 'xml/'
+    private var to_xml = '/xml/'
   	
 	
     public function ControlPanel(empire, turn, parent) {
@@ -249,8 +249,8 @@ package control_panel {
   	public function endTurn(event:MouseEvent) {
       eAtW.currentTurn++;
   	  turnLabel.text = "Turn: " + eAtW.currentTurn;
-      eAtW.empireArr.forEach(function(empire) { empire.processTurn(this) });
       ExternalInterface.call('saveGame', eAtW.currentTurn);
+      eAtW.empireArr.forEach(function(empire) { empire.processTurn(this) });
   	}
   }
 }

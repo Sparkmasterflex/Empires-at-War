@@ -132,6 +132,7 @@ package pieces {
     
     public override function stopWalk(sq) {
       game_piece.gotoAndPlay('stand');
+      attr['changed'] = true;
       square(sq);
       attr['moves']--;
       dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));

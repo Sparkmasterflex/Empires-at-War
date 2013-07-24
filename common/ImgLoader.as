@@ -14,7 +14,7 @@ package common {
   	public var bmHeight:Number;
   	
   	/*---- MovieClips and Strings ----*/
-  	private var path:String = 'images/';
+  	private var path:String = '/images/';
   	
   	public function ImgLoader(image) {
   	  loader = new Loader();

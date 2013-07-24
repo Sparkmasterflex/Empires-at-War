@@ -12,7 +12,11 @@ package control_panel.ui.slides {
       labels = new Array();
       if(obj is Array) {
         add_bg();
+/*        var keyboard = new ImgLoader('/ui/controlPanel/info_box/keys.png');
+        keyboard.x = 20;
+        keyboard.y = 20;*/
         obj.forEach(addLabel);
+        //bg.addChild(keyboard);
       } else {
         parse_object_info(obj);
       }

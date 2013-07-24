@@ -63,7 +63,12 @@ package pieces.events {
             attk_percent = Math.round((attk_points['attack']/(attk_points['attack']+defn_points['attack']))*100),
             defn_percent = Math.round((attk_points['defense']/(attk_points['defense']+defn_points['defense']))*100),
             men_percent = Math.round((attk_points['men']/(attk_points['men']+defn_points['men']))*100),
-            multiplier = num_skirmish <= 1 ? 3 : 1;
+            // first attack really counts
+            multiplier = num_skirmish <= 1 ? 4 : 
+              // third attack is second wind
+              num_skirmish == 3 ? 2 
+                // normal attack
+                : 1;
             // first two skirmishes are the most bloody
         
         for(var i:int=0; i<larger; i++) {
@@ -96,9 +101,12 @@ package pieces.events {
         popup.updateStats()
         num_skirmish++;
       } else {
-        // TODO: only destroy if army
-        if(attacker_army.totalMen() == 0) attacker_army.destroy()
-        if(defender_army.totalMen() == 0) defender_army.destroy()
+        var winner = attacker_army.totalMen() == 0 ? defender_army : attacker_army,
+            loser = winner == attacker_army ? defender_army : attacker_army;
+        winner.displayTotalMenBar();
+        if(loser.isSelected) loser.selectThis(null);
+        loser.obj_is('city') ? loser.conquored_by(winner) : loser.destroy();
+        popup.addCloseButton();
         clearInterval(skimish_interval);
       }
     }
