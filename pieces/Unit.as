@@ -2,6 +2,7 @@ package pieces {
   import flash.events.*;
   import flash.net.URLLoader;
   import flash.net.URLRequest;
+  import static_return.GameConstants;
   
   public class Unit {
     /*---- Arrays and Objects ----*/
@@ -113,7 +114,8 @@ package pieces {
     }
     
     private function getXML() {
-      var xml = "xml/army_" + empire.toLowerCase() + ".xml",
+      var path = GameConstants.ENVIRONMENT == 'flash' ? "xml/army_" : "/xml/army_",
+          xml  = path + empire.toLowerCase() + ".xml",
           xmlLoader = new URLLoader();
       xmlLoader.load(new URLRequest(xml));
       xmlLoader.addEventListener(Event.COMPLETE, setupAttributes);
@@ -135,7 +137,7 @@ package pieces {
       upkeep(parseInt(list.upkeep));
       bonuses(list.bonuses);
       description(list.description);
-      this_parent().u_length++;
+      this_parent().child_length++;
     }
   }
 }

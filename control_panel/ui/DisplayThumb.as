@@ -77,7 +77,7 @@ package control_panel.ui {
     }
 
   	private function addNameTF() {
-      var txt = responds_to is Building ? responds_to.name() : responds_to.name;
+      var txt = responds_to is Building ? responds_to.named() : responds_to.name;
       if(txt) {
         nameLbl = new Label(11, 0x000000, 'Arial', 'LEFT');
         nameLbl.text = txt;

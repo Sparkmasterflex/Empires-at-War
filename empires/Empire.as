@@ -43,6 +43,8 @@ package empires {
   	  attr = new Object();
   	  attr['id'] = emp.id;
       attr['money'] = emp.treasury;
+      attr['playable'] = false;
+      playable(emp.user_id);
   	  empire(emp.clan);
       destroying = new Array();
   	  
@@ -55,9 +57,43 @@ package empires {
       if(game.status == GameConstants.NEW_GAME) {
         createGamePieces(emp, stge);
       } else {
-        ExternalInterface.addCallback('returnPieces', returnPieces);
-        ExternalInterface.call('get_empire_pieces', emp.id);
+        if(GameConstants.ENVIRONMENT == 'flash') {
+          var piece_arr = emp.id == 1 ?
+            [
+              {"agents":"","building_queue":null,"buildings":"1,60,0||","built_id":1,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":1,"moves":null,"name":"city_0_40","pieceType":30,"population":10000,"square":"0_28_16","units":"","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
+              {"agents":"settler||","building_queue":null,"buildings":null,"built_id":1,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":2,"moves":null,"name":"agent_0_40","pieceType":10,"population":null,"square":"0_28_17","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
+              {"agents":"settler||","building_queue":null,"buildings":null,"built_id":1,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":3,"moves":null,"name":"agent_1_40","pieceType":10,"population":null,"square":"0_29_13","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
+              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":4,"moves":5,"name":"army_0_40","pieceType":20,"population":null,"square":"0_28_14","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
+              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":5,"moves":5,"name":"army_1_40","pieceType":20,"population":null,"square":"0_27_17","units":"2,200||2,200||3,200||8,200||7,1||","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
+              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":6,"moves":5,"name":"army_2_40","pieceType":20,"population":null,"square":"0_25_16","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"}
+            ] :
+            [
+              {"agents":"","building_queue":null,"buildings":"1,60,0||","built_id":2,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":7,"moves":null,"name":"city_0_20","pieceType":30,"population":10000,"square":"0_9_10","units":"","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
+              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":8,"moves":5,"name":"army_0_20","pieceType":20,"population":null,"square":"0_7_12","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
+              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":9,"moves":5,"name":"army_1_20","pieceType":20,"population":null,"square":"0_9_12","units":"2,200||2,200||3,200||8,200||7,1||","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
+              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":10,"moves":5,"name":"army_2_20","pieceType":20,"population":null,"square":"0_10_10","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
+              {"agents":"settler||","building_queue":null,"buildings":null,"built_id":2,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":11,"moves":null,"name":"agent_0_20","pieceType":10,"population":null,"square":"0_8_10","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
+              {"agents":"settler||","building_queue":null,"buildings":null,"built_id":2,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":12,"moves":null,"name":"agent_1_20","pieceType":10,"population":null,"square":"0_10_9","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:39Z"}
+            ];
+          returnPieces(piece_arr);
+        } else {
+          ExternalInterface.addCallback('returnPieces', returnPieces);
+          ExternalInterface.call('get_empire_pieces', emp.id);
+        }
       }
+    }
+
+    /* Determines if this Empire is the player controlled empire
+     *
+     * ==== Parameters:
+     * user_id::  Integer
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function playable(user_id=null) {
+      if(user_id && user_id != "") attr['playable'] = true;
+      return attr['playable'];
     }
   	  
     private function createGamePieces(emp, stge) {
@@ -71,15 +107,14 @@ package empires {
     		  case 'ARMY':
             for(var army_index:int=0; army_index<toStart.ARMY; army_index++) addArmy({units: toStart.armyUnits[army_index]});
     		    break;
-    		  /*case 'SETTLER':
+    		  case 'SETTLER':
             for(var settler_index:int=0; settler_index<toStart.SETTLER; settler_index++) addAgent({agents: [GameConstants.SETTLER]});
     		    break;
     		  case 'CITY':
-    		    for(var city_index:int=0; city_index<toStart.CITY; city_index++) addCity({square: startSq});
-    		    break;*/
+    		    for(var city_index:int=0; city_index<toStart.CITY; city_index++) addCity({population: CityConstants.START, square: startSq, buildings: [[1,CityConstants.GOVERNMENT, 0]]});
+    		    break;
     		}
   	  }
-
   	}
   
     public function piece_by_name(str) {
@@ -91,7 +126,7 @@ package empires {
     }
     
     public function returnPieces(json) {
-      var parsed_pieces = JSON.parse(json);
+      var parsed_pieces = GameConstants.ENVIRONMENT == 'flash' ? json : JSON.parse(json);
       parsed_pieces.forEach(function(p) {
         switch(p.pieceType) {
           case 10:
@@ -107,41 +142,23 @@ package empires {
             break;
         }
       });
-      return true;
+
     }
 	
     /* Creates and adds City to stage
      *
      * ==== Parameters:
-     * piece::Object
+     * attrs::Object
      *
      */
-    public function addCity(piece) {
-      var sq, units, agents, buildings, population, city:City;
-
-      // if piece.square doesn't exist 
-      //   then is new and not from DB
-      /*if(piece.id) {
-        var section = gStage.getChildByName('section_' + piece.square.split('_')[0]);
-        sq = section.getChildByName(piece.square);
-        units = parseUnitsString(piece.units);
-        population = piece.population;
-      } else {
-        sq = piece.square
-        population = CityConstants.START;
-      }
-      
-      city = new City(this, population, cityArray.length, piece.id);
-      if(units) city.units(units);
-      if(piece.buildings) parseBuildingsString(piece.buildings, city).forEach(function(bld) { city.buildings(bld); });
-      
-      //city.addUnits(units);
+    public function addCity(attrs) {
+      var city:City;
+      if(attrs.square is String) attrs.square = gStage.find_sq(attrs.square);
+      // if not from database (attrs.id) then save right away
+      if(!attrs.id) attrs.instant_save = true
+      if(difficulty == GameConstants.EASYGAME && cityArray.length == 0) attrs.primary = true // for moving window to city
+      city = new City(this, cityArray.length, attrs);
       gStage.addChild(city);
-      city.this_stage = gStage;
-      city.square(sq);
-      setTimeout(function() { 
-        ExternalInterface.call('savePiece', city.createJSON());
-      }, 200);*/
     }
   	
     /* Creates and adds Army to stage
@@ -155,6 +172,7 @@ package empires {
       attrs.square = !attrs.square ? getLandSquare() : gStage.find_sq(attrs.square);
       // if not from database (attrs.id) then save right away
       if(!attrs.id) attrs.instant_save = true
+      if(difficulty != GameConstants.EASYGAME && armyArray.length == 0) attrs.primary = true // for moving window to city
       army = new Army(this, armyArray.length, attrs);
       gStage.addChild(army);
     }
@@ -162,28 +180,16 @@ package empires {
     /* Creates and adds Agent to stage
      *
      * ==== Parameters:
-     * piece::Object
+     * attrs::Object
      *
      */
-    public function addAgent(piece) {
-      /*var sq, agent_arr, agent:Agent;
-      if(piece.id) {
-        var section = gStage.getChildByName('section_' + piece.square.split('_')[0]);
-        sq = section.getChildByName(piece.square);
-        agent_arr = parseAgentsString(piece.agents)
-      } else {
-        sq = getLandSquare();
-        agent_arr = piece.agents;
-      }
-      
-      agent = new Agent(this, agentArray.length, piece.id);
-      agent.agents(build_agents(agent_arr));
+    public function addAgent(attrs) {
+      var agent:Agent;
+      attrs.square = !attrs.square ? getLandSquare() : gStage.find_sq(attrs.square);
+      // if not from database (attrs.id) then save right away
+      if(!attrs.id) attrs.instant_save = true
+      agent = new Agent(this, agentArray.length, attrs);
       gStage.addChild(agent);
-      agent.this_stage = gStage;
-      agent.square(sq);
-      //setTimeout(function() { 
-        //ExternalInterface.call('savePiece', agent.createJSON());
-      //}, 150);*/
     }
 	
   	private function getLandSquare() {
@@ -197,42 +203,6 @@ package empires {
   	  return sq;
   	}
     
-    private function parseBuildingsString(str, c) {
-      var buildings = new Array(),
-          arr = str.split('||');
-      arr.forEach(function(str) {
-        if(str != "") {
-          var bld_attrs = str.split(','),
-              building = new Building({type: parseInt(bld_attrs[0]), level: parseInt(bld_attrs[1]), build_points: 0}, c);
-          buildings.push(building);
-        }
-      });
-
-      return buildings;
-    }
-
-    /* builds array of Agents
-     * 
-     * ==== Parameters:
-     * arr::Array
-     * 
-     * ==== Returns
-     * Array
-     */
-    private function build_agents(arr) {
-      var agents = new Array();
-      arr.forEach(function(a) { 
-        switch(a) {
-          case GameConstants.SETTLER:
-          case "Settler":
-            agents.push(new Settler());
-            break;
-        }
-      });
-
-      return agents;
-    }
-
     public function treasury(m=null) {
   	  if(m) {
         attr['money'] += m;

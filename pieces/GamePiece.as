@@ -29,23 +29,28 @@ package pieces {
     public var bar:PercentBar;
     public var this_stage:GameStage;
     public var game_piece;
+    public var interval;
   	
   	/*--------Boolean-------*/
   	public var isSelected:Boolean = false;
 	
-	  /*--------Arrays and Objects-------*/
-  	public var attr:Object;
+    /*--------Arrays and Objects-------*/
+    public var attr:Object;
     public var selectedArr:Array;
-  	public var directionKeys:Array = new Array(
+    public var directionKeys:Array = new Array(
       81, 87, 69, 65, 68, 90, 88, 67, // Q, W, E, A, D, Z, X, C
       104, 105, 102, 99, 98, 97, 100, 103, // numbers
-  		38, 33, 39, 34, 40, 35, 37, 36 // arrow keys
+      38, 33, 39, 34, 40, 35, 37, 36 // arrow keys
     );
+
+	  /*---------- Numbers ---------*/
+    public var child_length:uint;
 	  
     public function GamePiece(empire) {
       MonsterDebugger.initialize(this);
       this_stage = empire.gStage
       attr = new Object();
+      child_length = 0;
   	  this_empire = empire;
   	  addEventListener(MouseEvent.CLICK, selectThis);
     }
@@ -73,6 +78,19 @@ package pieces {
   	  if(e) attr['empire'] = [e, GameConstants.parseEmpireName(e)];
   	  return attr['empire'];
   	}
+
+    /* Tests if this piece is primary, on game start focus window here
+     *
+     * ==== Parameters:
+     * p:: Boolean
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function primary(p=false) {
+      if(p) attr['primary'] = p;
+      return attr['primary'];
+    }
   	
   	public function square(sq=null):Object {
   	  if(sq) {
@@ -96,6 +114,14 @@ package pieces {
       if(changed()) {
         ExternalInterface.call("savePiece", createJSON());
         changed(false);
+      }
+    }
+
+    public function test_for_save(len) {
+      if(child_length >= len) {
+        if(attr['units']) displayTotalMenBar();
+        ExternalInterface.call('savePiece', createJSON());
+        clearInterval(interval);
       }
     }
 
@@ -133,6 +159,28 @@ package pieces {
       return units;
     }
 
+    /* builds array of Agents
+     * 
+     * ==== Parameters:
+     * arr::Array
+     * 
+     * ==== Returns
+     * Array
+     */
+    public function build_agents(arr) {
+      var agents = new Array();
+      arr.forEach(function(a) { 
+        switch(a) {
+          case GameConstants.SETTLER:
+          case "Settler":
+            agents.push(new Settler());
+            break;
+        }
+      });
+
+      return agents;
+    }
+
     /* creates array of agent data based on string from DB
      * 
      * ==== Parameters:
@@ -141,7 +189,7 @@ package pieces {
      * ==== Returns
      * Array
      */
-    private function parseAgentsString(str) {
+    public function parseAgentsString(str) {
       var agents = new Array(),
           agent = '',
           arr = str.split('||');
@@ -157,6 +205,41 @@ package pieces {
       });
 
       return agents;
+    }
+
+    /* builds array of Agents
+     * 
+     * ==== Parameters:
+     * arr::Array
+     * 
+     * ==== Returns
+     * Array
+     */
+    public function build_buildings(arr) {
+      var buildings = new Array();
+      arr.forEach(function(b) {
+        var bld_attr = {type: b[0], level: b[1], build_points: b[2]}
+        buildings.push(new Building(bld_attr, this_empire.named()));
+      });
+      return buildings;
+    }
+
+    /* creates array of building data based on string from DB
+     * 
+     * ==== Parameters:
+     * str::String
+     * 
+     * ==== Returns
+     * Array
+     */
+    public function parseBuildingsString(str) {
+      var buildings = new Array(),
+          arr = str.split('||');
+      arr.forEach(function(str) {
+        if(str != "") buildings.push(str.split(','));
+      });
+
+      return buildings;
     }
 
     //---------------------- Selecting GamePiece
@@ -312,8 +395,7 @@ package pieces {
     // creating new Agent and add agents() to it
     public function split_agents_out(toSquare, key, piece=null) {
       selectedArr.forEach(function(agent) { agents().splice(agents().indexOf(agent),1) });
-      var new_agent = new Agent(this_empire, this_empire.agentArray.length);
-      new_agent.agents(selectedArr);
+      var new_agent = new Agent(this_empire, this_empire.agentArray.length, {agents: selectedArr});
       addAndMove(new_agent, key);
     }
     

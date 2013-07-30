@@ -2,27 +2,26 @@ package pieces {
   import flash.events.Event;
   import flash.net.URLLoader;
   import flash.net.URLRequest;
+  import com.demonsters.debugger.MonsterDebugger;
   
-  import static_return.CityConstants;
+  import static_return.GameConstants;
   
   public class Building {
   	public var attr:Object = new Object();
     public var originalPoints = null;
+    private var empire:String;
   	
-  	public function Building(building, c) {
+  	public function Building(building, emp, p=null) {
+      MonsterDebugger.initialize(this);
       type(building.type);
       level(building.level);
-      if(building.build_points != null) originalPoints = building.build_points
-      city(c);
+      if(building.build_points != null) originalPoints = building.build_points;
+      empire = emp;
+      if(p) this_parent(p);
   	  getXML();
   	}
     
     public function is_a(str) { return (str == "Building"); }
-  	
-    public function city(c=null) {
-      if(c) attr['city'] = c;
-      return attr['city'];
-    }
     
   	public function type(t=null) {
   	  if(t) attr['type'] = t;
@@ -35,7 +34,10 @@ package pieces {
   	}
 
     public function this_parent(p=null) {
-      if(p) attr['parent'] = p;
+      if(p) {
+        attr['parent'] = p;
+        attr['parent'].child_length++;
+      }
       return attr['parent'];
     }
 
@@ -44,7 +46,7 @@ package pieces {
   	  return attr['obj_call'];
   	}
     
-    public function name(n=null) {
+    public function named(n=null) {
   	  if(n) attr['name'] = n;
   	  return attr['name'];
   	}
@@ -72,8 +74,7 @@ package pieces {
     }
     
     public function turns() {
-      var city = city()
-      return Math.round(build_points()/city.population())
+      return Math.round(build_points()/this_parent().population());
     }
   	
   	public function benefits(specific=null, value=null) {
@@ -99,7 +100,8 @@ package pieces {
   	}
     
     private function getXML() {
-      var xml = "xml/city_" + city().empire()[1].toLowerCase() + ".xml",
+      var path = GameConstants.ENVIRONMENT == 'flash' ? "xml/city_" : "/xml/city_",
+          xml  = path + empire.toLowerCase() + ".xml",
           xmlLoader = new URLLoader();
       xmlLoader.load(new URLRequest(xml));
       xmlLoader.addEventListener(Event.COMPLETE, setupAttributes);
@@ -111,7 +113,7 @@ package pieces {
           list:XMLList = buildingXML.building.(type == tp && level == lvl),
           bp = originalPoints != null ? originalPoints : list.build_points;
       obj_call(list.objCall);
-      name(list.name);
+      named(list.name);
       image(list.image);
       thumb(list.thumbnail);
       cost(list.cost);

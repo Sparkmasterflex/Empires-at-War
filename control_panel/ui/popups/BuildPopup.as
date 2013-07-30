@@ -29,7 +29,7 @@ package control_panel.ui.popups {
     }
     
     public override function createSelectedObject(target) {
-      var new_obj = new Building(target.responds_to, currObj);
+      var new_obj = new Building(target.responds_to, currObj.empire()[1]);
       currObj.buildingQueue(new_obj);
       availBG.removeChild(target);
     }

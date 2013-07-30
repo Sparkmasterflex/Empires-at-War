@@ -1,5 +1,4 @@
 package static_return {
-	
   public class GameConstants {
   	public static const EGYPT:int 			 = 10;
   	public static const ROME:int 			   = 20;
@@ -27,8 +26,8 @@ package static_return {
   	public static const HEIGHT_CENTER:Number = 400;
   	
   	public static const NEW_GAME:int  = 10;
-  	public static const ACTIVE:int    = 20;
-  	public static const VICTORY:int   = 30;
+  	public static const ACTIVE:int    = 50;
+  	public static const VICTORY:int   = 100;
   	
   	public static const EASYGAME:int  = 10;
   	public static const MEDGAME:int	  = 20;
@@ -40,15 +39,17 @@ package static_return {
 //	public var directionKeys:Array = new Array(104, 105, 102, 99, 98, 97, 100, 103,
 //		38, 33, 39, 34, 40, 35, 37, 36);
     
-    public static const SPY_MALE:int   =  10
-    public static const SPY_FEMALE:int =  15
-    public static const DIPLOMAT:int   =  20
-    public static const SETTLER:int    = 100
+    public static const SPY_MALE:int   =  10;
+    public static const SPY_FEMALE:int =  15;
+    public static const DIPLOMAT:int   =  20;
+    public static const SETTLER:int    = 100;
 
-    public static const INFINTRY:int    = 10
-    public static const MISSLE:int      = 20
-    public static const CAVALRY:int     = 30
-    public static const MAGIC:int       = 40
+    public static const INFINTRY:int    = 10;
+    public static const MISSLE:int      = 20;
+    public static const CAVALRY:int     = 30;
+    public static const MAGIC:int       = 40;
+
+    public static const ENVIRONMENT:String = 'browser';
     
 	
   	public function GameConstants() {

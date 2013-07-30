@@ -3,6 +3,8 @@ package control_panel {
   import com.greensock.easing.*;
   import com.greensock.plugins.DropShadowFilterPlugin;
   import com.greensock.plugins.TweenPlugin;
+
+  import static_return.CityConstants;
   
   import empires.Empire;
 
@@ -54,10 +56,11 @@ package control_panel {
   	private var expanded:Boolean = false;
 
     /*----- Strings -----*/
-    private var to_xml = '/xml/'
+    private var to_xml:String;
   	
 	
     public function ControlPanel(empire, turn, parent) {
+      to_xml = GameConstants.ENVIRONMENT == 'flash' ? 'xml/' : '/xml/';
   	  eAtW = parent;
   	  userEmp = empire;
   	  this.y = COLLAPSED;

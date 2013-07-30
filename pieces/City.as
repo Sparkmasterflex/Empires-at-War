@@ -9,7 +9,7 @@ package pieces {
   import flash.display.MovieClip;
   import flash.events.Event;
   import flash.events.MouseEvent;
-  import flash.utils.setTimeout;
+  import flash.utils.*;
   import flash.external.ExternalInterface;
   
   import pieces.agents.Settler;
@@ -21,34 +21,52 @@ package pieces {
   import static_return.GameConstants;
 
   public class City extends GamePiece {
+    /*--------Classes Added------------*/
     
     /*------ Arrays and Objects -----*/
     public var builders:Array;
+
 	
-  	public function City(emp, s, num, id=null) {
+  	public function City(emp, num, attributes) {
       super(emp);
-      attr = new Object();
       this_empire = emp;
-      if(id != null) this_id(id);
-      empire_id(emp.attr['id']);
       empire(this_empire.empire());
+      if(attributes.id != null) this_id(attributes.id);
+      empire_id(emp.attr['id']);
       this_empire.cityArray.push(this);
       this_empire.pieceArray.push(this);
-      setAttributes(s, num);
-  	  addCityImage();
-  	}
+      setAttributes(num, attributes);
+      addCityImage();
+    }
 
-    private function setAttributes(pop, num) {
+    private function setAttributes(num, a=null) {
       attr['pieceType'] = "city";
-      attr['buildings']  = []
-      population(pop);
+      attr['buildings'] = []
       named("city_" + num + "_" + empire()[0]);
-      if(population() <= CityConstants.START) {
-        var gov_build = new Building({level: 1, type: CityConstants.GOVERNMENT, build_points: 0}, this);
-        setTimeout(function() { buildings(gov_build); }, 200);
-        if(population() == 0) addBuilders();
-      }
+      if(a.primary) primary(true);
+
+      population(a.population);
+      if(population() == 0) addBuilders();
       taxes(0.07);
+
+      if(!a.instant_save && !a.id) {
+        if(a.units) units(a.units);
+        if(a.agents) agents(a.agents);
+      } else {
+        var building_arr = a.id ? parseBuildingsString(a.buildings) : a.buildings,
+            unit_arr = a.id ? parseUnitsString(a.units) : a.units,
+            agent_arr = a.id ? parseAgentsString(a.agents) : a.agents;
+        if(building_arr) buildings(build_buildings(building_arr));
+        if(unit_arr) units(build_units(unit_arr));
+        if(agent_arr) agents(build_agents(agent_arr));
+      }
+
+      if(a.square) square(a.square);
+      if(a.instant_save) {// on game load/reload if not in DB
+        var test_against = unit_arr ? (unit_arr.length + building_arr.length) : building_arr.length;
+        interval = setInterval(test_for_save, 100, test_against);
+      } else
+        if(unit_arr) displayTotalMenBar();
     }
   	
   	public function addCityImage() {
@@ -62,11 +80,11 @@ package pieces {
   	
   	public function determineCitySize(s) {
   	  var size = (s <= CityConstants.VILLAGE) ? 'VILLAGE' :
-  				   (s <= CityConstants.TOWN) ? 'TOWN' :
-  					 (s <= CityConstants.SMALL_CITY) ? 'SMALL_CITY' :
-  					   (s <= CityConstants.CITY) ? 'CITY' :
-  					 	 (s <= CityConstants.LARGE_CITY) ? 'LARGE_CITY' :
-  					   	   'METROPOLIOUS';
+  				  (s <= CityConstants.TOWN) ? 'TOWN' :
+  					  (s <= CityConstants.SMALL_CITY) ? 'SMALL_CITY' :
+  					    (s <= CityConstants.CITY) ? 'CITY' :
+  					 	    (s <= CityConstants.LARGE_CITY) ? 'LARGE_CITY' :
+  					   	    'METROPOLIOUS';
   	  
       return size;
   	}
@@ -130,12 +148,14 @@ package pieces {
       return arr;
     }
   	
-  	public function buildings(b=null) {
+  	public function buildings(blds=null) {
       var _this = this;
-      if(b) {
-        b.this_parent(_this);
-        unavailable(b);
-        attr['buildings'].push(b)
+      if(blds) {
+        blds.forEach(function(b) { 
+          b.this_parent(_this);
+          unavailable(b);
+        });
+        attr['buildings'] = blds;
       }
       
       return attr['buildings'];
@@ -239,7 +259,7 @@ package pieces {
         units: "",
         agents: ""
       }
-      if(buildings()) buildings().forEach(function(bld) { json['buildings'] += bld.type() + "," + bld.level() + "||"; });
+      if(buildings()) buildings().forEach(function(bld) { json['buildings'] += bld.type() + "," + bld.level() + "," + bld.build_points() + "||"; });
       if(units()) units().forEach(function(unit) { json['units'] += unit.type() + "," + unit.men() + "||"; });
       if(agents()) agents().forEach(function(agent) { json['agents'] += agent.type + "||"; });
       

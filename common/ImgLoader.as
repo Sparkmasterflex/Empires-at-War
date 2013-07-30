@@ -4,6 +4,8 @@ package common {
   import flash.display.Loader;
   import flash.net.URLRequest;
   import flash.display.Bitmap;
+
+  import static_return.GameConstants;
   
   public class ImgLoader extends MovieClip {
   	/*---- Classes ----*/
@@ -14,9 +16,10 @@ package common {
   	public var bmHeight:Number;
   	
   	/*---- MovieClips and Strings ----*/
-  	private var path:String = '/images/';
+  	private var path:String;
   	
   	public function ImgLoader(image) {
+      path = GameConstants.ENVIRONMENT == 'flash' ? 'images/' : '/images/';
   	  loader = new Loader();
   	  url = new URLRequest(path + image);
   	  loader.contentLoaderInfo.addEventListener(Event.COMPLETE, ret);

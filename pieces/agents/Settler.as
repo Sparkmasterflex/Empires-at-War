@@ -30,7 +30,10 @@ package pieces.agents {
      * GamePiece (Army, City or Agent)
      */
     public function this_parent(p=null) {
-      if(p) parent_obj = p;
+      if(p) {
+        parent_obj = p;
+        p.child_length++;
+      }
       return parent_obj;
     }
     

@@ -212,7 +212,7 @@ package stage.stage_elements {
   	  gridInfo['pieces'] = obj;
       obj.x = x+60;
       obj.y = y+60;
-  	  if(obj.attr['primary'] == true) {
+  	  if(obj.primary() == true) {
   		  dispatchEvent(new MoveWindowEvent(MoveWindowEvent.WINDOW, obj.x, obj.y));
   	  }
   	}

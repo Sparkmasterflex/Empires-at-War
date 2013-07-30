@@ -1,6 +1,7 @@
 package pieces {
   import com.greensock.*;
   import com.greensock.easing.*;
+  import com.demonsters.debugger.MonsterDebugger;
   
   import settlerBase;
   
@@ -10,6 +11,8 @@ package pieces {
   
   import flash.display.MovieClip;
   import flash.events.*;
+  import flash.utils.*;
+  import flash.external.ExternalInterface;
   
   import pieces.agents.Settler;
   
@@ -18,29 +21,39 @@ package pieces {
   import static_return.GetDirection;
   
   public class Agent extends GamePiece {
+    /*--------Classes Added------------*/
+
     
-    public function Agent(emp, num, id=null) {
+    public function Agent(emp, num, attributes) {
       super(emp);
-      attr = new Object();
       this_empire = emp;
-      attr = new Object()
       this_empire.pieceArray.push(this);
       this_empire.agentArray.push(this);
-      if(id != null) this_id(id);
-      empire_id(this_empire.attr['id']);
-      setAttributes(num);
+      if(attributes.id != null) this_id(attributes.id);
+      empire_id(emp.attr['id']);
+      setAttributes(num, attributes);
       createAgentType();
-      facing(true);
       addEventListener(MouseEvent.CLICK, animateSelect);
     }
 
-    private function setAttributes(num) {
+    private function setAttributes(num, a=null) {
       attr['pieceType'] = "agent";
-      moves(4);
       empire(this_empire.empire());
       named("agent_" + num + "_" + empire()[0]);
       scaleX = .75;
       scaleY = .75;
+
+      if(!a.instant_save && !a.id) {
+        agents(a.agents);
+      } else {
+        var agent_arr = a.id ? parseAgentsString(a.agents) : a.agents;
+        agents(build_agents(agent_arr));
+      }
+      if(a.square) square(a.square);
+      facing(true);
+      moves(4);
+      // on game load/reload if not in DB
+      if(a.instant_save) interval = setInterval(test_for_save, 100, agent_arr.length);
     }
     
     private function createAgentType() {
