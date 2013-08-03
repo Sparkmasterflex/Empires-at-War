@@ -30,7 +30,6 @@ package pieces {
 	
   	public function City(emp, num, attributes) {
       super(emp);
-      MonsterDebugger.initialize(this);
       this_empire = emp;
       empire(this_empire.empire());
       if(attributes.id != null) this_id(attributes.id);
@@ -140,14 +139,8 @@ package pieces {
   	}
     
     public function can_train() {
-      var arr = null;
-      buildings().forEach(function(bld) {
-        if(arr) {
-          arr.concat(bld.armies_allowed());
-        } else {
-          arr = bld.armies_allowed();
-        }
-      });
+      var arr = new Array();
+      buildings().forEach(function(bld) { arr.concat(bld.armies_allowed()); });
       return arr;
     }
   	
@@ -197,7 +190,7 @@ package pieces {
         var first = buildingQueue()[0];
         first.build_points(population())
         if(first.turns() == 0) {
-          buildings(first);
+          addBuilding(first);
           buildingQueue().splice(0, 1);
         }
       }
