@@ -14,17 +14,21 @@ package control_panel {
   
   public class InfoBox extends MovieClip {
     public var buttons;
+    public var fullscreen;
     public var slides;
     public var piece_info:Slide;
+    private var eAw;
 
-    public function InfoBox(game) {
+    public function InfoBox(game, p) {
       super();
+      eAw = p;
       var w = 300,
-          h = 300;
+          h = 200;
       setup_box(w, h);
       add_buttons(w, h);
       slides = starting_slides();
       addChild(slides[0]);
+      eAw.remove_preloader();
     }
 
     private function setup_box(w, h) {
@@ -34,6 +38,7 @@ package control_panel {
       brdr.graphics.moveTo(w, 0);
       brdr.graphics.lineTo(w, h);
       brdr.graphics.lineTo(0, h);
+      bg.y = -100;
       addChild(bg);
       addChild(brdr);
     }
@@ -69,6 +74,12 @@ package control_panel {
       buttons['fastforward'].x = buttons['arrowdown'].x - (btn_size + 20);
       buttons['rewind'].y = y_pos;
       buttons['fastforward'].y = y_pos;
+
+      fullscreen = new SquareButton("Full Screen", 125, 25, 14);
+      fullscreen.x = 10;
+      fullscreen.y = y_pos-5;
+      addChild(fullscreen);
+      fullscreen.addEventListener(MouseEvent.CLICK, eAw.goFullScreen);
     }
 
     /* Create Starting Info Slides for InfoBox
@@ -111,7 +122,7 @@ package control_panel {
      */
     public function collapse_this(event:MouseEvent) {
       var _this = this;
-      TweenLite.to(this, 0.5, {y: -270, onComplete: function() {
+      TweenLite.to(this, 0.5, {y: -170, onComplete: function() {
           TweenLite.to(_this, 0.25, {x: -270});
         }
       });

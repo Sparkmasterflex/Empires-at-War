@@ -106,7 +106,7 @@ package pieces {
   	public function moves(num=null) {
   	  if(!obj_is('city')) {
   	    if(num) attr['moves'] = num;
-  	    return attr['moves'];
+  	    return 100;//attr['moves'];
   	  }
   	}
     
@@ -218,7 +218,7 @@ package pieces {
     public function build_buildings(arr) {
       var buildings = new Array();
       arr.forEach(function(b) {
-        var bld_attr = {type: b[0], level: b[1], build_points: b[2]}
+        var bld_attr = {type: b[1], level: b[0], build_points: b[2]}
         buildings.push(new Building(bld_attr, this_empire.named()));
       });
       return buildings;
@@ -428,7 +428,10 @@ package pieces {
     public function attack(enemy) {
       if(enemy.obj_is('agent'))
         combinePieces(enemy);
-      else {
+      else if(obj_is('agent')) {
+        trace('no!');
+        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
+      } else {
         if(enemy.obj_is('city') && !enemy.units()) {
           enemy.conquored_by(this);
         } else {
@@ -449,8 +452,18 @@ package pieces {
      * piece2::  GamePiece
      */
   	public function combinePieces(piece2) {
+
+      /* if selected piece is an Agent
+       *   added this.agents() to new piece
+       *   and destroy moving piece
+       */
       if(obj_is('agent')) {
         piece2.addAgents(agents());
+
+      /* else if stationary piece is an agent
+       *   add piece2.agent() to selected piece
+       *   replace stationary piece with selected
+       */
       } else if(piece2.obj_is('agent')) {
         addAgents(piece2.agents());
         square(piece2.square());
@@ -458,13 +471,21 @@ package pieces {
         y = square().y + 60;
         changed(true);
         piece2.destroy();
+
+      /* else neither piece is an agent
+       *   combine troops to stationary piece
+       *   if agents() add to piece2
+       */
       } else {
         piece2.concat_units(units());
         piece2.displayTotalMenBar();
         if(agents()) piece2.addAgents(agents());
       }
-      if(!piece2.obj_is('agent')) {
+      // piece2 is removed if agent so don't select if so
+      if(!piece2.obj_is('agent') || (obj_is('agent') && piece2.obj_is('agent'))) {
         piece2.selectThis(null);
+        piece2.changed(true);
+        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, piece2, true));
         destroy();
       }
   	}
@@ -577,15 +598,17 @@ package pieces {
     
     public function buildCity() {
       if(hasSettler() && !obj_is('city')) {
-        var city:City = new City(this_empire, 0, this_empire.cityArray.length);
-        city.x = square().x + 60;
-        city.y = square().y + 60;
-        city.square(square());
-        this_empire.gStage.addChild(city);
-        this_empire.pieceArray.push(city);
-        this_empire.cityArray.push(city);
         agents().splice(agents().lastIndexOf(Settler),1);
-        if(obj_is('agent') && agents().length == 0) this_empire.gStage.removeChild(this);
+        var attrs = {
+          population: 0, 
+          units: (units() != null && units().length > 0 ? units() : null), 
+          agents: agents(),
+          square: square()
+        }
+        var city:City = new City(this_empire, this_empire.cityArray.length, attrs);
+        this_stage.addChild(city);
+        city.selectThis(null);
+        destroy();
       }
     }
 

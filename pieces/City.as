@@ -1,6 +1,7 @@
 package pieces {
   import com.greensock.*;
   import com.greensock.easing.*;
+  import com.demonsters.debugger.MonsterDebugger;
 
   import common.ImgLoader;
   
@@ -29,14 +30,16 @@ package pieces {
 	
   	public function City(emp, num, attributes) {
       super(emp);
+      MonsterDebugger.initialize(this);
       this_empire = emp;
       empire(this_empire.empire());
       if(attributes.id != null) this_id(attributes.id);
       empire_id(emp.attr['id']);
       this_empire.cityArray.push(this);
       this_empire.pieceArray.push(this);
-      setAttributes(num, attributes);
       addCityImage();
+      setAttributes(num, attributes);
+      changed(true);
     }
 
     private function setAttributes(num, a=null) {
@@ -274,9 +277,11 @@ package pieces {
     public function conquored_by(enemy) {
       // set cities empire as enemy's
       empire(enemy.empire()[0]);
+      empire_id(enemy.empire_id());
       enemy.combinePieces(this);
       // TODO: create popup to alert user that this has been conquored
       //----- Also allow them to choose (occupy, sack or raze)
+      return this;
     }
   }
 }

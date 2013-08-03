@@ -1,5 +1,6 @@
 package control_panel.ui.slides {
   import flash.display.MovieClip;
+  import flash.utils.setTimeout;
 
   import common.*;
   
@@ -26,15 +27,15 @@ package control_panel.ui.slides {
      * Add Background for text
      */
     private function add_bg(large=false) {
-      var bg_height = large ? 160 : 120,
-          bg_y = large ? 100 : 145;
+      var bg_height = 140,
+          bg_y = 145;
       bg = new Gradient(
         [1, 0x777777], 'linear', [0xaaaaaa, 0xaaaaaa],
         [0.75,0.75], [0,145], 280, bg_height,
         (3 * Math.PI) / 2, [280,bg_height], 'rectangle'
       );
       bg.x = 10;
-      bg.y = bg_y;
+      bg.y = 10; //bg_y;
       addChild(bg);
     }
 
@@ -91,10 +92,12 @@ package control_panel.ui.slides {
      */
     private function add_empire_symbol(empire) {
       var empSymbol = new ImgLoader('empireSymbols/' + empire.toLowerCase() + '.png');
-      empSymbol.scaleX = 0.9;
-      empSymbol.scaleY = 0.9;
-      empSymbol.x = 10;
-      empSymbol.y = 10;
+      empSymbol.visible = false;
+      setTimeout(function() { 
+        empSymbol.x = 10;
+        empSymbol.y = 200-(empSymbol.bmHeight+30);
+        empSymbol.visible = true;
+      }, 100);
       //empSymbol.alpha = 0.75; TODO: if adding actual image here set opacity
       addChild(empSymbol);
     }

@@ -104,6 +104,7 @@ package pieces.events {
         var winner = attacker_army.totalMen() == 0 ? defender_army : attacker_army,
             loser = winner == attacker_army ? defender_army : attacker_army;
         winner.displayTotalMenBar();
+        winner.changed(true);
         if(loser.isSelected) loser.selectThis(null);
         loser.obj_is('city') ? loser.conquored_by(winner) : loser.destroy();
         popup.addCloseButton();

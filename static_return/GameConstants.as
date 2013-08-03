@@ -49,7 +49,7 @@ package static_return {
     public static const CAVALRY:int     = 30;
     public static const MAGIC:int       = 40;
 
-    public static const ENVIRONMENT:String = 'browser';
+    public static const ENVIRONMENT:String = 'flash';
     
 	
   	public function GameConstants() {

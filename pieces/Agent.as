@@ -113,35 +113,6 @@ package pieces {
       }
       game_piece.gotoAndPlay(frame);
     }
-
-/*    public function pieceMoveKeyBoard(event:*) {
-      var key = event.keyCode,
-          currSq = square(),
-          obj = event.eventPhase ? this : event.prevObj, 
-          toSq = FindAndTestSquare.ret(key, obj),
-          stage = this.parent,
-          section = stage.sGridArr[toSq.split('_')[0]];
-      if(directionKeys.indexOf(key) >= 0) {
-        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, false));
-        var toSquare = section.getChildByName(toSq);
-        
-        if(toSquare.hasLand() && moves() > 0) {
-          if(currSq) changeDirection(currSq, toSquare);
-          if(!toSquare.pieces() && selectedArr == null) {
-            // standard move
-            piece.gotoAndPlay('walk');
-            TweenLite.to(this, .5,
-              { x:(toSquare.gridInfo.posX), y: (toSquare.gridInfo.posY), onComplete: stopWalk, onCompleteParams: [toSquare]});
-          } else {
-            if(toSquare.pieces().empire()[0] == empire()[0]) {
-              combinePieces(toSquare.pieces())
-            }
-          }
-        } else {
-          dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
-        }
-      }
-    }*/
     
     public override function stopWalk(sq) {
       game_piece.gotoAndPlay('stand');
