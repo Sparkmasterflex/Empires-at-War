@@ -19,7 +19,7 @@ package common {
 		  defaultTextFormat = tFormat;
 		  selectable = false;
 		}
-	  
+
 		private static function alignment(a):String {
 		  var align;
 		  switch(a) {

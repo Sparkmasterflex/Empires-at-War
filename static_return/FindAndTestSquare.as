@@ -19,10 +19,9 @@ package static_return {
 		  //empty constructor
 		}
 		
-		public static function ret(key, piece):String {
+		public static function ret(key, sq):String {
 		  var direction = testKey(key),
-			  curPiece = piece,
-			  square = curPiece.square(),
+			  square = sq,
 			  newSquare = newSquare(square, direction);
 			
 		  return newSquare;

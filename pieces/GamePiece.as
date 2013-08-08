@@ -1,7 +1,6 @@
 package pieces {
   import com.greensock.*;
   import com.greensock.easing.*;
-  import com.demonsters.debugger.MonsterDebugger;
 
   import common.ImgLoader;
   
@@ -47,11 +46,11 @@ package pieces {
     public var child_length:uint;
 	  
     public function GamePiece(empire) {
-      MonsterDebugger.initialize(this);
       this_stage = empire.gStage
       attr = new Object();
       child_length = 0;
   	  this_empire = empire;
+      attr['rally'] = false;
   	  addEventListener(MouseEvent.CLICK, selectThis);
     }
 	
@@ -67,6 +66,15 @@ package pieces {
     public function empire_id(emp_id=null) {
       if(emp_id) attr['empire_id'] = emp_id;
       return attr['empire_id'];
+    }
+
+    /* Tests if playable by human player
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function playable() {
+      return this_empire.playable();
     }
     
   	public function named(named=null) {
@@ -291,7 +299,7 @@ package pieces {
       var key = event.keyCode,
           currSq = square(),
           obj = event.eventPhase ? this : event.prevObj,
-          toSq = FindAndTestSquare.ret(key, obj),
+          toSq = FindAndTestSquare.ret(key, obj.square()),
           sq_arr = toSq.split('_'),
           section = this_stage.sGridArr[0];
 
@@ -326,6 +334,53 @@ package pieces {
           dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
         }
       }
+    }
+
+    /* 
+     * Moves piece 3 squares out of danger
+     */
+    public function retreat_from_battle() {
+      var _this = this,
+          direction_arr = create_three_step(),
+          toSquare = square(),
+          i = 0;
+      game_piece.gotoAndPlay('walk');
+      var interval = setInterval(function() {
+        if(i >= direction_arr.length) {
+          clearInterval(interval);
+          game_piece.gotoAndPlay('stand');
+          square(toSquare);
+        } else {
+          var toSq = FindAndTestSquare.ret(direction_arr[i], toSquare),
+            section = this_stage.getChildByName("section_" + toSq.split('_')[0]);
+          toSquare = section.getChildByName(toSq);
+          if(toSquare.empty() && toSquare.hasLand()) TweenLite.to(_this, .5, { x:(toSquare.gridInfo.posX), y: (toSquare.gridInfo.posY)});
+          i++;
+        }
+      }, 500);
+      
+    }
+
+    /* Creates an array of directions for piece to move
+     *
+     * ==== Parameters:
+     * params
+     *
+     * ==== Returns:
+     * Array
+     */
+    private function create_three_step() {
+      var arr = [81, 87, 69, 65, 68, 90, 88, 67],
+          start_index = Math.ceil(Math.random()*arr.length-1),
+          new_arr = [arr[start_index]];
+      for(var i:int=0; i<2; i++) {
+        var next_dir = new_arr[i] == arr[arr.length-1] ? arr[0] : 
+              new_arr[i] == arr[0] ? arr[1] :
+                arr[start_index+(i+1)];
+        new_arr.push(next_dir);
+      }
+
+      return new_arr;
     }
 
     private function changeDirection(sq, newSq) {
@@ -641,6 +696,19 @@ package pieces {
       var percent = 0;
       percent = Math.round((totalMen() / GameConstants.TOTAL_TROOPS) * 100);
       return percent;
+    }
+
+    /* Sets/returns if army is currently rallying
+     *
+     * ==== Parameters:
+     * r:: Boolean
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function rally(r=null) {
+      if(r != null) attr['rally'] = r;
+      return attr['rally'];
     }
     
     public function createJSON() { return JSON.stringify({general: 'Hannabal'}); }

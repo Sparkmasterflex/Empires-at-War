@@ -2,8 +2,7 @@ package empires {
   import flash.display.Sprite;
   import flash.external.ExternalInterface;
   import flash.utils.setTimeout;
-  import com.demonsters.debugger.MonsterDebugger;
-
+  
   import common.Label;
   
   import game_setup.StartsWith;
@@ -37,7 +36,6 @@ package empires {
   	
   	public function Empire(emp, game, stge, parent) {
       super();
-      MonsterDebugger.initialize(this);
       gStage = stge;
   	  eAtW = parent;
   	  attr = new Object();
@@ -60,20 +58,22 @@ package empires {
         if(GameConstants.ENVIRONMENT == 'flash') {
           var piece_arr = emp.id == 1 ?
             [
-              {"agents":"","building_queue":null,"buildings":"1,60,0||","built_id":1,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":1,"moves":null,"name":"city_0_40","pieceType":30,"population":10000,"square":"0_28_16","units":"","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
+              {"primary": true, "agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":6,"moves":5,"name":"army_2_40","pieceType":20,"population":null,"square":"2_15_19","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"}
+              /*{"agents":"","building_queue":null,"buildings":"1,60,0||","built_id":1,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":1,"moves":null,"name":"city_0_40","pieceType":30,"population":10000,"square":"0_28_16","units":"","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
               {"agents":"settler||","building_queue":null,"buildings":null,"built_id":1,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":2,"moves":null,"name":"agent_0_40","pieceType":10,"population":null,"square":"0_28_17","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
               {"agents":"settler||","building_queue":null,"buildings":null,"built_id":1,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":3,"moves":null,"name":"agent_1_40","pieceType":10,"population":null,"square":"0_29_13","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
               {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":4,"moves":5,"name":"army_0_40","pieceType":20,"population":null,"square":"0_28_14","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
               {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":5,"moves":5,"name":"army_1_40","pieceType":20,"population":null,"square":"0_27_17","units":"2,200||2,200||3,200||8,200||7,1||","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"},
-              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":6,"moves":5,"name":"army_2_40","pieceType":20,"population":null,"square":"0_25_16","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"}
+              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:37Z","empire_id":1,"general":null,"id":6,"moves":5,"name":"army_2_40","pieceType":20,"population":null,"square":"0_25_16","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:37Z"}*/
             ] :
             [
-              {"agents":"","building_queue":null,"buildings":"1,60,0||","built_id":2,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":7,"moves":null,"name":"city_0_20","pieceType":30,"population":10000,"square":"0_9_10","units":"","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
+              {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":8,"moves":5,"name":"army_0_20","pieceType":20,"population":null,"square":"2_15_18","units":"2,200||2,200||3,200||4,100||10,200||5,100||8,200||8,200||","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"}
+              /*{"agents":"","building_queue":null,"buildings":"1,60,0||","built_id":2,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":7,"moves":null,"name":"city_0_20","pieceType":30,"population":10000,"square":"0_9_10","units":"","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
               {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":8,"moves":5,"name":"army_0_20","pieceType":20,"population":null,"square":"0_7_12","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
               {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":9,"moves":5,"name":"army_1_20","pieceType":20,"population":null,"square":"0_9_12","units":"2,200||2,200||3,200||8,200||7,1||","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
               {"agents":null,"building_queue":null,"buildings":null,"built_id":null,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":10,"moves":5,"name":"army_2_20","pieceType":20,"population":null,"square":"0_10_10","units":"2,200||2,200||3,200||4,100||5,100||8,200||8,200||10,200||","units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
               {"agents":"settler||","building_queue":null,"buildings":null,"built_id":2,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":11,"moves":null,"name":"agent_0_20","pieceType":10,"population":null,"square":"0_8_10","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:39Z"},
-              {"agents":"settler||","building_queue":null,"buildings":null,"built_id":2,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":12,"moves":null,"name":"agent_1_20","pieceType":10,"population":null,"square":"0_10_9","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:39Z"}
+              {"agents":"settler||","building_queue":null,"buildings":null,"built_id":2,"created_at":"2013-07-27T21:27:39Z","empire_id":2,"general":null,"id":12,"moves":null,"name":"agent_1_20","pieceType":10,"population":null,"square":"0_10_9","units":null,"units_queue":null,"updated_at":"2013-07-27T21:27:39Z"}*/
             ];
           returnPieces(piece_arr);
         } else {

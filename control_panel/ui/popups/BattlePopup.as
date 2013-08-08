@@ -2,6 +2,7 @@ package control_panel.ui.popups {
   import com.greensock.*;
 
   import dispatch.PopupEvent;
+  import control_panel.ui.popups.BattleAlert;
   
   import common.Gradient;
   import common.ImgLoader;
@@ -18,6 +19,7 @@ package control_panel.ui.popups {
     public var attacker:GamePiece;
     public var defender:GamePiece;
     public var battle:Battle;
+    public var alert:BattleAlert;
     public var balanceBar:BalanceBar;
     public var startButton:SquareButton;
     public var cancelButton:SquareButton;
@@ -45,7 +47,7 @@ package control_panel.ui.popups {
       
       // create popup ui
       addBattleImage();
-      addControlButtons();
+      battle_controls();
       createBalanceBar();
     }
     
@@ -57,31 +59,16 @@ package control_panel.ui.popups {
       return img;
     }
     
-    private function addControlButtons() {
-      startButton = new SquareButton("Start Battle", 170, 40, 24),
-      cancelButton = new SquareButton("Cancel", 130, 40, 24);
-
-      cancelButton.x = this.width - (cancelButton.width + 20);
-      cancelButton.y = 349 - cancelButton.height;
-      startButton.x = cancelButton.x - (startButton.width + 10);
-      startButton.y = cancelButton.y;
-      addChild(startButton);
-
-      addChild(cancelButton);
-      cancelButton.addEventListener(MouseEvent.CLICK, cancelBattle);
-      startButton.addEventListener(MouseEvent.CLICK, startBattle);
+    private function battle_controls() {
+      if(alert) fade_and_remove(alert);
+      var attk_pts = battle.attk_points['attack'] + battle.attk_points['defense'] + battle.attk_points['men'],
+          defn_pts = battle.defn_points['attack'] + battle.defn_points['defense'] + battle.defn_points['men'],
+          attk_per = Math.round((attk_pts/(attk_pts+defn_pts))*100),
+          defn_per = Math.round((defn_pts/(attk_pts+defn_pts))*100);
+      alert = new BattleAlert('battle_controls', this, {attacker: attacker, attk_per: attk_per, defender: defender, defn_per: defn_per});
+      add_and_tween(alert);
     }
 
-    /* 
-     * Add 'close' button for battle
-     */
-    public function addCloseButton() {
-      var closeBtn = new SquareButton("Close", 130, 40, 24);
-      closeBtn.x = cancelButton.x;
-      closeBtn.y = cancelButton.y;
-      closeBtn.addEventListener(MouseEvent.CLICK, concludeBattle);
-    }
-    
     private function createBalanceBar() {
       balanceBar = new BalanceBar(battle);
       balanceBar.x = (width/2) - (balanceBar.width/2);
@@ -145,10 +132,64 @@ package control_panel.ui.popups {
       addChild(battle);
     }
     
-    private function startBattle(event:MouseEvent) {
+    public function startBattle(event:MouseEvent) {
+      if(event.currentTarget.name == "rally_troops") battle.losing().rally(true);
+      if(alert) fade_and_remove(alert);
       battle.startBattle();
-      TweenLite.to(startButton, .25, {alpha: 0});
-      TweenLite.to(cancelButton, .25, {alpha: 0});
+    }
+
+    /* Calls retreat from player's army
+     *
+     * ==== Parameters:
+     * event:: MouseEvent
+     *
+     */
+    public function soundRetreat(event:MouseEvent) {
+      if(alert) fade_and_remove(alert);
+      battle.soundRetreat();
+    }
+
+    /* Display current battle standing to player
+     *   allow opportunity to continue battle or retreat
+     * 
+     * ==== Parameters:
+     * attk_per:: Float
+     * defn_per:: Float
+     */
+    public function offer_retreat(attk_per, defn_per) {
+      battle.allow_continue(true);
+      if(alert) fade_and_remove(alert);
+      alert = new BattleAlert('offer_retreat', this, {attacker: attacker, attk_per: (100-attk_per), defender: defender, defn_per: (100-defn_per)});
+      add_and_tween(alert);
+    }
+
+    /* Display current battle standing to player
+     *   alert computer retreating
+     * 
+     * ==== Parameters:
+     * attk_per:: Float
+     * defn_per:: Float
+     */
+    public function computer_retreating(attk_per, defn_per) {
+      if(alert) fade_and_remove(alert);
+      alert = new BattleAlert('computer_retreat', this, {attacker: attacker, attk_per: (100-attk_per), defender: defender, defn_per: (100-defn_per)});
+      add_and_tween(alert);
+    }
+
+    /* Display the battle results and button to remove popup
+     *
+     * ==== Parameters:
+     * winner:: String
+     * attk_per:: Float
+     * defn_per:: Float
+     *
+     * ==== Returns:
+     * returns
+     */
+    public function display_battle_results(winner, attk_per, defn_per) {
+      if(alert) fade_and_remove(alert);
+      alert = new BattleAlert('battle_results', this, {winner: winner, attacker: attacker, attk_per: (100-attk_per), defender: defender, defn_per: (100-defn_per)});
+      add_and_tween(alert);
     }
 
     /* Conclude battle, close popup
@@ -159,8 +200,16 @@ package control_panel.ui.popups {
      * ==== Returns:
      * Boolean
      */
-    private function concludeBattle(event:MouseEvent) {
-      return dispatchEvent(new PopupEvent(PopupEvent.POPUP, this));
+    public function concludeBattle(event:MouseEvent) {
+      if(alert) fade_and_remove(alert);
+      if(battle.winner)
+        dispatchEvent(new PopupEvent(PopupEvent.POPUP, this))
+      else {
+        // at this point sending computer retreat
+        // 33/67 chance computer is rallying/retreating
+        if(Math.random() < 0.33) battle.losing().rally(true)
+        battle.soundRetreat();
+      }
     }
 
     /* Conclude battle, close popup
@@ -168,8 +217,37 @@ package control_panel.ui.popups {
      * ==== Parameters:
      * event::  MouseEvent
      */
-    private function cancelBattle(event:MouseEvent) {
+    public function cancelBattle(event:MouseEvent) {
       dispatchEvent(new PopupEvent(PopupEvent.POPUP, this));
+    }
+
+    /* Add argument (MC) and tween up and in
+     *
+     * ==== Parameters:
+     * mc:: MovieClip
+     *
+     * ==== Returns:
+     * returns
+     */
+    private function add_and_tween(mc) {
+      mc.alpha = 0;
+      mc.x = (width/2) - (mc.width/2);
+      mc.y = 100;
+      addChild(mc);
+      TweenLite.to(mc, 0.5, {alpha: 1, y: 75, dropShadowFilter:{blurX:2, blurY:2, distance:3, alpha:0.6} });
+    }
+
+    /* Tweens argument (MC) down and out then removes
+     *
+     * ==== Parameters:
+     * mc:: MovieClip
+     *
+     * ==== Returns:
+     * returns
+     */
+    private function fade_and_remove(mc) {
+      alert = null;
+      TweenLite.to(mc, 0.5, {alpha: 0, y: (mc.y + 25), onComplete: function() { removeChild(mc); } });
     }
     
     public function removeDestroyedUnit(thumb, is_attk) {

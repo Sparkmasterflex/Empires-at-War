@@ -1,5 +1,6 @@
 package pieces.events {
   import control_panel.ui.popups.BattlePopup;
+  import dispatch.PopupEvent;
   
   import flash.display.MovieClip;
   import flash.utils.clearInterval;
@@ -16,6 +17,8 @@ package pieces.events {
     public var popup:BattlePopup;
     public var attacker_army:GamePiece;
     public var defender_army:GamePiece;
+    public var winner;
+    public var loser;
     
     /*---- Objects and Arrays -----*/
     public var attacker_thumbs:Array; 
@@ -23,9 +26,14 @@ package pieces.events {
     public var attk_points:Object;
     public var defn_points:Object;
         
+    /*---- Boolean -----*/
+    public var continue_attack;
+
     /*---- Numbers -----*/
     private var skimish_interval:uint;
     private var num_skirmish:int;
+    public var attk_total_men:int;
+    public var defn_total_men:int;
     
     public function Battle(pop) {
       super();
@@ -36,12 +44,33 @@ package pieces.events {
       defender_thumbs = popup.defender_thumbs;
       
       attk_points = parsePoints(attacker_thumbs);
+      attk_total_men = attk_points.men;
       defn_points = parsePoints(defender_thumbs);
+      defn_total_men = defn_points.men;
       num_skirmish = 0;
+      allow_continue(false);
     }
     
     public function startBattle() {
-      skimish_interval = setInterval(skirmish, 500); 
+      skimish_interval = setInterval(skirmish, 250); 
+    }
+
+    /* Sounds retreat from either player or computer
+     *
+     * ==== Parameters:
+     * player:: Boolean
+     *
+     * ==== Returns:
+     * returns
+     */
+    public function soundRetreat() {
+      if(able_retreat()) {
+        determine_winner();
+        loser.retreat_from_battle();
+      } else {
+        allow_continue(true);
+        startBattle();
+      }
     }
     
     private function parsePoints(thumb_arr) {
@@ -58,15 +87,23 @@ package pieces.events {
     }
     
     private function skirmish() {
-      if(attk_points['men'] > 0 && defn_points['men'] > 0) {
+      if(continue_battle()) {
+        // if rallied troops add 25% to attack points
+        // ---- This will prob need tweeked
+        if(attacker_army.rally())
+          attk_points['attack'] = attk_points['attack']*1.25;
+        else if(defender_army.rally())
+          defn_points['attack'] = defn_points['attack']*1.25;
+
         var larger = attacker_thumbs.length > defender_thumbs.length ? attacker_thumbs.length : defender_thumbs.length,
             attk_percent = Math.round((attk_points['attack']/(attk_points['attack']+defn_points['attack']))*100),
             defn_percent = Math.round((attk_points['defense']/(attk_points['defense']+defn_points['defense']))*100),
             men_percent = Math.round((attk_points['men']/(attk_points['men']+defn_points['men']))*100),
+            // TODO: adjust this more... first hit is too much
             // first attack really counts
-            multiplier = num_skirmish <= 1 ? 4 : 
+            multiplier = num_skirmish <= 1 ? 1.5 : 
               // third attack is second wind
-              num_skirmish == 3 ? 2 
+              num_skirmish == 3 ? 1.3
                 // normal attack
                 : 1;
             // first two skirmishes are the most bloody
@@ -80,9 +117,9 @@ package pieces.events {
               defn_loser = d_rand > defn_percent ? attacker_thumbs[i] : defender_thumbs[i],
               men_loser = m_rand > men_percent ? attacker_thumbs[i] : defender_thumbs[i];
           
-          if(attk_loser) attk_loser.responds_to.men(Math.ceil(attk_loser.responds_to.men()*(multiplier*0.07)), true);
-          if(defn_loser) defn_loser.responds_to.men(Math.ceil(defn_loser.responds_to.men()*(multiplier*0.10)), true);
-          if(men_loser) men_loser.responds_to.men(Math.round(men_loser.responds_to.men()*(multiplier*0.05)), true);
+          if(attk_loser) attk_loser.responds_to.men(Math.ceil(attk_loser.responds_to.men()*(multiplier*0.035)), true);
+          if(defn_loser) defn_loser.responds_to.men(Math.ceil(defn_loser.responds_to.men()*(multiplier*0.05)), true);
+          if(men_loser) men_loser.responds_to.men(Math.round(men_loser.responds_to.men()*(multiplier*0.025)), true);
           if(attacker_thumbs[i]) {
             var a_th = attacker_thumbs[i],
                 a_u = a_th.responds_to;
@@ -101,15 +138,122 @@ package pieces.events {
         popup.updateStats()
         num_skirmish++;
       } else {
-        var winner = attacker_army.totalMen() == 0 ? defender_army : attacker_army,
-            loser = winner == attacker_army ? defender_army : attacker_army;
-        winner.displayTotalMenBar();
-        winner.changed(true);
+        trace('check for end');
+        clearInterval(skimish_interval);
+        men_remaining() ?
+          calculate_retreat() :
+            determine_winner();
+      }
+    }
+
+    /* Allow user to retreat from battle
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function calculate_retreat() {
+      // TODO: this is off by 4 or 5%
+      var losing = attacker_army.totalMen() < defender_army.totalMen() ? attacker_army : defender_army,
+          attk_per = (attacker_army.totalMen()/attk_total_men)*100,
+          defn_per = (defender_army.totalMen()/defn_total_men)*100;
+      
+      losing.playable() ?
+        popup.offer_retreat(Math.round(attk_per), Math.round(defn_per)) :
+          popup.computer_retreating(Math.round(attk_per), Math.round(defn_per));
+    }
+
+    /* Determine results of battle
+     * == remove loser
+     * == conquer city
+     * == adjust winner's TotalMenBar
+     *
+     * ==== Returns:
+     * N/A
+     */
+    public function determine_winner() {
+      winner = attacker_army.totalMen() < defender_army.totalMen() ? defender_army : attacker_army,
+      loser = winner == attacker_army ? defender_army : attacker_army;
+      winner.displayTotalMenBar();
+      winner.changed(true);
+      var attk_per = (attacker_army.totalMen()/attk_total_men)*100,
+          defn_per = (defender_army.totalMen()/defn_total_men)*100;
+
+      popup.display_battle_results([winner.empire()[1], winner.playable()], Math.round(attk_per), Math.round(defn_per))
+      handle_loser();
+    }
+
+    /* Determine what to do with losing army/city
+     *
+     * ==== Returns:
+     * GamePiece
+     */
+    public function handle_loser() {
+      if(loser.totalMen() > 0) {
+        loser.displayTotalMenBar();
+        loser.changed(true);
+      } else {
         if(loser.isSelected) loser.selectThis(null);
         loser.obj_is('city') ? loser.conquored_by(winner) : loser.destroy();
-        popup.addCloseButton();
-        clearInterval(skimish_interval);
       }
+    }
+
+    /* Calculates the army currently losing battle
+     *
+     * ==== Returns:
+     * GamePiece
+     */
+    public function losing() {
+      // IMPORTANT: only check this if continuing attack
+      // ---- do not want losing to flip-flop back and forth
+      var losing = attacker_army.totalMen() == defender_army.totalMen() ? null :
+                    attacker_army.totalMen() < defender_army.totalMen() ? attacker_army :
+                      defender_army;
+      return losing;
+    }
+
+    /* Test if battle should continue or not
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    private function continue_battle() {
+      // if less than 1/2 men remain give option to end
+      var lowest = attk_points['men'] >= defn_points['men'] ? defn_points['men'] : attk_points['men'],
+          half_of_total = attk_points['men'] >= defn_points['men'] ? (defn_total_men/2) : (attk_total_men/2),
+          half = lowest >= half_of_total;
+      // else continue_attack has been set to 'true' and both armies still have men
+      return half == true || (allow_continue() && men_remaining());
+    }
+
+    /* Sets this.continue_battle to true
+     *
+     * ==== Parameters:
+     * ca:: Boolean
+     *
+     * ==== Returns:
+     * returns
+     */
+    public function allow_continue(ca=null) {
+      if(ca != null) continue_attack = ca;
+      return continue_attack;
+    }
+    
+    /* Test if men remain on both sides
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    private function men_remaining() {
+      return attk_points['men'] > 0 && defn_points['men'] > 0
+    }
+
+    /* Calculate 50/50 chance retreat successful
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function able_retreat() {
+      return 0.5 <= Math.random();
     }
     
     private function get_chances(attk_val, defn_val) {
