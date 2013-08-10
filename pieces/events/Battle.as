@@ -87,7 +87,7 @@ package pieces.events {
     }
     
     private function skirmish() {
-      if(continue_battle()) {
+      if(continue_battle() || (defender_army.obj_is('city') && men_remaining())) {
         // if rallied troops add 25% to attack points
         // ---- This will prob need tweeked
         if(attacker_army.rally())
@@ -138,7 +138,6 @@ package pieces.events {
         popup.updateStats()
         num_skirmish++;
       } else {
-        trace('check for end');
         clearInterval(skimish_interval);
         men_remaining() ?
           calculate_retreat() :
@@ -175,6 +174,7 @@ package pieces.events {
       loser = winner == attacker_army ? defender_army : attacker_army;
       winner.displayTotalMenBar();
       winner.changed(true);
+      if(winner.tmp_army) winner.removeChild(winner.tmp_army);
       var attk_per = (attacker_army.totalMen()/attk_total_men)*100,
           defn_per = (defender_army.totalMen()/defn_total_men)*100;
 

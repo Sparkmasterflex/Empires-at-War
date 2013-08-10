@@ -56,8 +56,8 @@ package pieces {
         if(a.agents) agents(a.agents);
       } else {
         var building_arr = a.id ? parseBuildingsString(a.buildings) : a.buildings,
-            unit_arr = a.id ? parseUnitsString(a.units) : a.units,
-            agent_arr = a.id ? parseAgentsString(a.agents) : a.agents;
+            unit_arr = (a.id && a.units) ? parseUnitsString(a.units) : a.units,
+            agent_arr = (a.id && a.agents) ? parseAgentsString(a.agents) : a.agents;
         if(building_arr) buildings(build_buildings(building_arr));
         if(unit_arr) units(build_units(unit_arr));
         if(agent_arr) agents(build_agents(agent_arr));
@@ -272,6 +272,7 @@ package pieces {
       empire(enemy.empire()[0]);
       empire_id(enemy.empire_id());
       enemy.combinePieces(this);
+      removeChild(tmp_army);
       // TODO: create popup to alert user that this has been conquored
       //----- Also allow them to choose (occupy, sack or raze)
       return this;

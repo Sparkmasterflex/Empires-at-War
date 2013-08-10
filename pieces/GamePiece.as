@@ -2,6 +2,8 @@ package pieces {
   import com.greensock.*;
   import com.greensock.easing.*;
 
+  import armyBase;
+
   import common.ImgLoader;
   
   import dispatch.*;
@@ -28,6 +30,7 @@ package pieces {
     public var bar:PercentBar;
     public var this_stage:GameStage;
     public var game_piece;
+    public var tmp_army:armyBase;
     public var interval;
   	
   	/*--------Boolean-------*/
@@ -305,7 +308,8 @@ package pieces {
 
       if(directionKeys.indexOf(key) >= 0) {
         dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, false));
-        var toSquare = section.getChildByName(toSq);
+        var toSquare = section.getChildByName(toSq),
+            other = toSquare.pieces();
 
         if(toSquare.hasLand() && (moves() > 0 || obj_is('city'))) {
           // set piece to face direction headed
@@ -320,12 +324,15 @@ package pieces {
 
           //------ splitting piece
           } else if(selectedArr && selectedArr.length > 0) {
-            split_piece_children(toSquare, key, toSquare.pieces());
-            selectedArr = null;
+            if(is_enemy(other)) {
+              attack(other);
+            } else {
+              split_piece_children(toSquare, key, toSquare.pieces());
+              selectedArr = null;
+            }
 
           //------ simple combine pieces
           } else {
-            var other = toSquare.pieces();
             is_enemy(other) ? 
               attack(other) : 
                 combinePieces(other);
@@ -340,25 +347,28 @@ package pieces {
      * Moves piece 3 squares out of danger
      */
     public function retreat_from_battle() {
-      var _this = this,
-          direction_arr = create_three_step(),
-          toSquare = square(),
-          i = 0;
-      game_piece.gotoAndPlay('walk');
-      var interval = setInterval(function() {
-        if(i >= direction_arr.length) {
-          clearInterval(interval);
-          game_piece.gotoAndPlay('stand');
-          square(toSquare);
-        } else {
-          var toSq = FindAndTestSquare.ret(direction_arr[i], toSquare),
-            section = this_stage.getChildByName("section_" + toSq.split('_')[0]);
-          toSquare = section.getChildByName(toSq);
-          if(toSquare.empty() && toSquare.hasLand()) TweenLite.to(_this, .5, { x:(toSquare.gridInfo.posX), y: (toSquare.gridInfo.posY)});
-          i++;
-        }
-      }, 500);
-      
+      if(obj_is('city')) {
+        if(tmp_army) removeChild(tmp_army);
+      } else {
+        var _this = this,
+            direction_arr = create_three_step(),
+            toSquare = square(),
+            i = 0;
+        game_piece.gotoAndPlay('walk');
+        var interval = setInterval(function() {
+          if(i >= direction_arr.length) {
+            clearInterval(interval);
+            game_piece.gotoAndPlay('stand');
+            square(toSquare);
+          } else {
+            var toSq = FindAndTestSquare.ret(direction_arr[i], toSquare),
+              section = this_stage.getChildByName("section_" + toSq.split('_')[0]);
+            toSquare = section.getChildByName(toSq);
+            if(toSquare.empty() && toSquare.hasLand()) TweenLite.to(_this, .5, { x:(toSquare.gridInfo.posX), y: (toSquare.gridInfo.posY)});
+            i++;
+          }
+        }, 500);
+      }
     }
 
     /* Creates an array of directions for piece to move
@@ -384,10 +394,12 @@ package pieces {
     }
 
     private function changeDirection(sq, newSq) {
-      var left = GetDirection.ret(sq, newSq);
-      if(facing() != left) {
-        left ? this.scaleX = 0.85 : this.scaleX = -0.85;
-        facing(left);
+      if(!obj_is('city')) {
+        var left = GetDirection.ret(sq, newSq);
+        if(facing() != left) {
+          left ? this.scaleX = 0.85 : this.scaleX = -0.85;
+          facing(left);
+        }
       }
     }
 
@@ -472,7 +484,7 @@ package pieces {
      * Boolean
      */
     public function is_enemy(piece) {
-      return empire()[0] != piece.empire()[0];
+      return piece && empire()[0] != piece.empire()[0];
     }
 
     /* Begins attack process
@@ -490,7 +502,12 @@ package pieces {
         if(enemy.obj_is('city') && !enemy.units()) {
           enemy.conquored_by(this);
         } else {
-          game_piece.gotoAndPlay('attack');
+          if(enemy.obj_is('city')) enemy.addTemporaryArmy();
+          if(obj_is('city')) {
+            addTemporaryArmy();
+            tmp_army.gotoAndPlay('attack');
+          } else
+            game_piece.gotoAndPlay('attack');
           var _this = this;
           setTimeout(function() {
             dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Battle', null, [_this, enemy], true));
@@ -709,6 +726,29 @@ package pieces {
     public function rally(r=null) {
       if(r != null) attr['rally'] = r;
       return attr['rally'];
+    }
+
+    /* Set Temporary Army's empire
+     * 
+     * ==== Parameters:
+     * army:: armyBase
+     * 
+     */
+    public function addTemporaryArmy() {
+      tmp_army = new armyBase();
+      switch(empire()[0]) {
+        case GameConstants.GAUL:
+          tmp_army.armyIsGaul();
+          break;
+        case GameConstants.ROME:
+          tmp_army.armyIsRome();
+          break;
+        default:
+          trace('none');
+        }
+      tmp_army.scaleX = 0.85;
+      tmp_army.scaleY = 0.85;
+      addChild(tmp_army);
     }
     
     public function createJSON() { return JSON.stringify({general: 'Hannabal'}); }

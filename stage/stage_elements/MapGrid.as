@@ -1,6 +1,7 @@
 package stage.stage_elements {
   import common.ImgLoader;
   import dispatch.MoveWindowEvent;
+  import common.Label;
   
   import flash.display.MovieClip;
   import flash.display.Sprite;
@@ -49,8 +50,6 @@ package stage.stage_elements {
   	  gridInfo.posX = posX;
   	  gridInfo.posY = posY;
   	  gridInfo.land = false;
-  	  gridInfo.pieces = null;
-  	  //findMapSquare(gridInfo.section, gridInfo.row, gridInfo.column);
   	}
   	
   	public function addLand(ld:Boolean, t=null) {
@@ -59,7 +58,8 @@ package stage.stage_elements {
   	  gridInfo.land = ld;
   	  var terrain = t == null ? setTerrain(gridInfo.section, gridInfo.row, gridInfo.column) : t,
   	      img = addTerrainImage(terrain);
-  	  gridInfo.terrain = terrain; 
+
+  	  gridInfo.terrain = terrain;
   	  if(img) addImgLoader(img);
   	}
   	
