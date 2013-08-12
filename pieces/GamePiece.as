@@ -500,7 +500,8 @@ package pieces {
         dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
       } else {
         if(enemy.obj_is('city') && !enemy.units()) {
-          enemy.conquored_by(this);
+          dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Conquer', null, [this, enemy], true));
+          //enemy.conquered_by(this);
         } else {
           if(enemy.obj_is('city')) enemy.addTemporaryArmy();
           if(obj_is('city')) {
@@ -518,6 +519,7 @@ package pieces {
     
     public function newArmy(arr) { selectedArr = arr; }
   	
+
   	/* Adds children to GamePiece passed and removes self
      *
      * ==== Parameters:
@@ -640,6 +642,12 @@ package pieces {
       return attr['units'];
     }
     
+    /* Remove unit from Army
+     *
+     * ==== Parameters:
+     * unit:: Unit
+     *
+     */
     public function removeUnit(unit) {
       units().splice(units().indexOf(unit), 1);
     }
@@ -684,10 +692,17 @@ package pieces {
       }
     }
 
+    /* 
+     * Destroy and remove from game
+     */
     public function destroy() {
       square().removeFromSquare();
-      this_empire.destroying.push(this_id())
-      this_stage.removeChild(this);
+      if(obj_is('city'))
+        set_to_destroyed();
+      else {
+        this_empire.destroying.push(this_id());
+        this_stage.removeChild(this);
+      }
     }
     
     public function hasSettler():Boolean { return agents() && agents().some(function(agent) { return agent is Settler; }); }
@@ -753,6 +768,7 @@ package pieces {
     
     public function createJSON() { return JSON.stringify({general: 'Hannabal'}); }
     public function stopWalk(sq) { return false; }
+    public function set_to_destroyed() { return false; }
 	
 /*--------------- Next Turn Functions -------------*/
     public function nextTurn(turn) { moves(5); }

@@ -23,6 +23,7 @@ package pieces {
 
   public class City extends GamePiece {
     /*--------Classes Added------------*/
+    public var city_img:ImgLoader;
     
     /*------ Arrays and Objects -----*/
     public var builders:Array;
@@ -71,13 +72,20 @@ package pieces {
         if(unit_arr) displayTotalMenBar();
     }
   	
-  	public function addCityImage() {
-  	  var size = CityConstants.IMAGES[determineCitySize(population())],
-  		    str = empire()[1].toLowerCase() + '/city/' + size,
-  	      img:ImgLoader = new ImgLoader(str);
-  	  img.x = -60;
-  	  img.y = -60;
-  	  addChild(img);
+    /* Add/Change city image
+     *
+     * ==== Parameters:
+     * destroy:: Boolean
+     *
+     */
+    public function addCityImage(destroy=false) {
+      if(city_img) removeChild(city_img);
+  	  var size = destroy ? 'destroyed.png' : CityConstants.IMAGES[determineCitySize(population())],
+  		    str = empire()[1].toLowerCase() + '/city/' + size;
+  	  city_img = new ImgLoader(str);
+  	  city_img.x = -60;
+  	  city_img.y = -60;
+  	  addChild(city_img);
   	}
   	
   	public function determineCitySize(s) {
@@ -95,6 +103,33 @@ package pieces {
   	  if(p) attr['population'] = p;
   	  return attr['population'];
   	}
+
+    /* Humanize population() adding commas
+     *
+     * ==== Parameters:
+     * params
+     *
+     * ==== Returns:
+     * String
+     */
+    public function humanize_population() {
+      var integer:String = "",
+          fraction:String = "",
+          pop = population(),
+          string:String = pop.toString(),
+          array:Array = string.split("."),
+          regex:RegExp = /(\d+)(\d{3})/;
+     
+      integer = array[0];
+     
+      while(regex.test(integer)) {
+        integer = integer.replace(regex,'$1' + ',' + '$2');
+      }
+     
+      if(array[1]){ fraction = integer.length > 0 ? '.' + array[1] : ''; }
+     
+      return integer + fraction;
+    }
     
     public function increasePopulation() {
       var population_effects = 0,
@@ -262,20 +297,60 @@ package pieces {
       return json;
     }
     
-    /* Sets self conquored by enemy passed
+    /* Sets self conquered by enemy passed
      *
      * ==== Parameters:
      * enemy:: GamePiece
      */
-    public function conquored_by(enemy) {
+    public function conquered_by(enemy) {
       // set cities empire as enemy's
       empire(enemy.empire()[0]);
       empire_id(enemy.empire_id());
+      this_empire = enemy.this_empire;
+      // TODO: clean up empire()
+      //   ---> really just set to this_empire and parse what is needed from that
       enemy.combinePieces(this);
-      removeChild(tmp_army);
-      // TODO: create popup to alert user that this has been conquored
-      //----- Also allow them to choose (occupy, sack or raze)
+      if(tmp_army) removeChild(tmp_army);
       return this;
+    }
+
+    /* 
+     * Set city to be destroyed
+     *   removes ability to select
+     *   sets 5 turn countdown to remove
+     *   adds 'destroyed.png' as city_img
+     */
+    public override function set_to_destroyed() {
+      addCityImage(true);
+      removeEventListener(MouseEvent.CLICK, selectThis);
+      population(0);
+      destroy_in(2, true);
+    }
+
+    /* set turn timer to remove 
+     * 
+     * ==== Parameters:
+     * t:: Integer
+     *
+     * ==== Returns:
+     * Integer
+     */
+    public function destroy_in(t=null, start_count=false) {
+      // if setting destroy_in or incrementing down save piece
+      if(start_count || t) changed(true);
+      if(start_count)
+        attr['destroy_in'] = t;
+       else if(t)
+        attr['destroy_in'] -= t;
+      return attr['destroy_in'];
+    }
+
+    /* 
+     * Remove city ruins from board
+     */
+    public function remove_ruins() {
+      this_empire.destroying.push(this_id());
+      this_stage.removeChild(this);
     }
   }
 }

@@ -6,14 +6,7 @@ package control_panel.ui.popups {
   
     public function BuildPopup(params:*, object:*) {
       super(params, object);
-    }
-    
-    private function addPopupImage() {
-      var img = new ImgLoader('ui/popups/placeholder2.jpg');
-      img.x = 10;
-      img.y = 10;
-      addChild(img);
-      createQueueLabel("Building Queue");
+      add_popup_image("ui/popups/placeholder2.jpg", {});
     }
     
     // TODO: fix this
@@ -35,7 +28,6 @@ package control_panel.ui.popups {
     }
     
     public override function getQueue() {
-      addPopupImage();
       return currObj.buildingQueue();
     }
   }

@@ -10,14 +10,7 @@ package control_panel.ui.popups {
     
     public function RecruitPopup(params:*, object:*) {
       super(params, object);
-    }
-    
-    private function addPopupImage() {
-      var img = new ImgLoader('ui/popups/placeholder.jpg');
-      img.x = 10;
-      img.y = 10;
-      addChild(img);
-      createQueueLabel("Recruiting Queue");
+      add_popup_image("ui/popups/placeholder.jpg", {});
     }
     
     public override function createXMLList(params) {
@@ -41,7 +34,6 @@ package control_panel.ui.popups {
     }
     
     public override function getQueue() {
-      addPopupImage();
       return currObj.unitsQueue();
     }
 

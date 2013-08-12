@@ -2,7 +2,6 @@ package pieces {
   import flash.events.Event;
   import flash.net.URLLoader;
   import flash.net.URLRequest;
-  import com.demonsters.debugger.MonsterDebugger;
   
   import static_return.GameConstants;
   
@@ -12,7 +11,6 @@ package pieces {
     private var empire:String;
   	
   	public function Building(building, emp, p=null) {
-      MonsterDebugger.initialize(this);
       type(building.type);
       level(building.level);
       if(building.build_points != null) originalPoints = building.build_points;

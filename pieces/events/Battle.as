@@ -193,7 +193,10 @@ package pieces.events {
         loser.changed(true);
       } else {
         if(loser.isSelected) loser.selectThis(null);
-        loser.obj_is('city') ? loser.conquored_by(winner) : loser.destroy();
+        if(loser.obj_is('city')) {
+          dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Conquer', null, [winner, loser], true));
+        } else
+          loser.destroy();
       }
     }
 

@@ -13,7 +13,7 @@ package control_panel.ui {
   	  this.graphics.beginFill(0x000000);
   	  this.graphics.drawRect(0, 0, w, h);
   	  this.graphics.endFill();
-  	  addEventListener(MouseEvent.CLICK, closePopups);
+  	  if(popup.can_click_overlay()) addEventListener(MouseEvent.CLICK, closePopups);
   	}
   	
   	private function closePopups(event:MouseEvent) {

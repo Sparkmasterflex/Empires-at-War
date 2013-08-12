@@ -2,6 +2,7 @@ package control_panel.ui.popups {
   import com.greensock.*;
 
   import dispatch.PopupEvent;
+  import control_panel.ui.*;
   import control_panel.ui.popups.BattleAlert;
   
   import common.Gradient;
@@ -10,7 +11,6 @@ package control_panel.ui.popups {
   
   import flash.events.*;
   
-  import control_panel.ui.*;
   import pieces.*;
   import pieces.events.Battle;
   
@@ -33,7 +33,7 @@ package control_panel.ui.popups {
     public var list_num:int;
     
     public function BattlePopup(type, attk, defn) {
-      super(870, 750);
+      super(870, 750, false);
       list_num = 0;
       attacker = attk;
       defender = defn;
@@ -46,17 +46,9 @@ package control_panel.ui.popups {
       setupBattle();
       
       // create popup ui
-      addBattleImage();
+      add_popup_image('battles/placeholder.jpg', {});
       battle_controls();
       createBalanceBar();
-    }
-    
-    private function addBattleImage() {
-      var img = new ImgLoader('battles/placeholder.jpg');
-      img.x = 10;
-      img.y = 10;
-      addChild(img);
-      return img;
     }
     
     private function battle_controls() {
