@@ -112,8 +112,8 @@ package empires {
     		  case 'SETTLER':
             for(var settler_index:int=0; settler_index<toStart.SETTLER; settler_index++) addAgent({agents: [GameConstants.SETTLER]});
     		    break;
-    		  case 'CITY': //CityConstants.START
-    		    for(var city_index:int=0; city_index<toStart.CITY; city_index++) addCity({population: 18000, square: startSq, buildings: [[1,CityConstants.GOVERNMENT, 0, 19]]}); //, [1,CityConstants.MILITARY, 0, 10]
+    		  case 'CITY': 
+    		    for(var city_index:int=0; city_index<toStart.CITY; city_index++) addCity({population: CityConstants.START, square: startSq, buildings: [[1,CityConstants.GOVERNMENT, 0, 19]]}); //, [1,CityConstants.MILITARY, 0, 10]
     		    break;
     		}
   	  }

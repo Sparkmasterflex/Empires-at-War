@@ -50,8 +50,13 @@ package control_panel.ui.slides {
       lbl.width = 250;
       lbl.multiline = true;
       lbl.wordWrap = true;
-      lbl.x = 25;
-      lbl.y = (24*i)+10;
+      if(arr.length > 3 && i >= 4) {
+        lbl.x = 180;
+        lbl.y = 24*(i-3)+10;
+      } else {
+        lbl.x = 15;
+        lbl.y = (24*i)+10;
+      }
       labels.push(lbl);
       bg.addChild(lbl);
     }
@@ -78,9 +83,9 @@ package control_panel.ui.slides {
      */
     private function build_array_for(object) {
       var arr = object.obj_is('city') ?
-        [object.empire()[1] + " " + object.obj_is(), "Population: " + object.population(), "Income: " + object.collectTaxes(), "General: None", "Total Men: " + object.totalMen()] :
-          object.obj_is('army') ? [object.empire()[1] + " " + object.obj_is(), "General: None", "Total Men: " + object.totalMen()] :
-            [object.empire()[1] + " " + object.obj_is()];
+        [object.empire()[1] + " " + object.obj_is(), "Population: " + object.population(), "Growth: " + Math.round(object.pop_growth()*1000)/10 + "%", "Income: " + object.collectTaxes(), "General: None", "Total Men: " + object.totalMen()] :
+          object.obj_is('army') ? [object.empire()[1] + " " + object.obj_is(), "General: None", "Total Men: " + object.totalMen(), "Moves: " + object.moves()] :
+            [object.empire()[1] + " " + object.obj_is(), "Moves: " + object.moves()];
 
       return arr;
     }
@@ -95,7 +100,7 @@ package control_panel.ui.slides {
       empSymbol.visible = false;
       setTimeout(function() { 
         empSymbol.x = 10;
-        empSymbol.y = 200-(empSymbol.bmHeight+30);
+        empSymbol.y = -60;
         empSymbol.visible = true;
       }, 100);
       //empSymbol.alpha = 0.75; TODO: if adding actual image here set opacity

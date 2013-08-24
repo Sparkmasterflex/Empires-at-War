@@ -132,23 +132,30 @@ package pieces {
     }
     
     public function increasePopulation() {
-      var population_effects = 0,
-          pop = population(),
-          percent;
+      var pop = population(),
+          growth = 1+pop_growth();
       if(pop >= 10000) {
         if(builders && builders.length > 0) removeBuilders();
-        buildings().forEach(function(bld) {
-          trace(parseFloat(bld.population_benefits()));
-          population_effects += parseFloat(bld.population_benefits());
-        });
-        percent = (1.015 + population_effects);
-        population(pop*percent);
+        population(pop*growth);
       } else {
         population(pop + 10000);
       }
       level();
       addCityImage();
       return population();
+    }
+
+    /* Calculate % of growth for city
+     *
+     * ==== Returns:
+     * Float
+     */
+    public function pop_growth() {
+      var population_effects = 0;
+      buildings().forEach(function(bld) {
+        population_effects += parseFloat(bld.population_benefits());
+      });
+      return (0.015 + population_effects);
     }
 
     /* Sets/returns city level based on population

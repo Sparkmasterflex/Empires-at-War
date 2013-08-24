@@ -9,14 +9,18 @@ package control_panel {
   import control_panel.ui.SquareButton;
   import control_panel.ui.slides.Slide;
 
+  import dispatch.MoveWindowEvent;
+
+  import pieces.GamePiece;
+
   import common.ImgLoader;
   import common.Label;
   
   public class InfoBox extends MovieClip {
     public var buttons;
     public var fullscreen;
-    public var slides;
-    public var piece_info:Slide;
+    public var curr_slide:Slide;
+    public var current_piece:GamePiece;
     private var eAw;
 
     public function InfoBox(game, p) {
@@ -26,8 +30,8 @@ package control_panel {
           h = 200;
       setup_box(w, h);
       add_buttons(w, h);
-      slides = starting_slides();
-      addChild(slides[0]);
+      curr_slide = new Slide(["Use the \"Q\", \"W\", \"E\" keys to move up.","Use the \"A\", \"D\" to move left and right.","Use the \"Z\", \"X\", \"C\" keys to move down."], 'ui/controlPanel/info_box/keys.png');
+      addChild(curr_slide);
       eAw.remove_preloader();
     }
 
@@ -56,6 +60,7 @@ package control_panel {
           y_pos = (h - btn_size) - 10;
       arr.forEach(function(btn) {
         buttons[btn] = new ImgLoader('ui/controlPanel/buttons/'+btn+'.png');
+        buttons[btn].name = btn;
         addChild(buttons[btn]);
       });
 
@@ -68,6 +73,8 @@ package control_panel {
 
       buttons['arrowup'].addEventListener(MouseEvent.CLICK, collapse_this);
       buttons['arrowdown'].addEventListener(MouseEvent.CLICK, expand_this);
+      buttons['rewind'].addEventListener(MouseEvent.CLICK, to_piece);
+      buttons['fastforward'].addEventListener(MouseEvent.CLICK, to_piece);
 
       // previous/next buttons
       buttons['rewind'].x = buttons['arrowdown'].x - (btn_size*2 + 40);
@@ -82,21 +89,6 @@ package control_panel {
       fullscreen.addEventListener(MouseEvent.CLICK, eAw.goFullScreen);
     }
 
-    /* Create Starting Info Slides for InfoBox
-     *
-     * ==== Returns:
-     * Array
-     */
-    public function starting_slides() {
-      var arr = new Array();
-
-      //----- keys slide
-      var keys = new Slide(["Use the \"Q\", \"W\", \"E\" keys to move up.","Use the \"A\", \"D\" to move left and right.","Use the \"Z\", \"X\", \"C\" keys to move down."], 'ui/controlPanel/info_box/keys.png');
-      arr.push(keys);
-
-      return arr;
-    }
-
     /* Display and expand this for piece information
      *
      * ==== Parameters:
@@ -104,14 +96,45 @@ package control_panel {
      * obj::   GamePiece
      */
     public function display(show, obj) {
+      remove_current_slide();
+      current_piece = obj;
       if(show) {
-        slides.forEach(function(slide) { slide.visible = false; });
-        piece_info = new Slide(obj);
-        addChild(piece_info);
+        curr_slide = new Slide(current_piece);
+        addChild(curr_slide);
         expand_this(null);
-      } else {
+      } else
         collapse_this(null);
-        removeChild(piece_info);
+    }
+
+    /* Switch slide to previous GamePiece info
+     *
+     * ==== Parameters:
+     * event:: Event
+     *
+     * ==== Returns:
+     * Slide
+     */
+    public function to_piece(event:MouseEvent) {
+      var emp = current_piece.this_empire,
+          index = emp.pieceArray.indexOf(current_piece),
+          to;
+      if(event.currentTarget.name == 'rewind')
+        to = index == 0 ? emp.pieceArray.length-1 : index-1;
+      else
+        to = index == emp.pieceArray.length-1 ? 0 : index+1;
+
+      display(true, emp.pieceArray[to]);
+      emp.pieceArray[to].selectThis(null);
+      dispatchEvent(new MoveWindowEvent(MoveWindowEvent.WINDOW, current_piece.x, current_piece.y));
+    }
+    
+    /* 
+     * Remove curr_slide and set to null
+     */
+    private function remove_current_slide() {
+      if(curr_slide) {
+        removeChild(curr_slide);
+        curr_slide = null;
       }
     }
 

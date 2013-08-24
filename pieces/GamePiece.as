@@ -117,7 +117,7 @@ package pieces {
   	public function moves(num=null) {
   	  if(!obj_is('city')) {
   	    if(num) attr['moves'] = num;
-  	    return 100;//attr['moves'];
+  	    return attr['moves'];
   	  }
   	}
 
