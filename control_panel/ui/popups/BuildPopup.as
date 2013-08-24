@@ -14,7 +14,7 @@ package control_panel.ui.popups {
       currObj.unavailable().forEach(function(ua) {
         if(ua != null && ua.toString() != "") delete params.building.(objCall == ua.toString())[0];
       });
-      return params.building.(level == currObj.level())
+      return params.building.(level <= currObj.level())
     }
     
     public override function createThumbAttributes(thumb, image) {

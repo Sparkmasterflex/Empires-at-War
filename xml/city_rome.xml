@@ -21,8 +21,8 @@
     <cost>150</cost>
     <build_points>30000</build_points>
     <benefits>
-      <population>0.005</population>
-      <order></order>
+      <population>0.015</population>
+      <order>0</order>
       <taxes>0.05</taxes>
     </benefits>
     <allows>
@@ -41,9 +41,9 @@
     <cost>200</cost>
     <build_points>35000</build_points>
     <benefits>
-      <population>0.005</population>
-      <order></order>
-      <taxes></taxes>
+      <population>0.015</population>
+      <order>0</order>
+      <taxes>0</taxes>
     </benefits>
     <allows>
       <army></army>
@@ -61,8 +61,8 @@
     <cost>300</cost>
     <build_points>45000</build_points>
     <benefits>
-      <population>0.002</population>
-      <order></order>
+      <population>0.02</population>
+      <order>0</order>
       <taxes>0.0003</taxes>
     </benefits>
     <allows>
@@ -81,8 +81,8 @@
     <cost>450</cost>
     <build_points>45000</build_points>
     <benefits>
-      <population>0.001</population>
-      <order></order>
+      <population>0.01</population>
+      <order>0</order>
       <taxes>0.005</taxes>
     </benefits>
     <allows>
@@ -103,8 +103,8 @@
     <cost>250</cost>
     <build_points>20000</build_points>
     <benefits>
-      <population></population>
-      <order></order>
+      <population>0</population>
+      <order>0</order>
       <taxes>0.005</taxes>
     </benefits>
     <allows>
@@ -123,8 +123,8 @@
     <cost>350</cost>
     <build_points>30000</build_points>
     <benefits>
-      <population></population>
-      <order></order>
+      <population>0</population>
+      <order>0</order>
       <taxes>0.0075</taxes>
     </benefits>
     <allows>
@@ -143,8 +143,8 @@
     <cost>375</cost>
     <build_points>35000</build_points>
     <benefits>
-      <population>0.001</population>
-      <order></order>
+      <population>0.01</population>
+      <order>0</order>
       <taxes>0.05</taxes>
     </benefits>
     <allows>
@@ -164,7 +164,7 @@
     <cost>450</cost>
     <build_points>45000</build_points>
     <benefits>
-      <population></population>
+      <population>0</population>
       <order>-0.05</order>
       <taxes>0.01</taxes>
     </benefits>
@@ -184,7 +184,7 @@
     <cost>600</cost>
     <build_points>65000</build_points>
     <benefits>
-      <population>0.0015</population>
+      <population>0.015</population>
       <order>-0.05</order>
       <taxes>0.0075</taxes>
     </benefits>
@@ -206,9 +206,9 @@
     <cost>250</cost>
     <build_points>30000</build_points>
     <benefits>
-      <population></population>
+      <population>0</population>
       <order>0.05</order>
-      <taxes></taxes>
+      <taxes>0</taxes>
     </benefits>
     <allows>
       <army>2</army>
@@ -226,9 +226,9 @@
     <cost>300</cost>
     <build_points>40000</build_points>
     <benefits>
-      <population></population>
+      <population>0</population>
       <order>0.075</order>
-      <taxes></taxes>
+      <taxes>0</taxes>
     </benefits>
     <allows>
       <army>3</army>
@@ -247,8 +247,8 @@
     <build_points>55000</build_points>
     <benefits>
       <population>-0.01</population>
-      <order></order>
-      <taxes></taxes>
+      <order>0</order>
+      <taxes>0</taxes>
     </benefits>
     <allows>
       <army>8</army>
@@ -266,9 +266,9 @@
     <cost>450</cost>
     <build_points>65000</build_points>
     <benefits>
-      <population></population>
-      <order></order>
-      <taxes></taxes>
+      <population>0</population>
+      <order>0</order>
+      <taxes>0</taxes>
     </benefits>
     <allows>
       <army>6, 9</army>
@@ -307,9 +307,9 @@
     <cost>350</cost>
     <build_points>40000</build_points>
     <benefits>
-      <population></population>
+      <population>0</population>
       <order>0.03</order>
-      <taxes></taxes>
+      <taxes>0</taxes>
     </benefits>
     <allows>
       <army>7</army>
@@ -369,7 +369,7 @@
     <benefits>
       <population>0.06</population>
       <order>0.1</order>
-      <taxes></taxes>
+      <taxes>0</taxes>
     </benefits>
     <allows>
       <army>12</army>
@@ -385,7 +385,7 @@
     <objCall>19</objCall>
     <thumbnail>/thumb/pending.png</thumbnail>
     <fullSize>/fullSize/pending.png</fullSize>
-    <name>Meeting Square</name>
+    <name>Meeting Hall</name>
     <type>60</type>
     <level>1</level>
     <cost>150</cost>

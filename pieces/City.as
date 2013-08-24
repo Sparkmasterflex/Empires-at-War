@@ -1,7 +1,6 @@
 package pieces {
   import com.greensock.*;
   import com.greensock.easing.*;
-  import com.demonsters.debugger.MonsterDebugger;
 
   import common.ImgLoader;
   
@@ -17,13 +16,14 @@ package pieces {
   
   import settlerBase;
   
+  import static_return.GameConstants;
   import static_return.CityConstants;
   import static_return.FindAndTestSquare;
-  import static_return.GameConstants;
 
   public class City extends GamePiece {
     /*--------Classes Added------------*/
     public var city_img:ImgLoader;
+    public var status_img:ImgLoader;
     
     /*------ Arrays and Objects -----*/
     public var builders:Array;
@@ -137,13 +137,18 @@ package pieces {
           percent;
       if(pop >= 10000) {
         if(builders && builders.length > 0) removeBuilders();
-        buildings().forEach(function(bld) { population_effects += parseFloat(bld.population_benefits()); });
+        buildings().forEach(function(bld) {
+          trace(parseFloat(bld.population_benefits()));
+          population_effects += parseFloat(bld.population_benefits());
+        });
         percent = (1.015 + population_effects);
         population(pop*percent);
       } else {
         population(pop + 10000);
       }
       level();
+      addCityImage();
+      return population();
     }
 
     /* Sets/returns city level based on population
@@ -175,7 +180,9 @@ package pieces {
     
     public function can_train() {
       var arr = new Array();
-      buildings().forEach(function(bld) { arr.concat(bld.armies_allowed()); });
+      buildings().forEach(function(bld) { 
+        arr.push(bld.armies_allowed()); // TODO: if this is an array...
+      });
       return arr;
     }
   	
@@ -213,12 +220,6 @@ package pieces {
       if(bld) attr['unavailable_buildings'].push(bld.obj_call());
       return attr['unavailable_buildings'];
     }
-    
-    //private function add_allowed_units(bld) {
-      //bld.armies_allowed().forEach(function(u) {
-        //if(can_train().indexOf(u) < 0) can_train(u);
-      //});
-    //}
   	
   	public function advanceBuilding() {
   	  if(buildingQueue()[0]) {
@@ -248,6 +249,13 @@ package pieces {
         unitsQueue().splice(0, 1);
       }
   	}
+
+    private function add_looted_image() {
+      status_img = new ImgLoader("/ui/tmp_looting.png");
+      status_img.x = this.width - 5;
+      status_img.y = this.height - 10;
+      addChild(status_img);
+    }
     
     private function addBuilders() {
       builders = new Array();
@@ -290,7 +298,7 @@ package pieces {
         units: "",
         agents: ""
       }
-      if(buildings()) buildings().forEach(function(bld) { json['buildings'] += bld.type() + "," + bld.level() + "," + bld.build_points() + "||"; });
+      if(buildings()) buildings().forEach(function(bld) { json['buildings'] +=  bld.level() + "," + bld.type() + "," + bld.build_points() + "||"; });
       if(units()) units().forEach(function(unit) { json['units'] += unit.type() + "," + unit.men() + "||"; });
       if(agents()) agents().forEach(function(agent) { json['agents'] += agent.type + "||"; });
       
@@ -324,33 +332,35 @@ package pieces {
       addCityImage(true);
       removeEventListener(MouseEvent.CLICK, selectThis);
       population(0);
-      destroy_in(2, true);
+      status(GameConstants.DESTROY);
+      change_status_in(5, true);
     }
 
-    /* set turn timer to remove 
-     * 
-     * ==== Parameters:
-     * t:: Integer
-     *
-     * ==== Returns:
-     * Integer
+    /* 
+     * Set city to be destroyed
+     *   removes ability to select
+     *   sets 5 turn countdown to remove
+     *   adds 'destroyed.png' as city_img
      */
-    public function destroy_in(t=null, start_count=false) {
-      // if setting destroy_in or incrementing down save piece
-      if(start_count || t) changed(true);
-      if(start_count)
-        attr['destroy_in'] = t;
-       else if(t)
-        attr['destroy_in'] -= t;
-      return attr['destroy_in'];
+    public function set_to_looted() {
+      add_looted_image();
+      status(GameConstants.LOOTED);
+      change_status_in(2, true);
     }
 
     /* 
      * Remove city ruins from board
      */
-    public function remove_ruins() {
+    public override function remove_ruins() {
       this_empire.destroying.push(this_id());
       this_stage.removeChild(this);
+    }
+
+    /* 
+     * Remove city looting image from city
+     */
+    public override function remove_looting() {
+      removeChild(status_img);
     }
   }
 }

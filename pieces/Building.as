@@ -13,6 +13,7 @@ package pieces {
   	public function Building(building, emp, p=null) {
       type(building.type);
       level(building.level);
+      if(building.obj_call) obj_call(building.obj_call);
       if(building.build_points != null) originalPoints = building.build_points;
       empire = emp;
       if(p) this_parent(p);

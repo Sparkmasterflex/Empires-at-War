@@ -49,6 +49,10 @@ package static_return {
     public static const CAVALRY:int     = 30;
     public static const MAGIC:int       = 40;
 
+    public static const DESTROY:int  = 10;
+    public static const LOOTED:int   = 20;
+    public static const BUILDING:int = 30;
+
     public static const ENVIRONMENT:String = 'flash';
     
 	

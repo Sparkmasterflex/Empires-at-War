@@ -112,8 +112,8 @@ package empires {
     		  case 'SETTLER':
             for(var settler_index:int=0; settler_index<toStart.SETTLER; settler_index++) addAgent({agents: [GameConstants.SETTLER]});
     		    break;
-    		  case 'CITY':
-    		    for(var city_index:int=0; city_index<toStart.CITY; city_index++) addCity({population: CityConstants.START, square: startSq, buildings: [[1,CityConstants.GOVERNMENT, 0]]});
+    		  case 'CITY': //CityConstants.START
+    		    for(var city_index:int=0; city_index<toStart.CITY; city_index++) addCity({population: 18000, square: startSq, buildings: [[1,CityConstants.GOVERNMENT, 0, 19]]}); //, [1,CityConstants.MILITARY, 0, 10]
     		    break;
     		}
   	  }
@@ -232,10 +232,10 @@ package empires {
           piece.increasePopulation();
     		  piece.advanceBuilding();
     		  piece.advanceUnits();
-          if(piece.destroy_in() && piece.destroy_in() > 0)
-            piece.destroy_in(1);
-          else if(piece.destroy_in() == 0)
-            piece.remove_ruins();
+          if(piece.status() && piece.change_status_in() > 0)
+            piece.change_status_in(1);
+          else if(piece.change_status_in() == 0)
+            piece.change_status_to(piece.status());
     		}
         piece.saveAttributes()
       });

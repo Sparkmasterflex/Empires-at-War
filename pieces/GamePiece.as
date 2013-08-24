@@ -120,6 +120,60 @@ package pieces {
   	    return 100;//attr['moves'];
   	  }
   	}
+
+    /* Set status
+     *
+     * ==== Parameters:
+     * s:: Integer
+     *
+     * ==== Returns:
+     * Integer
+     */
+    public function status(s=null) {
+      if(s != null) attr['status'] = s;
+      return attr['status'];
+    }
+
+    /* set turn timer to remove 
+     * 
+     * ==== Parameters:
+     * t:: Integer
+     *
+     * ==== Returns:
+     * Integer
+     */
+    public function change_status_in(t=null, start_count=false) {
+      // if setting status_change or incrementing down save piece
+      if(start_count || t != null) changed(true);
+      if(start_count)
+        attr['status_change'] = t;
+       else if(t != null)
+        attr['status_change'] -= t;
+      return attr['status_change'];
+    }
+
+    /* Change status to arguement passed
+     *   reset status() && change_status_in() to null
+     *
+     * ==== Parameters:
+     * st:: Integer
+     *
+     * ==== Returns:
+     * status
+     */
+    public function change_status_to(st) {
+      switch(st) {
+        case GameConstants.DESTROY:
+          if(obj_is('city')) remove_ruins();
+          break;
+        case GameConstants.LOOTED:
+          if(obj_is('city')) remove_looting();
+      }
+
+      status(false);
+      change_status_in(false);
+      return status();
+    }
     
     public function saveAttributes() {
       if(changed()) {
@@ -229,7 +283,7 @@ package pieces {
     public function build_buildings(arr) {
       var buildings = new Array();
       arr.forEach(function(b) {
-        var bld_attr = {type: b[1], level: b[0], build_points: b[2]}
+        var bld_attr = {type: b[1], level: b[0], build_points: b[2], obj_call: b[3]}
         buildings.push(new Building(bld_attr, this_empire.named()));
       });
       return buildings;
@@ -697,12 +751,8 @@ package pieces {
      */
     public function destroy() {
       square().removeFromSquare();
-      if(obj_is('city'))
-        set_to_destroyed();
-      else {
-        this_empire.destroying.push(this_id());
-        this_stage.removeChild(this);
-      }
+      this_empire.destroying.push(this_id());
+      this_stage.removeChild(this);
     }
     
     public function hasSettler():Boolean { return agents() && agents().some(function(agent) { return agent is Settler; }); }
@@ -769,6 +819,8 @@ package pieces {
     public function createJSON() { return JSON.stringify({general: 'Hannabal'}); }
     public function stopWalk(sq) { return false; }
     public function set_to_destroyed() { return false; }
+    public function remove_ruins() { return false; }
+    public function remove_looting() { return false; }
 	
 /*--------------- Next Turn Functions -------------*/
     public function nextTurn(turn) { moves(5); }
