@@ -18,7 +18,8 @@ package control_panel.ui {
   	public var btnRoll:Gradient;
   	public var btnDisabled:Gradient;
   	public var btnLabel:Label;
-  	public var rollLabel:Label;
+    public var rollLabel:Label;
+  	public var tF:Label;
   	public var disabledLabel:Label;
   	
   	/*-- Arrays --*/		
@@ -62,8 +63,8 @@ package control_panel.ui {
   	}
   	
   	private function textFieldCreation(label, fs=null) {
-  	  var fontSize = fs || 30,
-          tF:Label = new Label(fontSize, 0xffffff, 'Trebuchet MS', 'LEFT');
+  	  var fontSize = fs || 30;
+      tF = new Label(fontSize, 0xffffff, 'Trebuchet MS', 'LEFT');
   	  tF.text = label;
   	  tF.x = (btnBG.width / 2) - (tF.width / 2);
   	  tF.y = (btnBG.height / 2) - (tF.height / 2);	
@@ -117,6 +118,21 @@ package control_panel.ui {
   	  btnLabel.visible = false;
   	  btnBG.visible = false;
   	}
+
+    /* Change the text in the label
+     *
+     * ==== Parameters:
+     * str:: String
+     *
+     * ==== Returns:
+     * this
+     */
+    public function change_text(str) {
+      tF.text = str;
+      tF.x = (btnBG.width / 2) - (tF.width / 2);
+      tF.y = (btnBG.height / 2) - (tF.height / 2);
+      return this;
+    }
   }
 }
 
