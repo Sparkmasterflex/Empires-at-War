@@ -2,6 +2,7 @@ package empires {
   import flash.display.Sprite;
   import flash.external.ExternalInterface;
   import flash.utils.setTimeout;
+  import flash.events.*;
   
   import common.Label;
   
@@ -9,6 +10,7 @@ package empires {
   
   import pieces.*;
   import pieces.agents.Settler;
+  import dispatch.*;
   
   import stage.GameStage;
   
@@ -224,6 +226,22 @@ package empires {
       }
   	  return attr['empire'];
   	}
+
+    /* Unselect current piece
+     *
+     * ==== Returns:
+     * GamePiece
+     */
+    public function unselect_piece() {
+      var current = selected_piece;
+      current.remove_highlight();
+      selected_piece = null;
+      if(!current.obj_is('city')) {
+        current.animateSelect(null);
+        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, current, false));
+      }
+      return current;
+    }
   	
   	public function processTurn(cp) {
   	  pieceArray.forEach(function(piece) {

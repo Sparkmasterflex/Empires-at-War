@@ -102,16 +102,20 @@ package pieces {
       }
     }
     
+    /* Determine proper frame and call gotoAndPlay() on game_piece
+     *
+     * ==== Parameters:
+     * event:: MouseEvent
+     *
+     * ==== Returns:
+     * String
+     */
     public function animateSelect(event:MouseEvent) {
-      var frame = '';
-      if(isSelected) {
-        frame = 'select-ed'
-        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
-      } else {
-        frame = 'unselect-ed';
-        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, false));
-      }
+      // TODO: does this need to have the event passed to it?
+      // == separate mouse event from selectThis() ?
+      var frame = isSelected ? 'select-ed' : 'unselect-ed';
       game_piece.gotoAndPlay(frame);
+      return frame;
     }
     
     public override function stopWalk(sq) {

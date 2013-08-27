@@ -314,22 +314,19 @@ package pieces {
      * event::   MouseEvent
      */    
   	public function selectThis(event:MouseEvent) {
-      if(this_empire.selected_piece == this) {
-        remove_highlight();
-        this_empire.selected_piece = null;
-      } else {
-        if(this_empire.selected_piece) this_empire.selected_piece.remove_highlight();
+      var current = this_empire.selected_piece ? this_empire.unselect_piece() : null;
+      if(current != this) {
         add_highlight()
         this_empire.selected_piece = this;
+        if(!obj_is('city')) dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
       }
-
       dispatchEvent(new ControlPanelEvent(ControlPanelEvent.ANIMATE, isSelected, this));
   	}
 
     /* 
      * Add selection highlight
      */
-    private function add_highlight() {
+    public function add_highlight() {
       highlight = new ImgLoader('ui/selected.png');
       highlight.x = -80;
       highlight.y = -40;
@@ -344,7 +341,7 @@ package pieces {
       isSelected = true;
     }
 
-    private function remove_highlight() {
+    public function remove_highlight() {
       removeChild(highlight);
       fadeTimer.removeEventListener(TimerEvent.TIMER, fadeInOut);
       fadeTimer.stop();
@@ -359,7 +356,6 @@ package pieces {
           toSq = FindAndTestSquare.ret(key, obj.square()),
           sq_arr = toSq.split('_'),
           section = this_stage.sGridArr[0];
-
       if(directionKeys.indexOf(key) >= 0) {
         dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, false));
         var toSquare = section.getChildByName(toSq),
