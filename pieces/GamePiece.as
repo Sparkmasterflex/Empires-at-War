@@ -735,10 +735,10 @@ package pieces {
           agents: agents(),
           square: square()
         }
+        destroy();
         var city:City = new City(this_empire, this_empire.cityArray.length, attrs);
         this_stage.addChild(city);
         city.selectThis(null);
-        destroy();
       }
     }
 
