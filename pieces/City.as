@@ -133,6 +133,7 @@ package pieces {
     
     public function increasePopulation() {
       var pop = population(),
+          prev_level = level(),
           growth = 1+pop_growth();
       if(pop >= 10000) {
         if(builders && builders.length > 0) removeBuilders();
@@ -140,8 +141,7 @@ package pieces {
       } else {
         population(pop + 10000);
       }
-      level();
-      addCityImage();
+      if(level() > prev_level) addCityImage();
       return population();
     }
 
