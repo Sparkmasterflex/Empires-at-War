@@ -2,6 +2,7 @@ package empires {
   import flash.display.Sprite;
   import flash.external.ExternalInterface;
   import flash.utils.setTimeout;
+//  import flash.utils.Dictionary;
   import flash.events.*;
   
   import common.Label;
@@ -103,7 +104,9 @@ package empires {
     private function createGamePieces(emp, stge) {
   	  var toStart = StartsWith.userStarts(difficulty),
     		  randGrid = gStage.sGridArr[0],  //[Math.round(Math.random() * gStage.sGridArr.length)],
-    		  startSq = randGrid.landSquares[Math.round(Math.random() * randGrid.landSquares.length)];
+          rand_num = Math.round(Math.random() * randGrid.landSquares.length),
+    		  startSq = randGrid.landSquares[rand_num];
+      randGrid.landSquares.splice(rand_num, 1); // after getting startSq remove from landSquares
       
     	posArr = CalculateStartPositions.ret(startSq);
   	  for(var j:String in toStart) {
@@ -198,6 +201,7 @@ package empires {
 	
   	private function getLandSquare() {
   	  var rand = Math.round(Math.random() * (posArr.length-1));
+//      trace('getLandSquare: ' + posArr[rand]);
   		var sq_name = posArr[rand],
   		    section = gStage.getChildByName('section_' + sq_name.split('_')[0]),
   		    sq = section.getChildByName(sq_name);

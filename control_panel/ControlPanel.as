@@ -223,7 +223,7 @@ package control_panel {
   	/*----- Button Functions -----*/
   	private function currentConstruction(event:MouseEvent) {
   	  var xml = 'city_' + currObj.empire()[1].toLowerCase() + '.xml',
-  		  xmlLoader = new URLLoader();
+  		    xmlLoader = new URLLoader();
   	  xmlLoader.load(new URLRequest(to_xml + xml));
   	  xmlLoader.addEventListener(Event.COMPLETE, availableToBuild);
   	}
