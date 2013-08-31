@@ -56,6 +56,34 @@ package pieces {
       attr['rally'] = false;
   	  addEventListener(MouseEvent.CLICK, selectThis);
     }
+
+    /* 
+     * Destroy and remove from game
+     */
+    public function destroy() {
+      square().removeFromSquare();
+      this_empire.destroying.push(this_id());
+      this_stage.removeChild(this);
+    }
+
+    /* Run any updates that should occur on end of turn
+     *
+     * ==== Parameters:
+     * turn:: Integer
+     *
+     * ==== Returns:
+     * this
+     */
+    public function nextTurn(turn) { 
+      moves(5); 
+      return this;
+    }
+
+
+
+    /*---------------------------*\
+            S: ATTRIBUTES
+    \*---------------------------*/
 	
   	public function obj_is(obj=null) {
   	  return obj ? (obj == attr['pieceType']) : attr['pieceType'];
@@ -114,7 +142,15 @@ package pieces {
   	  return attr['square'];
   	}
   	
-  	public function moves(num=null) {
+    /* Set/Get number of moves
+     *
+     * ==== Parameters:
+     * num:: Integer
+     *
+     * ==== Returns:
+     * Integer
+     */
+    public function moves(num=null) {
   	  if(!obj_is('city')) {
   	    if(num) attr['moves'] = num;
   	    return attr['moves'];
@@ -175,6 +211,9 @@ package pieces {
       return status();
     }
     
+    /*
+     *  Send attributes to js/DB
+     */
     public function saveAttributes() {
       if(changed()) {
         ExternalInterface.call("savePiece", createJSON());
@@ -189,6 +228,25 @@ package pieces {
         clearInterval(interval);
       }
     }
+
+    /* Set and/or test piece has been changed since last save
+     *
+     * ==== Parameters:
+     * has_change:: Boolean
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function changed(has_change=null) {
+      if(has_change != null) attr['changed'] = has_change;
+      return attr['changed'];
+    }
+
+
+
+    /*---------------------------*\
+        S: CONSTRUCTING DATA
+    \*---------------------------*/
 
     /* builds array of Units
      * 
@@ -307,7 +365,12 @@ package pieces {
       return buildings;
     }
 
-    //---------------------- Selecting GamePiece
+ 
+
+    /*---------------------------*\
+           S: SELECTING
+    \*---------------------------*/
+
     /* Select GamePiece
      *
      * ==== Parameters:
@@ -318,7 +381,7 @@ package pieces {
       if(current != this) {
         add_highlight()
         this_empire.selected_piece = this;
-        if(!obj_is('city')) dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
+        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
       }
       dispatchEvent(new ControlPanelEvent(ControlPanelEvent.ANIMATE, isSelected, this));
   	}
@@ -347,7 +410,18 @@ package pieces {
       fadeTimer.stop();
       isSelected = false;
     }
-    //---------------------- End Selecting GamePiece
+
+    private function fadeInOut(event:TimerEvent) {
+      var fade = highlight.alpha == 1 ? 0 : 1;
+      TweenLite.to(highlight, .75, { alpha: fade, ease:Sine.easeIn });
+    }
+    
+
+
+
+    /*---------------------------*\
+              S: MOVING
+    \*---------------------------*/
 
     public function pieceMoveKeyBoard(event:*) {
       var key = event.keyCode,
@@ -381,7 +455,7 @@ package pieces {
               selectedArr = null;
             }
 
-          //------ simple combine pieces
+          //------ simple combine/attack pieces
           } else {
             is_enemy(other) ? 
               attack(other) : 
@@ -391,6 +465,229 @@ package pieces {
           dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
         }
       }
+    }
+
+    // sets selectArr from ControlPanel
+    public function newArmy(arr) { selectedArr = arr; }
+    
+    /* Adds children to GamePiece passed and removes self
+     *
+     * ==== Parameters:
+     * piece2::  GamePiece
+     */
+    public function combinePieces(piece2) {
+      /* if selected piece is an Agent
+       *   added agents() to new piece
+       *   and destroy moving piece
+       */
+      if(obj_is('agent')) {
+        piece2.addAgents(agents());
+        piece2.selectThis(null);
+        destroy();
+
+      /* if selected piece is a City
+       *   add units() to new piece (if army)
+       *   do not destroy city
+       */
+      } else if(obj_is('city')) {
+        if(piece2.obj_is('army') && units()) {
+          piece2.concat_units(units());
+          reset_units().displayTotalMenBar();
+          piece2.displayTotalMenBar();
+          changed(true);
+        }
+
+      /* 
+       * else selected piece is an Army
+       */
+      } else {
+        switch(piece2.obj_is()) {
+          /* add agents to current piece
+           *   move to square
+           */
+          case 'agent':
+            concat_agents(piece2.agents());
+            var new_sq = piece2.square();
+            piece2.destroy();
+            square(new_sq);
+            x = square().x + 60;
+            y = square().y + 60;
+            changed(true);
+            dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
+            break;
+          /* add units/agents to city/army
+           *   remove current piece
+           */
+          case 'city':
+          case 'army':
+            piece2.concat_units(units());
+            piece2.concat_agents(agents());
+            destroy();
+            piece2.changed(true);
+            piece2.selectThis(null);
+            piece2.displayTotalMenBar();
+            dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, piece2, true));
+            break;
+        }
+      }
+    }
+    
+    /* Split selectArr
+     *
+     * ==== Parameters:
+     * sq::      MapGrid
+     * key::     Integer
+     * piece::   GamePiece
+     */
+    public function split_piece_children(sq, key, piece=null) {
+      if(selectedArr.every(isAgent))
+        split_agents_out(sq, key, piece); // TODO: handle changed()/saveAttributes()
+      else
+        split_army(sq, key, piece);
+    }
+
+    // splitting army
+    public function split_army(toSquare, key, piece=null) {
+      // remove selected units from units() and update piece attributes
+      selectedArr.forEach(function(unit) { units().splice(units().indexOf(unit),1); });
+      displayTotalMenBar();
+      changed(true);
+
+      // if piece != null then add selected to piece.units()
+      if(piece && !piece.obj_is('agent')) {
+        piece.concat_units(selectedArr);
+        piece.displayTotalMenBar();
+        piece.changed(true);
+        piece.selectThis(null);
+      } else {
+        // else make new army
+        var attr = {
+          units: selectedArr,
+          agents: (piece ? piece.agents() : null)
+        },
+            new_army = new Army(this_empire, this_empire.armyArray.length, attr);
+        addAndMove(new_army, key);
+      }
+    }
+    
+    // creating new Agent and add agents() to it
+    public function split_agents_out(toSquare, key, piece=null) {
+      selectedArr.forEach(function(agent) { agents().splice(agents().indexOf(agent),1) });
+      if(piece)
+        send_agents_to(piece)
+      else {
+        var new_agent = new Agent(this_empire, this_empire.agentArray.length, {agents: selectedArr});
+        addAndMove(new_agent, key);
+      }
+    }
+
+    // sending units to another army
+    public function send_troops_to(other) {
+      selectedArr.forEach(function(unit) { units().splice(units().indexOf(unit),1) });
+      other.addUnits(selectedArr);
+      other.selectThis(null);
+      dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, other, true));
+    }
+
+    // sending agents to another piece
+    public function send_agents_to(other) {
+      selectedArr.forEach(function(agent) { agents().splice(agents().indexOf(agent),1) });
+      other.addAgents(selectedArr);
+      other.selectThis(null);
+      dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, other, true));
+    }
+    
+    private function addAndMove(obj, key) {
+      this_empire.gStage.addChild(obj);
+      obj.x = square().x + 60;
+      obj.y = square().y + 60;
+      obj.selectThis(null);
+      obj.pieceMoveKeyBoard({type: "keyDown", keyCode: key, prevObj: this, eventPhase: null});
+      obj = null;
+    }
+
+
+    
+    /*---------------------------*\
+            S: ATTACKING
+    \*---------------------------*/
+
+    /* Tests if GamePiece is an enemy
+     *
+     * ==== Parameters:
+     * piece::  GamePiece
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function is_enemy(piece) {
+      return piece && empire()[0] != piece.empire()[0];
+    }
+
+    /* Begins attack process
+     *
+     * ==== Parameters:
+     * enemy::  GamePiece
+     */
+    public function attack(enemy) {
+      if(enemy.obj_is('agent'))
+        combinePieces(enemy);
+      else if(obj_is('agent')) {
+        trace('no!');
+        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
+      } else {
+        if(enemy.obj_is('city') && !enemy.units()) {
+          dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Conquer', null, [this, enemy], true));
+          //enemy.conquered_by(this);
+        } else {
+          if(enemy.obj_is('city')) enemy.addTemporaryArmy();
+          if(obj_is('city')) {
+            addTemporaryArmy();
+            tmp_army.gotoAndPlay('attack');
+          } else
+            game_piece.gotoAndPlay('attack');
+          var _this = this;
+          setTimeout(function() {
+            dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Battle', null, [_this, enemy], true));
+          }, 1250)
+        }
+      }
+    }
+
+    /* Set Temporary Army's empire
+     * 
+     * ==== Parameters:
+     * army:: armyBase
+     * 
+     */
+    public function addTemporaryArmy() {
+      tmp_army = new armyBase();
+      switch(empire()[0]) {
+        case GameConstants.GAUL:
+          tmp_army.armyIsGaul();
+          break;
+        case GameConstants.ROME:
+          tmp_army.armyIsRome();
+          break;
+        default:
+          trace('none');
+        }
+      tmp_army.scaleX = 0.85;
+      tmp_army.scaleY = 0.85;
+      addChild(tmp_army);
+    }
+
+    /* Sets/returns if army is currently rallying
+     *
+     * ==== Parameters:
+     * r:: Boolean
+     *
+     * ==== Returns:
+     * Boolean
+     */
+    public function rally(r=null) {
+      if(r != null) attr['rally'] = r;
+      return attr['rally'];
     }
 
     /* 
@@ -443,6 +740,11 @@ package pieces {
       return new_arr;
     }
 
+
+    /*---------------------------*\
+            S: DIRECTION
+    \*---------------------------*/
+    
     private function changeDirection(sq, newSq) {
       if(!obj_is('city')) {
         var left = GetDirection.ret(sq, newSq);
@@ -458,196 +760,17 @@ package pieces {
       return attr['facing'];
     }
 
-    /* Set and/or test piece has been changed since last save
-     *
-     * ==== Parameters:
-     * has_change:: Boolean
-     *
-     * ==== Returns:
-     * Boolean
-     */
-    public function changed(has_change=null) {
-      if(has_change != null) attr['changed'] = has_change;
-      return attr['changed'];
-    }
 
-    /* Split selectArr
-     *
-     * ==== Parameters:
-     * sq::      MapGrid
-     * key::     Integer
-     * piece::   GamePiece
-     */
-    public function split_piece_children(sq, key, piece=null) {
-      if(selectedArr.every(isAgent))
-        split_agents_out(sq, key, piece); // TODO: handle changed()/saveAttributes()
-      else
-        split_army(sq, key, piece);
-    }
 
-    // splitting army
-    public function split_army(toSquare, key, piece=null) {
-      // remove selected units from units() and update piece attributes
-      selectedArr.forEach(function(unit) { units().splice(units().indexOf(unit),1); });
-      displayTotalMenBar();
-      changed(true);
-
-      // if piece != null then add selected to piece.units()
-      if(piece && !piece.obj_is('agent')) {
-        piece.concat_units(selectedArr);
-        piece.displayTotalMenBar();
-        piece.changed(true);
-        piece.selectThis(null);
-      } else {
-        // else make new army
-        var attr = {
-          units: selectedArr,
-          agents: (piece ? piece.agents() : null)
-        },
-            new_army = new Army(this_empire, this_empire.armyArray.length, attr);
-        addAndMove(new_army, key);
-      }
-    }
+    /*---------------------------*\
+            S: CHILDREN
+      1. units
+      2. buildings
+      3. agents
+    \*---------------------------*/    
     
-    // creating new Agent and add agents() to it
-    public function split_agents_out(toSquare, key, piece=null) {
-      selectedArr.forEach(function(agent) { agents().splice(agents().indexOf(agent),1) });
-      var new_agent = new Agent(this_empire, this_empire.agentArray.length, {agents: selectedArr});
-      addAndMove(new_agent, key);
-    }
-    
-    private function addAndMove(obj, key) {
-      this_empire.gStage.addChild(obj);
-      obj.x = square().x + 60;
-      obj.y = square().y + 60;
-      obj.selectThis(null);
-      obj.pieceMoveKeyBoard({type: "keyDown", keyCode: key, prevObj: this, eventPhase: null});
-      obj = null;
-    }
+    /*----------- AGENTS -----------*/
 
-    /* Tests if GamePiece is an enemy
-     *
-     * ==== Parameters:
-     * piece::  GamePiece
-     *
-     * ==== Returns:
-     * Boolean
-     */
-    public function is_enemy(piece) {
-      return piece && empire()[0] != piece.empire()[0];
-    }
-
-    /* Begins attack process
-     *
-     * ==== Parameters:
-     * enemy::  GamePiece
-     */
-    public function attack(enemy) {
-      if(enemy.obj_is('agent'))
-        combinePieces(enemy);
-      else if(obj_is('agent')) {
-        trace('no!');
-        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, this, true));
-      } else {
-        if(enemy.obj_is('city') && !enemy.units()) {
-          dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Conquer', null, [this, enemy], true));
-          //enemy.conquered_by(this);
-        } else {
-          if(enemy.obj_is('city')) enemy.addTemporaryArmy();
-          if(obj_is('city')) {
-            addTemporaryArmy();
-            tmp_army.gotoAndPlay('attack');
-          } else
-            game_piece.gotoAndPlay('attack');
-          var _this = this;
-          setTimeout(function() {
-            dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Battle', null, [_this, enemy], true));
-          }, 1250)
-        }
-      }
-    }
-    
-    public function newArmy(arr) { selectedArr = arr; }
-  	
-
-  	/* Adds children to GamePiece passed and removes self
-     *
-     * ==== Parameters:
-     * piece2::  GamePiece
-     */
-  	public function combinePieces(piece2) {
-
-      /* if selected piece is an Agent
-       *   added this.agents() to new piece
-       *   and destroy moving piece
-       */
-      if(obj_is('agent')) {
-        piece2.addAgents(agents());
-
-      /* else if stationary piece is an agent
-       *   add piece2.agent() to selected piece
-       *   replace stationary piece with selected
-       */
-      } else if(piece2.obj_is('agent')) {
-        addAgents(piece2.agents());
-        square(piece2.square());
-        x = square().x + 60;
-        y = square().y + 60;
-        changed(true);
-        piece2.destroy();
-
-      /* else neither piece is an agent
-       *   combine troops to stationary piece
-       *   if agents() add to piece2
-       */
-      } else {
-        piece2.concat_units(units());
-        piece2.displayTotalMenBar();
-        if(agents()) piece2.addAgents(agents());
-      }
-      // piece2 is removed if agent so don't select if so
-      if(!piece2.obj_is('agent') || (obj_is('agent') && piece2.obj_is('agent'))) {
-        piece2.selectThis(null);
-        piece2.changed(true);
-        dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, piece2, true));
-        destroy();
-      }
-  	}
-    
-    // sending units to another army
-    public function send_troops_to(other) {
-      selectedArr.forEach(function(unit) { units().splice(units().indexOf(unit),1) });
-      other.addUnits(selectedArr);
-      other.selectThis(null);
-      dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, other, true));
-    }
-
-    // sending agents to another piece
-    public function send_agents_to(other) {
-      selectedArr.forEach(function(agent) { agents().splice(agents().indexOf(agent),1) });
-      other.addAgents(selectedArr);
-      other.selectThis(null);
-      dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, other, true));
-    }
-  	
-  	private function fadeInOut(event:TimerEvent) {
-  	  var fade = highlight.alpha == 1 ? 0 : 1;
-  	  TweenLite.to(highlight, .75, { alpha: fade, ease:Sine.easeIn });
-  	}
-    
-    public function agents(agents=null) {
-      var _this = this;
-      if(agents) {
-        agents.forEach(function(a) { a.this_parent(_this); });
-        attr['agents'] = agents;
-      }
-      return attr['agents']; 
-    }
-
-    private function isAgent(obj, index, arr) {
-      return (obj is Settler);
-    }
-  	
     /* Sets units
      *
      * ==== Parameters:
@@ -679,7 +802,7 @@ package pieces {
       return units();
     }
 
-    /* Concatinating array of units into units()
+    /* Concatenating array of units into units()
      *
      * ==== Parameters:
      * new_units::   Array
@@ -692,6 +815,42 @@ package pieces {
       return attr['units'];
     }
     
+    /* Remove all units
+     *
+     * ==== Parameters:
+     * params
+     *
+     * ==== Returns:
+     * this
+     */
+    public function reset_units() {
+      attr['units'] = new Array();
+      return this;
+    }
+
+    public function displayTotalMenBar() {
+      if(bar) removeChild(bar);
+      bar = new PercentBar(empire()[0], percentOfMen());
+      bar.x = 25;
+      addChild(bar);
+      this.setChildIndex(bar, 0);
+      TweenLite.to(bar, .1, {dropShadowFilter:{blurX:1, blurY:1, distance:1, alpha:0.6}});
+    }
+    
+    public function totalMen() {
+      var totalMen = 0;
+      if(units()) {
+        units().forEach(function(unit) { totalMen += parseInt(unit.men()); });
+      }
+      return totalMen;
+    }
+    
+    private function percentOfMen() {
+      var percent = 0;
+      percent = Math.round((totalMen() / GameConstants.TOTAL_TROOPS) * 100);
+      return percent;
+    }
+    
     /* Remove unit from Army
      *
      * ==== Parameters:
@@ -701,7 +860,37 @@ package pieces {
     public function removeUnit(unit) {
       units().splice(units().indexOf(unit), 1);
     }
+
+    /*----------- AGENTS -----------*/
+    private function isAgent(obj, index, arr) {
+      return (obj is Settler);
+    }
+
+    public function hasSettler():Boolean { return agents() && agents().some(function(agent) { return agent is Settler; }); }
+
+    public function agents(agents=null) {
+      var _this = this;
+      if(agents) {
+        agents.forEach(function(a) { a.this_parent(_this); });
+        attr['agents'] = agents;
+      }
+      return attr['agents']; 
+    }
+
+    /* Concatenating array of units into units()
+     *
+     * ==== Parameters:
+     * new_units::   Array
+     *
+     * ==== Returns:
+     * Array
+     */
+    public function concat_agents(new_agents) {
+      attr['agents'] = attr['agents'] ? attr['agents'].concat(new_agents) : new_agents;
+      return attr['agents'];
+    }
     
+    // TODO: I believe concat_agents() can replace this
     public function addAgents(agents:*) {
       var agent;
       if(!attr['agents']) attr['agents'] = new Array();
@@ -742,83 +931,18 @@ package pieces {
       }
     }
 
-    /* 
-     * Destroy and remove from game
-     */
-    public function destroy() {
-      square().removeFromSquare();
-      this_empire.destroying.push(this_id());
-      this_stage.removeChild(this);
-    }
-    
-    public function hasSettler():Boolean { return agents() && agents().some(function(agent) { return agent is Settler; }); }
-    
-    public function displayTotalMenBar() {
-      if(bar) removeChild(bar);
-      bar = new PercentBar(empire()[0], percentOfMen());
-      bar.x = 25;
-      addChild(bar);
-      this.setChildIndex(bar, 0);
-      TweenLite.to(bar, .1, {dropShadowFilter:{blurX:1, blurY:1, distance:1, alpha:0.6}});
-    }
-    
-    public function totalMen() {
-      var totalMen = 0;
-      if(units()) {
-        units().forEach(function(unit) { totalMen += parseInt(unit.men()); });
-      }
-      return totalMen;
-    }
-    
-    private function percentOfMen() {
-      var percent = 0;
-      percent = Math.round((totalMen() / GameConstants.TOTAL_TROOPS) * 100);
-      return percent;
-    }
 
-    /* Sets/returns if army is currently rallying
-     *
-     * ==== Parameters:
-     * r:: Boolean
-     *
-     * ==== Returns:
-     * Boolean
-     */
-    public function rally(r=null) {
-      if(r != null) attr['rally'] = r;
-      return attr['rally'];
-    }
 
-    /* Set Temporary Army's empire
-     * 
-     * ==== Parameters:
-     * army:: armyBase
-     * 
-     */
-    public function addTemporaryArmy() {
-      tmp_army = new armyBase();
-      switch(empire()[0]) {
-        case GameConstants.GAUL:
-          tmp_army.armyIsGaul();
-          break;
-        case GameConstants.ROME:
-          tmp_army.armyIsRome();
-          break;
-        default:
-          trace('none');
-        }
-      tmp_army.scaleX = 0.85;
-      tmp_army.scaleY = 0.85;
-      addChild(tmp_army);
-    }
-    
+
+    /*---------------------------*\
+            S: OVERRIDES
+    \*---------------------------*/
+
     public function createJSON() { return JSON.stringify({general: 'Hannabal'}); }
     public function stopWalk(sq) { return false; }
     public function set_to_destroyed() { return false; }
     public function remove_ruins() { return false; }
     public function remove_looting() { return false; }
-	
-/*--------------- Next Turn Functions -------------*/
-    public function nextTurn(turn) { moves(5); }
+    
   }
 }
