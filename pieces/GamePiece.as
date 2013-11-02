@@ -5,22 +5,22 @@ package pieces {
   import armyBase;
 
   import common.ImgLoader;
-  
+
   import dispatch.*;
-  
+
   import empires.Empire;
   import stage.GameStage;
-  
+
   import flash.display.MovieClip;
   import flash.events.*;
   import flash.utils.*;
   import flash.external.ExternalInterface;
-  
+
   import pieces.PercentBar;
   import pieces.agents.Settler;
-  
+
   import static_return.*;
-  
+
 
   public class GamePiece extends MovieClip {
   	/*--------Classes Added------------*/
@@ -32,10 +32,10 @@ package pieces {
     public var game_piece;
     public var tmp_army:armyBase;
     public var interval;
-  	
+
   	/*--------Boolean-------*/
   	public var isSelected:Boolean = false;
-	
+
     /*--------Arrays and Objects-------*/
     public var attr:Object;
     public var selectedArr:Array;
@@ -47,7 +47,7 @@ package pieces {
 
 	  /*---------- Numbers ---------*/
     public var child_length:uint;
-	  
+
     public function GamePiece(empire) {
       this_stage = empire.gStage
       attr = new Object();
@@ -57,7 +57,7 @@ package pieces {
   	  addEventListener(MouseEvent.CLICK, selectThis);
     }
 
-    /* 
+    /*
      * Destroy and remove from game
      */
     public function destroy() {
@@ -74,8 +74,8 @@ package pieces {
      * ==== Returns:
      * this
      */
-    public function nextTurn(turn) { 
-      moves(5); 
+    public function nextTurn(turn) {
+      moves(5);
       return this;
     }
 
@@ -84,16 +84,16 @@ package pieces {
     /*---------------------------*\
             S: ATTRIBUTES
     \*---------------------------*/
-	
+
   	public function obj_is(obj=null) {
   	  return obj ? (obj == attr['pieceType']) : attr['pieceType'];
   	}
-  	
+
     public function this_id(id=null) {
       if(id) attr['id'] = id;
       return attr['id'];
     }
-      
+
     public function empire_id(emp_id=null) {
       if(emp_id) attr['empire_id'] = emp_id;
       return attr['empire_id'];
@@ -107,12 +107,12 @@ package pieces {
     public function playable() {
       return this_empire.playable();
     }
-    
+
   	public function named(named=null) {
   	  if(named) attr['name'] = named;
   	  return attr['name'];
   	}
-  	
+
   	public function empire(e=null):Array {
   	  if(e) attr['empire'] = [e, GameConstants.parseEmpireName(e)];
   	  return attr['empire'];
@@ -130,7 +130,7 @@ package pieces {
       if(p) attr['primary'] = p;
       return attr['primary'];
     }
-  	
+
   	public function square(sq=null):Object {
   	  if(sq) {
   		  var prev = attr['square'];
@@ -141,7 +141,7 @@ package pieces {
   	  }
   	  return attr['square'];
   	}
-  	
+
     /* Set/Get number of moves
      *
      * ==== Parameters:
@@ -170,8 +170,8 @@ package pieces {
       return attr['status'];
     }
 
-    /* set turn timer to remove 
-     * 
+    /* set turn timer to remove
+     *
      * ==== Parameters:
      * t:: Integer
      *
@@ -210,7 +210,7 @@ package pieces {
       change_status_in(false);
       return status();
     }
-    
+
     /*
      *  Send attributes to js/DB
      */
@@ -249,10 +249,10 @@ package pieces {
     \*---------------------------*/
 
     /* builds array of Units
-     * 
+     *
      * ==== Parameters:
      * arr::Array
-     * 
+     *
      * ==== Returns
      * Array
      */
@@ -265,10 +265,10 @@ package pieces {
     }
 
     /* creates array of unit data based on string from DB
-     * 
+     *
      * ==== Parameters:
      * str::String
-     * 
+     *
      * ==== Returns
      * Array
      */
@@ -283,16 +283,16 @@ package pieces {
     }
 
     /* builds array of Agents
-     * 
+     *
      * ==== Parameters:
      * arr::Array
-     * 
+     *
      * ==== Returns
      * Array
      */
     public function build_agents(arr) {
       var agents = new Array();
-      arr.forEach(function(a) { 
+      arr.forEach(function(a) {
         switch(a) {
           case GameConstants.SETTLER:
           case "Settler":
@@ -305,10 +305,10 @@ package pieces {
     }
 
     /* creates array of agent data based on string from DB
-     * 
+     *
      * ==== Parameters:
      * str::String
-     * 
+     *
      * ==== Returns
      * Array
      */
@@ -331,10 +331,10 @@ package pieces {
     }
 
     /* builds array of Agents
-     * 
+     *
      * ==== Parameters:
      * arr::Array
-     * 
+     *
      * ==== Returns
      * Array
      */
@@ -348,10 +348,10 @@ package pieces {
     }
 
     /* creates array of building data based on string from DB
-     * 
+     *
      * ==== Parameters:
      * str::String
-     * 
+     *
      * ==== Returns
      * Array
      */
@@ -365,7 +365,7 @@ package pieces {
       return buildings;
     }
 
- 
+
 
     /*---------------------------*\
            S: SELECTING
@@ -375,7 +375,7 @@ package pieces {
      *
      * ==== Parameters:
      * event::   MouseEvent
-     */    
+     */
   	public function selectThis(event:MouseEvent) {
       var current = this_empire.selected_piece ? this_empire.unselect_piece() : null;
       if(current != this) {
@@ -386,7 +386,7 @@ package pieces {
       dispatchEvent(new ControlPanelEvent(ControlPanelEvent.ANIMATE, isSelected, this));
   	}
 
-    /* 
+    /*
      * Add selection highlight
      */
     public function add_highlight() {
@@ -415,7 +415,7 @@ package pieces {
       var fade = highlight.alpha == 1 ? 0 : 1;
       TweenLite.to(highlight, .75, { alpha: fade, ease:Sine.easeIn });
     }
-    
+
 
 
 
@@ -457,8 +457,8 @@ package pieces {
 
           //------ simple combine/attack pieces
           } else {
-            is_enemy(other) ? 
-              attack(other) : 
+            is_enemy(other) ?
+              attack(other) :
                 combinePieces(other);
           }
         } else {
@@ -469,7 +469,7 @@ package pieces {
 
     // sets selectArr from ControlPanel
     public function newArmy(arr) { selectedArr = arr; }
-    
+
     /* Adds children to GamePiece passed and removes self
      *
      * ==== Parameters:
@@ -497,7 +497,7 @@ package pieces {
           changed(true);
         }
 
-      /* 
+      /*
        * else selected piece is an Army
        */
       } else {
@@ -531,7 +531,7 @@ package pieces {
         }
       }
     }
-    
+
     /* Split selectArr
      *
      * ==== Parameters:
@@ -569,7 +569,7 @@ package pieces {
         addAndMove(new_army, key);
       }
     }
-    
+
     // creating new Agent and add agents() to it
     public function split_agents_out(toSquare, key, piece=null) {
       selectedArr.forEach(function(agent) { agents().splice(agents().indexOf(agent),1) });
@@ -596,7 +596,7 @@ package pieces {
       other.selectThis(null);
       dispatchEvent(new AddListenerEvent(AddListenerEvent.EVENT, other, true));
     }
-    
+
     private function addAndMove(obj, key) {
       this_empire.gStage.addChild(obj);
       obj.x = square().x + 60;
@@ -607,7 +607,7 @@ package pieces {
     }
 
 
-    
+
     /*---------------------------*\
             S: ATTACKING
     \*---------------------------*/
@@ -646,6 +646,7 @@ package pieces {
             tmp_army.gotoAndPlay('attack');
           } else
             game_piece.gotoAndPlay('attack');
+
           var _this = this;
           setTimeout(function() {
             dispatchEvent(new PopupEvent(PopupEvent.POPUP, 'Battle', null, [_this, enemy], true));
@@ -655,10 +656,10 @@ package pieces {
     }
 
     /* Set Temporary Army's empire
-     * 
+     *
      * ==== Parameters:
      * army:: armyBase
-     * 
+     *
      */
     public function addTemporaryArmy() {
       tmp_army = new armyBase();
@@ -690,7 +691,7 @@ package pieces {
       return attr['rally'];
     }
 
-    /* 
+    /*
      * Moves piece 3 squares out of danger
      */
     public function retreat_from_battle() {
@@ -731,7 +732,7 @@ package pieces {
           start_index = Math.ceil(Math.random()*arr.length-1),
           new_arr = [arr[start_index]];
       for(var i:int=0; i<2; i++) {
-        var next_dir = new_arr[i] == arr[arr.length-1] ? arr[0] : 
+        var next_dir = new_arr[i] == arr[arr.length-1] ? arr[0] :
               new_arr[i] == arr[0] ? arr[1] :
                 arr[start_index+(i+1)];
         new_arr.push(next_dir);
@@ -744,7 +745,7 @@ package pieces {
     /*---------------------------*\
             S: DIRECTION
     \*---------------------------*/
-    
+
     private function changeDirection(sq, newSq) {
       if(!obj_is('city')) {
         var left = GetDirection.ret(sq, newSq);
@@ -767,8 +768,8 @@ package pieces {
       1. units
       2. buildings
       3. agents
-    \*---------------------------*/    
-    
+    \*---------------------------*/
+
     /*----------- AGENTS -----------*/
 
     /* Sets units
@@ -787,7 +788,7 @@ package pieces {
       }
       return attr['units'];
     }
-  	
+
     /* Add a single Unit class
      *
      * ==== Parameters:
@@ -814,7 +815,7 @@ package pieces {
       attr['units'] = attr['units'] ? attr['units'].concat(new_units) : new_units;
       return attr['units'];
     }
-    
+
     /* Remove all units
      *
      * ==== Parameters:
@@ -836,7 +837,7 @@ package pieces {
       this.setChildIndex(bar, 0);
       TweenLite.to(bar, .1, {dropShadowFilter:{blurX:1, blurY:1, distance:1, alpha:0.6}});
     }
-    
+
     public function totalMen() {
       var totalMen = 0;
       if(units()) {
@@ -844,13 +845,13 @@ package pieces {
       }
       return totalMen;
     }
-    
+
     private function percentOfMen() {
       var percent = 0;
       percent = Math.round((totalMen() / GameConstants.TOTAL_TROOPS) * 100);
       return percent;
     }
-    
+
     /* Remove unit from Army
      *
      * ==== Parameters:
@@ -874,7 +875,7 @@ package pieces {
         agents.forEach(function(a) { a.this_parent(_this); });
         attr['agents'] = agents;
       }
-      return attr['agents']; 
+      return attr['agents'];
     }
 
     /* Concatenating array of units into units()
@@ -889,7 +890,7 @@ package pieces {
       attr['agents'] = attr['agents'] ? attr['agents'].concat(new_agents) : new_agents;
       return attr['agents'];
     }
-    
+
     // TODO: I believe concat_agents() can replace this
     public function addAgents(agents:*) {
       var agent;
@@ -914,13 +915,13 @@ package pieces {
         attr['agents'].push(agents)
       }
     }
-    
+
     public function buildCity() {
       if(hasSettler() && !obj_is('city')) {
         agents().splice(agents().lastIndexOf(Settler),1);
         var attrs = {
-          population: 0, 
-          units: (units() != null && units().length > 0 ? units() : null), 
+          population: 0,
+          units: (units() != null && units().length > 0 ? units() : null),
           agents: agents(),
           square: square()
         }
@@ -943,6 +944,6 @@ package pieces {
     public function set_to_destroyed() { return false; }
     public function remove_ruins() { return false; }
     public function remove_looting() { return false; }
-    
+
   }
 }

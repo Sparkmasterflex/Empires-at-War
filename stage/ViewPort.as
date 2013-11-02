@@ -1,9 +1,9 @@
 package stage {
 	import com.greensock.*;
   import com.greensock.easing.*;
-  
+
   import flash.display.MovieClip;
-  
+
   import game_setup.DarkenEdges;
   import static_return.GameConstants;
 
@@ -11,7 +11,7 @@ package stage {
   import control_panel.*;
   import control_panel.ui.*;
   import control_panel.ui.popups.*;
-  
+
   public class ViewPort extends MovieClip {
   	/*---- Classes Added ----*/
   	private var edgeTop:DarkenEdges;
@@ -25,7 +25,7 @@ package stage {
     private var pop;
 
     public var turn:int;
-    
+
     public function ViewPort(p) {
       super();
       eAw = p;
@@ -81,30 +81,29 @@ package stage {
       popup.y = 100;
       popup.alpha = 0;
       addChild(popup);
-      TweenLite.to(overlay, 0.25, { alpha:0.4 }); 
-      TweenLite.to(popup, 0.25, { y:25, alpha:1 }); 
+      TweenLite.to(overlay, 0.25, { alpha:0.4 });
+      TweenLite.to(popup, 0.25, { y:25, alpha:1 });
     }
-    
+
     private function tweenOutPopup(popup) {
       TweenLite.to(popup, .25, {x: (GameConstants.WIDTH_CENTER - (popup.width*1.35)/2), y: -50, scaleX:1.35, scaleY:1.35, alpha:0});
       TweenLite.to(overlay, .25, {alpha:0, onComplete: removePopup, onCompleteParams: [popup]});
     }
-    
+
     private function removePopup(p) {
       removeChild(p);
       removeChild(overlay);
       pop = null;
     }
-    
+
     /*--------------------------------------- FormControlPanel ------*/
-    private function popupHandler(event:PopupEvent) {
-      trace('popup');
+    public function popupHandler(event:PopupEvent) {
       var popup = event.popup,
           params = event.parameters,
           show = event.showPopup,
           object = event.object,
           type = event.popup;
-      
+
       if(show) {
         if(pop) removePopup(pop);
         switch(popup) {
